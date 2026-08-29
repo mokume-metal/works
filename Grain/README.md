@@ -6,11 +6,20 @@
 
 ## 走らせる
 
+開発は CLI から。この作品は 1 つの SwiftPM パッケージで、`mokume-cli` の単位そのものになっている。
+
 ```bash
-swift run Grain                          # 板の面を出す
-swift run Grain slab                     # 板を立体にして回す (未完成 — 下記)
-swift run Grain --render <置き場> <番号>   # 1 枚だけ書き出す
-swift run Grain --frames <置き場> <数> slab # 連番で書き出す
+mokume-cli run .      # 作って走らせる
+mokume-cli watch .    # 保存したら作り直して差し替える
+mokume-cli mcp .      # 走っているスケッチを外から観測する
+```
+
+書き出しは実行ファイルへ直に渡す (CLI は引数を通さないため)。
+
+```bash
+swift run Grain slab                       # 板を立体にして回す (未完成 — 下記)
+swift run Grain --render <置き場> <番号>     # 1 枚だけ書き出す
+swift run Grain --frames <置き場> <数> slab  # 連番で書き出す
 ```
 
 ## 検証する
@@ -19,7 +28,7 @@ swift run Grain --frames <置き場> <数> slab # 連番で書き出す
 
 | | |
 | --- | --- |
-| works | `70cee117aa50396f4fe9d9c4fc365a1464794eac` |
+| works (スケッチを最後に触ったコミット) | `ad5d2252d01a7d7130f485d3a799ffdee36008c4` |
 | mokume | `a919d8fff77d3b62f95ef63accea0754bb173d0f` (`Package.resolved` が固定している) |
 
 ```bash
