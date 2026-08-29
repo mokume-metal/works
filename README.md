@@ -38,6 +38,17 @@ mokume-cli watch <作品>   # 保存したら作り直して差し替える
 mokume-cli mcp <作品>     # 走っているスケッチを外から観測する
 ```
 
+**CLI を入れる手段はまだ無い** ([mokume#383](https://github.com/mokume-metal/mokume/issues/383))。
+当面は mokume を clone して自分で作る:
+
+```bash
+cd <mokume の clone>
+swift build -c release --product mokume-cli
+install -m 755 "$(swift build -c release --show-bin-path)/mokume-cli" ~/.local/bin/
+```
+
+mokume は 0.x で動き続けるので、CLI の挙動が古いと感じたら上を打ち直す。
+
 フォルダの `README.md` はその作品の記録を持つ — 何を作ったか・走らせ方・**再現の手がかり**
 (works と mokume のコミット、書き出した絵のハッシュ)・止まったところ・mokume へ戻したもの。
 後から検証するときはそのフォルダだけ読めばよい。
