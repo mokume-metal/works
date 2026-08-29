@@ -15,6 +15,19 @@
 
 体制の正典は mokume 側の [ADR-0022](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0022-production-track.md)。
 
+## 並べ方
+
+**1 作品 1 フォルダ・1 実行ファイル。** フォルダの `README.md` がその作品の記録を持つ —
+何を作ったか・走らせ方・**再現の手がかり** (works と mokume のコミット、書き出した絵のハッシュ)・
+止まったところ・mokume へ戻したもの。後から検証するときはそのフォルダだけ読めばよい。
+
+| | |
+| --- | --- |
+| [Grain](Grain/) | 挽いた板を並べた面。木目を手続き的に作る |
+
+`Package.resolved` はコミットする。作品のコミットを checkout すれば mokume も当時の版に戻るので、
+別の作品が新しい mokume を要求してピンが動いても、前の作品の再現は壊れない。
+
 ## 規約
 
 **このリポジトリの規約は、このリポジトリが持つ。** mokume の規約は写さない — 写すと必ず片方が古くなる。
