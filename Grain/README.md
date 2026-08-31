@@ -6,12 +6,12 @@
 
 ## 走らせる
 
-開発は CLI から。この作品は 1 つの SwiftPM パッケージで、`mokume-cli` の単位そのものになっている。
+開発は CLI から。この作品は 1 つの SwiftPM パッケージで、`mokume` の単位そのものになっている。
 
 ```bash
-mokume-cli run .      # 作って走らせる
-mokume-cli watch .    # 保存したら作り直して差し替える
-mokume-cli mcp .      # 走っているスケッチを外から観測する
+mokume run .      # 作って走らせる
+mokume watch .    # 保存したら作り直して差し替える
+mokume mcp .      # 走っているスケッチを外から観測する
 ```
 
 書き出しは実行ファイルへ直に渡す (CLI は引数を通さないため)。
