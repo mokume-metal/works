@@ -18,7 +18,7 @@
 ## 並べ方
 
 **1 作品 = 1 フォルダ = 1 SwiftPM パッケージ = 1 スケッチ。** これは好みではなく
-`mokume-cli` の単位である — `run` / `watch` はディレクトリ直下の `Package.swift` を求め、
+`mokume` の単位である — `run` / `watch` はディレクトリ直下の `Package.swift` を求め、
 実行ファイルの名前を `products` から取る。1 つのパッケージに作品を並べると、
 **最初の product が黙って起動する**。
 
@@ -33,21 +33,23 @@
 開発は CLI から:
 
 ```bash
-mokume-cli run <作品>     # 作って走らせる
-mokume-cli watch <作品>   # 保存したら作り直して差し替える
-mokume-cli mcp <作品>     # 走っているスケッチを外から観測する
+mokume run <作品>     # 作って走らせる
+mokume watch <作品>   # 保存したら作り直して差し替える
+mokume mcp <作品>     # 走っているスケッチを外から観測する
 ```
 
-**CLI を入れる手段はまだ無い** ([mokume#383](https://github.com/mokume-metal/mokume/issues/383))。
-当面は mokume を clone して自分で作る:
+道具は Homebrew で入る ([mokume#383](https://github.com/mokume-metal/mokume/issues/383) が tap を用意した):
 
 ```bash
-cd <mokume の clone>
-swift build -c release --product mokume-cli
-install -m 755 "$(swift build -c release --show-bin-path)/mokume-cli" ~/.local/bin/
+brew install mokume-metal/tap/mokume
+brew upgrade mokume                    # 古いと感じたら
 ```
 
-mokume は 0.x で動き続けるので、CLI の挙動が古いと感じたら上を打ち直す。
+**手元でビルドした `mokume-cli` を使い続けない。** 道具は自分の版を名乗れないので
+([mokume#634](https://github.com/mokume-metal/mokume/issues/634))、古いソースから作った実行
+ファイルは**ファイルの日付が新しくても中身が古く**、それに気付く手掛かりが無い。解消済みの
+不具合を新しい不具合として起票する事故が実際に起きている
+([mokume#633](https://github.com/mokume-metal/mokume/issues/633))。
 
 フォルダの `README.md` はその作品の記録を持つ — 何を作ったか・走らせ方・**再現の手がかり**
 (works と mokume のコミット、書き出した絵のハッシュ)・止まったところ・mokume へ戻したもの。
@@ -59,6 +61,18 @@ mokume は 0.x で動き続けるので、CLI の挙動が古いと感じたら�
 
 **`Package.resolved` は作品ごとに持ち、コミットする。** 作品のコミットへ戻れば mokume も
 当時の版に戻るので、別の作品が新しい mokume を要求しても前の作品の再現は壊れない。
+
+## 窓口 (`mcp`) を使うとき
+
+エージェントの MCP 宣言は作業ディレクトリを渡せないので、窓口は**セッションを開いた場所**で
+立つ。作品の親 (このリポジトリの直下) でセッションを開いたなら、見張る側の基準も揃える:
+
+```bash
+MOKUME_WORK_DIR="$PWD" mokume watch <作品>
+```
+
+揃っていないと `observe` が空振りする。いまどちらの基準で走っているかは `mokume doctor` が
+「区画の基準」として出す。
 
 ## 規約
 
