@@ -1,6 +1,6 @@
 # Garden — p5.js の Data Structure Garden を mokume へ
 
-<!-- STILL -->
+![咲きそろった庭 (frame 1)](https://i.gyazo.com/556227dfafeaca33b5412aa3fe00a951.png)
 
 制作トラック ([mokume ADR-0022](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0022-production-track.md)) の 3 本目。これは作品であると同時に**物差し**である。
 
@@ -8,7 +8,11 @@ Grain (面) と OrbitControl (視点) は mokume が得意な方向を伸ばし�
 
 **作り替えず、1 行ずつ写している。** 面 400x400・lightblue の背景・初期 20 本・毎フレーム `size *= 0.99` と `lifespan -= 1` まで原典どおりに保ってあるのは、「p5 の語彙のどこに mokume の対応物が無いか」を対応表として取り出すためである。
 
-<!-- MOTION -->
+**20 本が萎れて消え、そのあと外から送った 5 回のクリックで植わるまで** (10.4 秒・観測は `.mokume/observe`、クリックは `.mokume/input` から)。
+
+![20 本が萎れて消え、クリックで 5 本植わる](https://i.gyazo.com/d7d1b4c10f23e78ee3bc21a24dd56382.webp)
+
+> クリックを 1 件ずつ別の要求に分けて送っている。**まとめて送ると 1 本も植わらない** — [下記](#踏んだのは-1-つだけ)。
 
 ## 走らせる
 
@@ -27,11 +31,13 @@ swift run Garden --frames <置き場> <数>     # 連番で書き出す
 
 ## 検証する
 
-**同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。
+**同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。下のハッシュが食い違ったら、変えたつもりのないところが変わっている。
+
+`random()` の種も既定の 0 で固定されているので、**「でたらめな 20 本」も毎回同じ**である (p5 は起動ごとに違う庭が出る)。
 
 | | |
 | --- | --- |
-| works (スケッチを最後に触ったコミット) | `<WORKS_SHA>` |
+| works | [#3](https://github.com/mokume-metal/works/pull/3) の merge コミット (`Package.resolved` が同じツリーにある) |
 | mokume | `v0.5.0` / `f0d136d1d70b172b49b3419f795feba018fe4101` (`Package.resolved` が固定している) |
 
 ```bash
