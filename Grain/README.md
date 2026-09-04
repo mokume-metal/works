@@ -28,18 +28,33 @@ swift run Grain --frames <置き場> <数> slab  # 連番で書き出す
 
 | | |
 | --- | --- |
-| works (スケッチを最後に触ったコミット) | `ad5d2252d01a7d7130f485d3a799ffdee36008c4` |
-| mokume | `a919d8fff77d3b62f95ef63accea0754bb173d0f` (`Package.resolved` が固定している) |
+| works | [#4](https://github.com/mokume-metal/works/pull/4) の merge コミット (`Package.resolved` が同じツリーにある) |
+| mokume | `v0.5.0` / `f0d136d1d70b172b49b3419f795feba018fe4101` (`Package.resolved` が固定している) |
 
 ```bash
 swift run Grain --render out 312 && shasum -a 256 out/grain-312.png
-# 383ca101ebef273667a64cef096f72fc1070308fb32664d1291f8b0f7d95ac1c
+# dbc3b8640fb2988c8ef2a18ff4b58ae7866d09badd7dbf6fb707eb1da1db7e4b
 
 swift run Grain --frames out-slab 60 slab && shasum -a 256 out-slab/frame-0055.png
 # a0a1d3e1c7ccca4b00add68b4e47e73442b27cc10fd8e9f448b7c2b3a918b989
 ```
 
 **`Package.resolved` はコミットしてある**ので、上の works のコミットを checkout すれば mokume も当時の版に戻る。別の作品が新しい mokume を要求してピンが動いても、この作品の再現は壊れない。
+
+### 版を上げたときに動いたもの
+
+依存は当初 `main` を指していた — 立体と光 (2026-08-28) を含まない `v0.1.0` しか無かったためである。`v0.5.0` がそれを含むので追随をやめ、Garden と同じくタグで固定した (`a919d8f` → `v0.5.0`、その間 124 コミット)。
+
+**平面の絵は 10 画素だけ動いた。** 1280x720 のうち、動いたのは**すべて右端の最終列** (x=1279) で、y は継ぎ目 (120 刻み) の ±1 に限られる。継ぎ目は `line(0, y, width, y)` で引いており、動いたのはその**終端画素のアンチエイリアス**だけである。
+
+| y | 左隣 (x=1278) | 右端 旧 | 右端 新 |
+| --- | --- | --- | --- |
+| 119 | (27,9,2) | (5,1,0) | (31,12,2) |
+| 601 | (40,21,6) | (9,2,1) | (42,22,7) |
+
+**旧版は右端で線が濃くなりすぎていた** — 左隣より暗い。新版は左隣と揃う。線の中心 (y=120 など) は 1 ビットも動いていない。上の絵は貼り替えていない (10 画素は目で見て分からない)。
+
+**立体 (`slab`) の絵は完全に一致する。** 上のハッシュが変わっていないのはそのためで、動いたのは平面の線の終端だけだと言える。
 
 ## 作り
 
