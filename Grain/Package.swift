@@ -11,10 +11,11 @@ let package = Package(
     // **宣言が無いと mokume-cli が実行ファイルを解決できない** (RunCommand)
     products: [.executable(name: "Grain", targets: ["Grain"])],
     dependencies: [
-        // タグではなく main を指す。v0.1.0 (2026-08-27) は立体と光 (2026-08-28) を
-        // 含まないため。**どの版で描いたかは Package.resolved が持つ**ので、
-        // この作品のコミットへ戻れば当時の mokume に戻る
-        .package(url: "https://github.com/mokume-metal/mokume.git", branch: "main")
+        // リリースされた版を指す。立体と光 (2026-08-28) を含まない v0.1.0 を避けて
+        // 一時 main を指していたが、v0.5.0 がそれを含むので追随をやめた。
+        // **どの版で描いたかは Package.resolved が持つ**ので、この作品のコミットへ
+        // 戻れば当時の mokume に戻る
+        .package(url: "https://github.com/mokume-metal/mokume.git", from: "0.5.0")
     ],
     targets: [
         .executableTarget(
