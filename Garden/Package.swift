@@ -9,7 +9,7 @@ let package = Package(
     products: [.executable(name: "Garden", targets: ["Garden"])],
     dependencies: [.package(
     url: "https://github.com/mokume-metal/mokume.git",
-    from: "0.5.0")],
+    from: "0.6.0")],
     targets: [
         .executableTarget(
             name: "Garden",

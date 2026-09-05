@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mokume-metal/mokume.git",
       "state" : {
-        "revision" : "f0d136d1d70b172b49b3419f795feba018fe4101",
-        "version" : "0.5.0"
+        "revision" : "d153f982435b775101772d904153c8d2b6711fd6",
+        "version" : "0.6.0"
       }
     },
     {

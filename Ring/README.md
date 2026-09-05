@@ -40,7 +40,7 @@ swift run Ring --frames <置き場> <数>     # 連番で書き出す
 | | |
 | --- | --- |
 | works | [#8](https://github.com/mokume-metal/works/pull/8) の merge コミット (`Package.resolved` が同じツリーにある) |
-| mokume | `v0.5.0` / `f0d136d1d70b172b49b3419f795feba018fe4101` (`Package.resolved` が固定している) |
+| mokume | `v0.6.0` / `d153f982435b775101772d904153c8d2b6711fd6` (`Package.resolved` が固定している) |
 
 ```bash
 swift run Ring --render out 1 && shasum -a 256 out/ring-1.png
@@ -49,6 +49,8 @@ swift run Ring --render out 1 && shasum -a 256 out/ring-1.png
 swift run Ring --render out 200 && shasum -a 256 out/ring-200.png
 # 78af752be63c53976014bfdb28eb8e1d86f4d7635247d9eec676c914677785d5
 ```
+
+**`v0.5.0` → `v0.6.0` で、この絵は 1 ビットも動かなかった。** 同じ版上げで Garden の円の縁と Grain の重ね塗りは動いている ([Garden](../Garden/README.md#v060-で動いたもの) / [Grain](../Grain/README.md)) — 動いたのは**塗りの縁が半端な画素に載るとき**の被覆の置き方で、この作品が置く帯は頂点をそのまま並べたものなので当たらない。
 
 **動くところは外から確かめる。** 窓口とスケッチで区画の基準を揃えて立て、`mouseMoved` を送っては撮る。
 
