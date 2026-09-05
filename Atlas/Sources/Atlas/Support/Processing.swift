@@ -147,3 +147,31 @@ func millis() -> Float { Float(Date().timeIntervalSince(started) * 1000) }
 func asset(_ example: String, _ file: String) -> String {
     "upstream/examples/\(example)/data/\(file)"
 }
+
+// MARK: - 色の成分
+
+// **mokume の `LinearRGBA` は作業空間 (線形) の値を持つ。** 原典の `red()` /
+// `green()` / `blue()` / `brightness()` が返すのは表示の値 (0〜255) なので、
+// 読み出すときに戻し変換が要る。台帳では `red` などは名前一致で `same` に見えるが、
+// **同じ名前で違う空間の数を返す** — 名前しか見ない台帳の穴のひとつ。
+
+/// 線形 → 表示 (sRGB の伝達関数)。mokume の `TransferFunction.encode` と同じ式。
+private func encode(_ linear: Float) -> Float {
+    linear <= 0.003_130_8 ? 12.92 * linear : 1.055 * pow(linear, 1 / 2.4) - 0.055
+}
+
+private func straight(_ value: Float, _ alpha: Float) -> Float {
+    alpha > 0 ? value / alpha : 0
+}
+
+/// 原典の `red(c)` — 表示の値 (0〜255)。
+func red(_ color: LinearRGBA) -> Float { encode(straight(color.red, color.alpha)) * 255 }
+/// 原典の `green(c)`。
+func green(_ color: LinearRGBA) -> Float { encode(straight(color.green, color.alpha)) * 255 }
+/// 原典の `blue(c)`。
+func blue(_ color: LinearRGBA) -> Float { encode(straight(color.blue, color.alpha)) * 255 }
+
+/// 原典の `brightness(c)` — HSB の明度 (0〜255)。**mokume は色相・彩度・明度を持たない。**
+func brightness(_ color: LinearRGBA) -> Float {
+    max(red(color), green(color), blue(color))
+}

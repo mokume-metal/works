@@ -2,10 +2,11 @@ import mokume
 
 /// Processing の [Alpha Mask](https://processing.org/examples/alphamask/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `blocked` と言った。外れている — 絵は出せる。** `img.mask(imgMask)` の口は
+/// **台帳は `blocked` と言った。半分だけ — 絵は出る。** `img.mask(imgMask)` の口は
 /// 無いが、`Image` は `get` / `set` を持つので**画素を 1 つずつ移し替えれば書ける**。
 /// ただし原典の 1 行が二重の繰り返しになり、23 万回の呼び出しになる。
-/// 台帳の `none` を `write` へ直す (絵が出せないのではなく、書けば出る)。
+/// **`mask` の判定は `none` ではなく `write` が正しい** — 絵が出せないのではなく、
+/// 書けば出る。
 final class AlphaMask: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Alpha Mask")
 

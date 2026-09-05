@@ -293,7 +293,7 @@ def check() -> int:
         if not entry or entry.get("url", "") not in readme:
             problems.append(f"{example}: README が指す絵が台帳に無い / 貼られていない")
     listed = {line.strip() for line in subprocess.run(
-        ["swift", "run", "Atlas", "--list"], cwd=ROOT, capture_output=True, text=True, check=True
+        ["swift", "run", "-c", "release", "Atlas", "--list"], cwd=ROOT, capture_output=True, text=True, check=True
     ).stdout.splitlines() if "/" in line}
     for example in sorted(set(book["shots"]) - listed):
         problems.append(f"{example}: 台帳にあるが、移植が無い")

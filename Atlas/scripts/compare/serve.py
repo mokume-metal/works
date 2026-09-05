@@ -63,7 +63,7 @@ def shots() -> dict:
 def ported() -> list[str]:
     """移してある例。`--list` が正本で、こちらで数え直さない。"""
     out = subprocess.run(
-        ["swift", "run", "Atlas", "--list"],
+        ["swift", "run", "-c", "release", "Atlas", "--list"],
         cwd=ROOT, capture_output=True, text=True, check=True)
     return [line.strip() for line in out.stdout.splitlines() if "/" in line]
 
@@ -134,7 +134,9 @@ def render(menu: list[dict]) -> None:
             todo.setdefault(entry["frame"], []).append(entry["example"])
     for frame, names in sorted(todo.items()):
         print(f"mokume の絵を {frame} 枚目まで書き出す ({len(names)} 本)…", file=sys.stderr)
-        subprocess.run(["swift", "run", "Atlas", "--render-all", "out", str(frame), *names],
+        # **書き出しは release で。** 画素を舐める例 (Image Processing の 6 本) は
+        # 1 枚あたり 200 万回の呼び出しになり、debug では分の単位で待つ
+        subprocess.run(["swift", "run", "-c", "release", "Atlas", "--render-all", "out", str(frame), *names],
                        cwd=ROOT, check=True, stdout=subprocess.DEVNULL)
 
 
