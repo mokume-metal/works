@@ -72,27 +72,39 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 
 ### 原典と同じ見た目になっているか
 
-**移した 5 本を、原典と並べて画素で突き合わせた。** 原典は processing-website が例ごとに配る `liveSketch.js` (Processing 版と 1 行ずつ対応した p5.js) をブラウザで走らせたもので、**mokume と条件を揃えてある** — マウスを動かさない (`mouseX` = 0)・1 フレーム目で止める・等倍 (`pixelDensity(1)`) の 3 つ。
+**移した例を、原典と並べて画素で突き合わせている。** 原典は processing-website が例ごとに配る `liveSketch.js` (Processing 版と 1 行ずつ対応した p5.js) をブラウザで走らせたもので、**mokume と条件を揃えてある** — マウスを動かさない (`mouseX` = 0)・決めた枚数で止める・等倍 (`pixelDensity(1)`) の 3 つ。
 
-| 例 | 画素が完全に一致 | 平均差 | 最大差 | 差はどこから出たか |
-| --- | ---: | ---: | ---: | --- |
-| `ContinuousLines` | **100.0%** | 0.00 | 0 | — (1 画素も違わない) |
-| `Map` | **100.0%** | 0.07 | 255 | 円の輪郭のアンチエイリアス |
-| `NoLoop` | 99.2% | 1.42 | 255 | 線の置き方 (下記 2) |
-| `Bezier` | 96.1% | 6.11 | 255 | 曲線の輪郭のアンチエイリアス |
-| `Mouse2D` | 92.1% | 1.41 | **18** | 半透明の合成 (下記 1) |
+**測れない例には数を出さない。** 乱数・時計・書体を使う例は原典と mokume で列が違うので、一致率は「入っている乱数と書体」を測っているだけになる。並べた 1 枚は作るが、数字の代わりに理由を絵に刷る。
+
+<!-- compare:begin -->
+| 測り方 | 本数 | |
+| --- | ---: | --- |
+| `pixel` | 5 | 1 画素ずつ突き合わせた |
+| `resampled` | 0 | 原典が 1280x720 の静止画しかない。縮めているので参考値 |
+| `none` | 0 | 乱数・時計・書体。原典と列が違うので一致率に意味が無い |
+
+| 画素の一致 | 本数 |
+| --- | ---: |
+| 100.0% (1 画素も違わない) | 1 |
+| 99% 以上 | 2 |
+| 95% 以上 | 1 |
+| それ未満 | 1 |
+
+全数は [`ledger/comparison.md`](ledger/comparison.md)。
+
+![Basics/Form/Bezier — 原典と mokume](https://i.gyazo.com/0427e8bc7a34a5f71f851cadec0511c7.png)
+
+![Basics/Math/Map — 原典と mokume](https://i.gyazo.com/c113efc229aac3b6bfc57564bc387e54.png)
+
+![Topics/Drawing/ContinuousLines — 原典と mokume](https://i.gyazo.com/b7df21fb981181f80893522962ab6756.png)
+<!-- compare:end -->
 
 **形と位置は合っている。** 差が出たのは輪郭の均しと、色の作り方の 2 か所だけである。
 
-![Map — 原典と mokume](https://i.gyazo.com/c113efc229aac3b6bfc57564bc387e54.png)
-
-![ContinuousLines — 原典と mokume](https://i.gyazo.com/b7df21fb981181f80893522962ab6756.png)
-
-![Bezier — 原典と mokume](https://i.gyazo.com/0427e8bc7a34a5f71f851cadec0511c7.png)
-
 #### 1. 半透明を重ねると色が変わる (`Mouse2D`)
 
-![Mouse2D — 原典と mokume](https://i.gyazo.com/2e896bfdb06b5ff5d3c6c47c9112c322.png)
+<!-- compare:image Basics/Input/Mouse2D -->
+![Basics/Input/Mouse2D — 原典と mokume](https://i.gyazo.com/2e896bfdb06b5ff5d3c6c47c9112c322.png)
 
 原典の `fill(255, 204)` — 白を 80% の濃さで、51 の背景へ重ねる 1 行。**出てくる色が違う。**
 
@@ -105,7 +117,8 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 
 #### 2. 1px の線をピクセルに載せるか、またがせるか (`NoLoop`)
 
-![NoLoop — 原典と mokume](https://i.gyazo.com/c870511ab9f5ef344873076f4052cef4.png)
+<!-- compare:image Basics/Structure/NoLoop -->
+![Basics/Structure/NoLoop — 原典と mokume](https://i.gyazo.com/c870511ab9f5ef344873076f4052cef4.png)
 
 `line(0, 180, width, 180)` の 1 本が、**p5 では 2 行に 128 ずつ・mokume では 1 行に 255** で出る。p5 は線をピクセルの境界にまたがらせて均し、mokume はピクセルに載せる。線 1 本ぶん (640 画素 = 面の 0.28%) の差なので一致率は 99.2% に留まる。
 
@@ -184,16 +197,24 @@ git diff --stat ledger/    # 差分が出なければ、同じ版から同じ台
 ```
 
 **原典と並べた比較も作り直せる。** 立てて、出た URL をブラウザで開くと、原典 (p5) と
-mokume を横に並べた 1 枚が `upstream/compare/shots/` に出る。
+mokume を横に並べた 1 枚が `upstream/compare/shots/` に出る。**献立は台帳が決める**ので、
+移植を足せば次から比較の対象に入る (mokume の絵は足りないぶんだけ勝手に書き出される)。
 
 ```bash
-swift run Atlas --render-all out 1        # 先に mokume の絵を書き出す
 python3 scripts/compare/serve.py          # http://127.0.0.1:8731/ を開く
+python3 scripts/compare/publish.py        # Gyazo へ上げ、台帳と文書を書き戻す
+python3 scripts/compare/publish.py --check  # 撮り直していないものを捕まえる
 ```
 
 比べているのが処理系の差であって撮り方の差ではないように、条件を 3 つ揃えてある
 ([`scripts/compare/index.html`](scripts/compare/index.html) にその理由も書いた)。
 **揃える前は原典側だけ 30 フレーム進み、線が 1 本ぶんずれていた。**
+
+**本文の画像行は手で書かない。** 撮った証跡の台帳は [`ledger/shots.json`](ledger/shots.json) で、
+`ledger/comparison.md` は丸ごと生成物、README のこの節も印 (`<!-- compare:begin -->`) で
+囲った区間だけが生成物である。`--check` は移植・枚数・測り方・mokume の版を撮影時の指紋と
+突き合わせ、**直したのに撮り直していない**を捕まえる (画像そのものは比べないので GPU も要らない)。
+**捕まえられるのはこちら側の変化だけ** — 原典が変わったことは、取ってきたときにしか分からない。
 
 ## 台帳の作り
 

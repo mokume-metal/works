@@ -1,0 +1,108 @@
+{
+  "comment": "scripts/compare/publish.py が書く。人が書くのは frame / measure / why / note / featured だけ",
+  "shots": {
+    "Basics/Form/Bezier": {
+      "class": "bend",
+      "diff": {
+        "max": 255,
+        "mean": 6.1119,
+        "same": 96.0998
+      },
+      "featured": true,
+      "frame": 1,
+      "group": "Basics/Form",
+      "height": 360,
+      "measure": "pixel",
+      "note": "曲線の輪郭のアンチエイリアス",
+      "origin": "live",
+      "sha256": "28037471e1ce2a43a6dacf804d193d56fe4408619bdf02d960f06948c6ce14c2",
+      "slug": "bezier",
+      "source": "d67b47c1695a2824fbaf61f4b7d779b9e1c9282146b53fc02a61468279842cc5",
+      "url": "https://i.gyazo.com/0427e8bc7a34a5f71f851cadec0511c7.png",
+      "width": 640
+    },
+    "Basics/Input/Mouse2D": {
+      "class": "clean",
+      "diff": {
+        "max": 18,
+        "mean": 1.4141,
+        "same": 92.1441
+      },
+      "frame": 1,
+      "group": "Basics/Input",
+      "height": 360,
+      "measure": "pixel",
+      "note": "半透明の合成 (線形空間で混ぜるので 214 ではなく 232)",
+      "origin": "live",
+      "sha256": "4f7686f0bd51bee355efebd6fe4b4a3638948c85f0b41853546b8efb3cfdfaab",
+      "slug": "mouse2d",
+      "source": "8e3ea7718900fdc305d0991ac8cf77fc2ae3091831b2b4e8972aa287c6fadeb6",
+      "url": "https://i.gyazo.com/2e896bfdb06b5ff5d3c6c47c9112c322.png",
+      "width": 640
+    },
+    "Basics/Math/Map": {
+      "class": "write-only",
+      "diff": {
+        "max": 255,
+        "mean": 0.0664,
+        "same": 99.9562
+      },
+      "featured": true,
+      "frame": 1,
+      "group": "Basics/Math",
+      "height": 360,
+      "measure": "pixel",
+      "note": "円の輪郭のアンチエイリアス",
+      "origin": "live",
+      "sha256": "6be59f6df79c319d77af13d946fc7189b60fc50c4492ba0c5d76146cd38dd746",
+      "slug": "map",
+      "source": "9160725a1be450105b9ff0d30c72ed263a4b4ad5471cfb644d73a6122557c981",
+      "url": "https://i.gyazo.com/c113efc229aac3b6bfc57564bc387e54.png",
+      "width": 640
+    },
+    "Basics/Structure/NoLoop": {
+      "class": "blocked",
+      "diff": {
+        "max": 255,
+        "mean": 1.4194,
+        "same": 99.1667
+      },
+      "frame": 1,
+      "group": "Basics/Structure",
+      "height": 360,
+      "measure": "pixel",
+      "note": "1px の線の置き方 (p5 は 2 行に 128、mokume は 1 行に 255)",
+      "origin": "live",
+      "sha256": "2c18aa6979f5554ce95c0b9f0686dae9dfd79ec41e83833ee1572987f245bc1e",
+      "slug": "noloop",
+      "source": "a5fd4e93fb3a7b615e7ba77e4f98da91d87a45efe8fb36e8b1490c04f20b05bd",
+      "url": "https://i.gyazo.com/c870511ab9f5ef344873076f4052cef4.png",
+      "width": 640
+    },
+    "Topics/Drawing/ContinuousLines": {
+      "class": "clean",
+      "diff": {
+        "max": 0,
+        "mean": 0,
+        "same": 100
+      },
+      "featured": true,
+      "frame": 1,
+      "group": "Topics/Drawing",
+      "height": 360,
+      "measure": "pixel",
+      "note": "1 画素も違わない",
+      "origin": "live",
+      "sha256": "2a4acf808cb536e35e136b4d32b39db255227be5f906b4615c2d63ce406f1c62",
+      "slug": "continuouslines",
+      "source": "aab37144488b300c98dffa4e63b90d771dc1f4d5906ef46a9f162ae8ff7dc57a",
+      "url": "https://i.gyazo.com/b7df21fb981181f80893522962ab6756.png",
+      "width": 640
+    }
+  },
+  "tool": {
+    "mokume": "0.5.0",
+    "p5": "1.9.4",
+    "reference": "1fce63d07182becca614b95ab76b3b1416424d8d"
+  }
+}
