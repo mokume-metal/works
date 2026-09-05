@@ -4,9 +4,11 @@
 
 制作トラック ([mokume ADR-0022](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0022-production-track.md)) の 6 本目。
 
-**これは途中で折れている作品である。** 目標は three.js の [webgl_loader_gltf](https://threejs.org/examples/#webgl_loader_gltf) 相当 — glTF を読んで PBR マップ 5 枚と HDR 環境で見せる絵 — だったが、**絵を 1 枚貼るところで止まった** ([mokume#914](https://github.com/mokume-metal/mokume/issues/914))。上の絵は絵を貼らずに置いたもので、形は出ている。
+目標は three.js の [webgl_loader_gltf](https://threejs.org/examples/#webgl_loader_gltf) 相当 — glTF を読んで PBR マップ 5 枚と HDR 環境で見せる絵 — だったが、**絵を 1 枚貼るところで止まった** ([mokume#914](https://github.com/mokume-metal/mokume/issues/914))。上の絵は絵を貼らずに置いたもので、形は出ている。
 
 折れたことは失敗ではなく、この作品の成果物である。ADR-0022 決定 4 が言うとおり「作ろうとして止まる」が最も純度の高い実需で、止まった瞬間のほうが何が無かったかを正確に指せる。
+
+**止まった原因は mokume 側で直った** ([mokume#914](https://github.com/mokume-metal/mokume/issues/914) は閉じ、main の `81efdf2` に入っている)。**まだ配られていない**ので、この作品が固定している `v0.5.0` では下の 3 枚目のままである。段 3 以降へ進むには、引く版を上げるのが先になる。
 
 ## 何を測るか
 
@@ -38,7 +40,7 @@ python3 scripts/fetch.py
 | [NormalTangentTest](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/NormalTangentTest) | CC0 1.0 (Analytical Graphics, Inc. / Ed Mackey) |
 | [royal_esplanade](https://polyhaven.com/a/royal_esplanade) | CC0 1.0 (Greg Zaal / Poly Haven) |
 
-NormalTangentTest と HDRI は段 3 以降で使うもので、**まだ 1 度も読んでいない** (段 2 で折れたため)。
+NormalTangentTest と HDRI は段 3 以降で使うもので、**まだ 1 度も読んでいない**。
 
 ## 走らせる
 
@@ -117,13 +119,17 @@ swift run -c release Helmet --measure whole                # 全部 1 度に渡�
 
 3 枚目が症状で、`setup()` で組んだ絵つきの形を `draw()` で置くと **1 画素も描かれない**。46,356 頂点・描画 1 回で組めていることは数で確認できるのに、絵にならない。警告も出ない。
 
-→ [mokume#914](https://github.com/mokume-metal/mokume/issues/914)
+→ [mokume#914](https://github.com/mokume-metal/mokume/issues/914) — **直った** ([mokume#917](https://github.com/mokume-metal/mokume/pull/917))。`place` が記録した面へ切り替えたあと、`beginSolids()` の `useFillTexture()` が**置く側の**状態で面を選び直して焼き場へ倒していた。「直後に置くと描かれる」の非対称も、`createShape` が `openSource` を `.solid` のまま抜けることから来ていた
+
+**直ったことは、この作品で確かめてある。** `Package.swift` を mokume の直しのブランチへ一時的に向けて走らせたら、`setup()` で組んだ絵つきの形が `draw()` で描かれた — 塗られた画素が **0 → 63,413**、明るさの種類が **1 → 256**。その絵は上の 2 枚目 (`draw()` で組み直したもの) と**バイト単位で同一**だった。
 
 **2 枚目が暗いのも所見である** (画素値の最頻値が 2〜6)。段 3 で追う予定だが、いま追えない。
 
-### 段 3 以降は測れていない
+### 段 3 以降はまだ測っていない
 
-法線マップ・metallicRoughness・AO・emissive・HDR 環境・ACES は、**絵が 1 枚も安定して貼れないと測れない**。[mokume#914](https://github.com/mokume-metal/mokume/issues/914) が直ってから続ける。
+法線マップ・metallicRoughness・AO・emissive・HDR 環境・ACES は、**絵が 1 枚も安定して貼れないと測れない**。[mokume#914](https://github.com/mokume-metal/mokume/issues/914) は直ったので進めるが、**引く版を上げるのが先**である (直しは main にしか無く、この作品は `v0.5.0` に固定している)。
+
+NormalTangentTest と HDRI は取得スクリプトが取ってくるが、まだ 1 度も読んでいない。
 
 ## three.js / glTF との対応
 
@@ -134,7 +140,7 @@ swift run -c release Helmet --measure whole                # 全部 1 度に渡�
 | `indices` | **無い** | CPU で展開して 3.2 倍に |
 | `node.rotation` (四元数) | **無い** (`applyMatrix()` が無く、`Placement` は一様な倍率とオイラー角だけ) | CPU で畳んだ。DamagedHelmet は X 軸 −90° の 1 つなので `rotateX` でも書けるが、一般の glTF は書けない |
 | `TANGENT` | **無い** (頂点の口は位置・法線・読み取り位置の 3 つ) | DamagedHelmet 自身も持たないので、実行時に作る必要がある。段 3 |
-| `baseColorTexture` | `texture(_:)` | **保持した形では次のフレームで消える** ([#914](https://github.com/mokume-metal/mokume/issues/914)) |
+| `baseColorTexture` | `texture(_:)` | 貼れる。**保持した形では次のフレームで消えていた**が直った ([#914](https://github.com/mokume-metal/mokume/issues/914))。引く版を上げれば効く |
 | `normalTexture` / `metallicRoughnessTexture` / `occlusionTexture` / `emissiveTexture` | **無い** | 材質は `shininess` / `metalness` / `ambient` / `emissive` の 4 つで、どれも面ぜんたいに 1 つ。段 3 |
 | UV の `REPEAT` ラップ | **無い** (`clamp_to_edge` 固定) | DamagedHelmet の v は **1.26 まで行く**。glTF では普通のことで、繰り返しを前提に展開されている |
 | `scene.environment` (HDR) | `Surroundings` は 3 色帯 | 段 6 |
@@ -177,7 +183,7 @@ swift run -c release Helmet --measure whole                # 全部 1 度に渡�
 
 | 踏んだもの | | 状態 |
 | --- | --- | --- |
-| 絵を貼った保持した形を、次のフレームで置くと消える | [mokume#914](https://github.com/mokume-metal/mokume/issues/914) | open — **この作品を止めている** |
+| 絵を貼った保持した形を、次のフレームで置くと消える | [mokume#914](https://github.com/mokume-metal/mokume/issues/914) | **閉じた** ([mokume#917](https://github.com/mokume-metal/mokume/pull/917) / main の `81efdf2`)。まだ配られていないので、この作品が引く `v0.5.0` では再現する |
 | 頂点を並べて作る形が、1 度に渡す三角形の数に比例して遅くなる | [mokume#915](https://github.com/mokume-metal/mokume/issues/915) | open |
 
-段 3 以降で踏むものは、[#914](https://github.com/mokume-metal/mokume/issues/914) が直ってから戻す。
+段 3 以降で踏むものは、引く版を上げてから戻す。
