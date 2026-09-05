@@ -39,7 +39,7 @@ swift run Solids --frames <置き場> <数>     # 連番で書き出す
 
 | | |
 | --- | --- |
-| works | [#6](https://github.com/mokume-metal/works/pull/6) の merge コミット (`Package.resolved` が同じツリーにある) |
+| works | [#22](https://github.com/mokume-metal/works/pull/22) の merge コミット (`Package.resolved` が同じツリーにある) |
 | mokume | `v0.6.0` / `d153f982435b775101772d904153c8d2b6711fd6` (`Package.resolved` が固定している) |
 
 ```bash
