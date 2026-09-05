@@ -4,7 +4,7 @@
 
 Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で踏んだ穴を対応表にして mokume へ戻してきた。**この形では穴の重みが分からない。** Ring は「`map` と `radians` が無い」を [#883](https://github.com/mokume-metal/mokume/issues/883) にしたが、それが Ring 1 本の都合なのか、Processing の例の 4 分の 1 が止まる話なのかは、1 本ずつ写している限り出てこない。
 
-[Processing 公式の Examples](https://processing.org/examples/) 254 本を全数で当てると、穴ごとに**何本の例を止めるか**が出る。
+[Processing 公式の Examples](https://processing.org/examples/) を全数で当てると、穴ごとに**何本の例を止めるか**が出る。台帳は processing-examples の 254 本を机上で当て、**実測は公式ページに並ぶ 162 本を全部移して**原典と並べる。
 
 ## 台帳
 
@@ -56,37 +56,73 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 
 ### 台帳は予測であって、検証ではない
 
-見ているのは**名前と定数だけ**なので、同名で当たってしまう違い (引数の形・既定値・振る舞い) は写らない。実際、移した 5 本のうち**2 本で台帳が外れた** (下記)。だから台帳は移すたびに直す。
+見ているのは**名前と定数だけ**なので、同名で当たってしまう違い (引数の形・既定値・振る舞い) は写らない。**移してみると、当たっていたのは半分ほどだった** — 下の「移して分かったこと」がその一覧である。だから台帳は移すたびに直す。
 
-## 実測
+## 実測 — 公式ページの 162 本
 
-台帳の各区分から選んで実際に移した。**作り替えず 1 行ずつ写している。**
+**移せる 157 本を全部移した。** 残る 5 本 (`Basics/Shape` の SVG を読むもの) は `loadShape` に口が無く、形そのものが来ないので面が空になる。作り替えず 1 行ずつ写し、**書けない口は書けないまま残している** — 動くように書き替えると、止まったこと自体が消えるため (ADR-0022 決定 4)。
 
-| 例 | 台帳の判定 | 実測 |
-| --- | --- | --- |
-| [`Basics/Input/Mouse2D`](Sources/Atlas/Examples/Mouse2D.swift) | `clean` | **外れ。** `background(51)` と `fill(255, 204)` は名前が当たるのに、数を 1 つ / 2 つで渡す形が無い |
-| [`Topics/Drawing/ContinuousLines`](Sources/Atlas/Examples/ContinuousLines.swift) | `clean` | **外れ。** 原典の `mousePressed` は**変数**で、呼び出しの形をしていないので抽出に乗らなかった |
-| [`Basics/Math/Map`](Sources/Atlas/Examples/Map.swift) | `write-only` | 当たり。`map()` を割り算で書く |
-| [`Basics/Form/Bezier`](Sources/Atlas/Examples/Bezier.swift) | `bend` | 当たり。単独の `bezier()` が無く、`beginShape` + `vertex` + `bezierVertex` の 3 行になる |
-| [`Basics/Structure/NoLoop`](Sources/Atlas/Examples/NoLoop.swift) | `blocked` | 当たり。**ここで止まっている** — `noLoop()` が無いので原典の「1 度だけ描く」が消える |
+### 面の外に書き足したもの
+
+Processing にあって mokume に無い語彙のうち、**面の外に書けば済むもの**は [`Sources/Atlas/Support/Processing.swift`](Sources/Atlas/Support/Processing.swift) 1 つに集めてある。**このファイルの長さがそのまま「Processing の例を書くのに mokume の外へどれだけ書き足す必要があるか」の答え**になる (いまは 180 行ほど)。
+
+| 何 | なぜ要るか |
+| --- | --- |
+| `gray` / `rgb` / `hex` | **`fill` / `stroke` / `background` が `LinearRGBA` しか取らない。** 原典の `fill(153)` が毎回 3 つの数の書き下しになる |
+| `hsb` | `colorMode(HSB, …)` の口が無い。色相環そのものを外に書く |
+| `red` / `green` / `blue` / `brightness` | `LinearRGBA` は**線形の値**を持つので、原典が期待する表示の値へ戻す変換が要る |
+| `map` / `radians` / `dist` / `constrain` / `lerp` / `norm` / `sq` / `mag` | 面に無い ([#883](https://github.com/mokume-metal/mokume/issues/883)) |
+| `second` / `minute` / `hour` / `millis` | 壁時計が無い。**値は Foundation が持っている**ので、無いのは読む口だけ |
+| `asset` | 資材はリポジトリに置けないので、束の外から読む |
+
+### 移して分かったこと
+
+台帳が名前しか見ていないために写らなかったもの。**どれも「名前は当たるのに形が違う」**。
+
+| | 何本に効くか |
+| --- | --- |
+| **数を 1 つ / 2 つで渡す色が書けない** (`fill(153)` / `fill(255, 204)`) | ほぼ全部 |
+| **自分で描けるクラスが書けない。** 原典のクラスは `PApplet` の内側にいるので `fill` も `ellipse` もそのまま呼べるが、mokume の描く口は `Sketch` の上にあるので面を持ち回る | クラスを持つ例すべて |
+| **`PVector` に当たるメソッドが 1 つも無い** (`add` / `sub` / `mult` / `div` / `normalize` / `limit` / `mag` / `dist` / `heading` / `rotate` / `setMag` / `copy` / `random2D`) | Motion / Vectors / Simulate の 17 本 |
+| **キーの出来事を受ける口が無い** ([#723](https://github.com/mokume-metal/mokume/issues/723))。`draw()` を空にして `keyPressed()` に中身を書く例は、面が背景のまま残る | 11 本 |
+| **押した瞬間を受ける口が無い。** ポーリングから作るには前のフレームの値を自分で覚える | 18 本 |
+| **立体の `line` が無い。** 原典の 1 行が `beginShape(.lines)` + 3 次元の `vertex` で 4 行になる | `MoveEye` |
+| **`Image` に `pixels` の 1 次元の並びが無い**。`createImage` も形式の引数を取らない | Image Processing の 6 本 |
+| **`background()` に絵を渡す形が無い** | `BackgroundImage` |
+| **書体ファイルを読む口が無い。** システムの書体へ置き換えれば絵は出るが、字形が環境で決まる | 6 本 |
+| **`scale` の引数 1 つの一様な拡大が無い** / **`spotLight` の集中度が渡せない** / **鏡の反射 (`specular`) が書けない** / **均しを切る口 (`noSmooth`) が無い** | それぞれ 1〜3 本 |
+| **光は `setup()` に置けない。** 「光はフレームごとに置き直すもの」なので、静止形の例を `setup()` へ写すと光だけが無視される | `Primitives3D` |
+
+**台帳を覆したものもある。** `Basics/Shape/LoadDisplayOBJ` は「絵が出せない」と判定されていたが、`loadShape` に口が無いのは本当でも **OBJ に限れば `loadModel` がある**。Processing が SVG と OBJ を 1 つの名前で受けているのに対し、mokume はそこを分けているためで、**語彙の名前 1 つに判定を 1 つ持たせている限り、同じ名前で 2 つのものを読む語彙は正しく測れない**。`mask` も同じで、`get` / `set` で画素を移し替えれば書ける (`none` ではなく `write`)。
 
 ### 原典と同じ見た目になっているか
 
-**移した例を、原典と並べて画素で突き合わせている。** 原典は processing-website が例ごとに配る `liveSketch.js` (Processing 版と 1 行ずつ対応した p5.js) をブラウザで走らせたもので、**mokume と条件を揃えてある** — マウスを動かさない (`mouseX` = 0)・決めた枚数で止める・等倍 (`pixelDensity(1)`) の 3 つ。
+**移した 157 本を、原典と並べて画素で突き合わせた。** 原典は processing-website が例ごとに配る `liveSketch.js` (Processing 版と 1 行ずつ対応した p5.js) をブラウザで走らせたもので、**mokume と条件を揃えてある** — マウスを動かさない (`mouseX` = 0)・決めた枚数で止める・等倍 (`pixelDensity(1)`) の 3 つ。
+
+**画素の完全一致では測れない。** 目には同じ絵でも数字だけが落ちる原因が 3 つあるので、4 つの数を出す。**半画素ずらして合うかを測る**のが肝で、ずらすと合うなら違いの正体は線の載せ方だと言い切れる (ぼかしでは言い切れない)。
+
+| | 何を見るか |
+| --- | --- |
+| その場で一致 | そのままの位置で、色が差 8 以内 (目で見て同じ色) |
+| 半画素ずらして | mokume を半画素動かしてよいとしたとき |
+| 形が一致 | 明るさの縁だけを取り出し、1 画素の幅を許して比べたもの |
+| 完全一致 | 1 画素も違わない |
 
 **測れない例には数を出さない。** 乱数・時計・書体を使う例は原典と mokume で列が違うので、一致率は「入っている乱数と書体」を測っているだけになる。並べた 1 枚は作るが、数字の代わりに理由を絵に刷る。
+
+**どれが「同じ絵」かは決めていない。** 数と並べた 1 枚を出すところまでが機械の仕事で、見て決めるのは人である。
 
 <!-- compare:begin -->
 | その場で一致 | 本数 |
 | --- | ---: |
-| 100% | 4 |
-| 99% 以上 | 13 |
-| 95% 以上 | 6 |
-| 90% 以上 | 4 |
-| 90% 未満 | 8 |
-| 測らない (乱数・時計・書体) | 10 |
+| 100% | 15 |
+| 99% 以上 | 53 |
+| 95% 以上 | 16 |
+| 90% 以上 | 6 |
+| 90% 未満 | 28 |
+| 測らない (乱数・時計・書体) | 39 |
 
-移した 45 本ぶん。うち 0 本は原典が静止画しかなく、縮めて比べているので参考値。**どれが「同じ絵」かは決めていない** — 数と並べた 1 枚を出すところまでが機械の仕事で、見て決めるのは人である。
+移した 157 本ぶん。うち 1 本は原典が静止画しかなく、縮めて比べているので参考値。**どれが「同じ絵」かは決めていない** — 数と並べた 1 枚を出すところまでが機械の仕事で、見て決めるのは人である。
 
 全数は [`ledger/comparison.md`](ledger/comparison.md)。
 
@@ -97,7 +133,7 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 ![Topics/Drawing/ContinuousLines — 原典と mokume](https://i.gyazo.com/bf6e690209c3979939765b4c8b422662.png)
 <!-- compare:end -->
 
-**形と位置は合っている。** 差が出たのは輪郭の均しと、色の作り方の 2 か所だけである。
+**形と位置はよく合っている。** 157 本のうち 68 本が「その場で一致 99% 以上」で、差が出たものも輪郭の均し・色の作り方・線の載せ方の 3 つにほぼ収まる。
 
 #### 1. 半透明を重ねると色が変わる (`Mouse2D`)
 
@@ -113,27 +149,44 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 
 **mokume は線形の空間で混ぜ、p5 は表示値のまま混ぜている。** `255 × 0.8 + 51 × 0.2 = 214` が p5 で、線形へ直してから混ぜて戻すと 232 になる。型の名前 (`LinearRGBA` = 「作業空間の色」) が言うとおりの振る舞いなので**これは mokume の意図**だが、**同じコードから違う絵が出る**ことは記録しておく。一致率が 92.1% まで落ちているのは、矩形が面の 7% を占めるためである (背景は 1 画素も違わない)。
 
-#### 2. 1px の線をピクセルに載せるか、またがせるか (`NoLoop`)
+#### 2. 同じ数から違う色が出る (`StatementsComments`)
+
+<!-- compare:image Basics/Structure/StatementsComments -->
+![Basics/Structure/StatementsComments — 原典と mokume](https://i.gyazo.com/ceb34e9673b0ea3b92c5bdf068e845ce.png)
+
+原典は `background(204, 153, 0)` の 1 行だけの例で、**面ぜんぶが 9 ずれる。**
+
+| | 面の色 |
+| --- | --- |
+| 原典 (p5) | `204, 153, 0` |
+| mokume | `213, 150, 0` |
+
+**mokume の書き出しは Display P3 として刻まれる** (`sips -g profile` で確かめられる)。同じ数を渡しても原色が違うので、彩度のある色ほどずれる。**灰色は 1 画素も違わない** — 赤と緑と青が等しい色は原色の取り方に依らないからで、この節の他の例で灰色が合っているのはそのためである。`WidthHeight` の `fill(129, 206, 15)` は `101, 208, 0` になり、28 ずれる。
+
+型の名前 (`LinearRGBA` = 「作業空間の色」) は空間を名乗っているが、**どの原色の空間かは名乗っていない**。半透明の合成 (下記 1) と同じで、これも mokume の意図した振る舞いだと思われるが、**同じコードから違う色が出る**ことは記録しておく。
+
+#### 3. 1px の線をピクセルに載せるか、またがせるか (`NoLoop`)
 
 <!-- compare:image Basics/Structure/NoLoop -->
 ![Basics/Structure/NoLoop — 原典と mokume](https://i.gyazo.com/a57a486bad51f567042a317a4f0adcdf.png)
 
 `line(0, 180, width, 180)` の 1 本が、**p5 では 2 行に 128 ずつ・mokume では 1 行に 255** で出る。p5 は線をピクセルの境界にまたがらせて均し、mokume はピクセルに載せる。線 1 本ぶん (640 画素 = 面の 0.28%) の差なので一致率は 99.2% に留まる。
 
-**この 2 つは台帳では絶対に出ない。** 語彙の名前は当たっていて、絵だけが違う。
-
-### 台帳が外した 2 つ
-
-どちらも**名前は当たるのに形が違う**もので、名前しか見ない台帳の構造的な穴である。
-
-1. **数の渡し方が写らない。** `background(51)` (灰色 1 つ)・`fill(255, 204)` (明るさ + 透かし) に対応する形が無く、`LinearRGBA.display(red:green:blue:alpha:)` で書き下すことになる。Ring が `background(0)` で踏んだのと同じ場所で、**`background` は台帳の上ではいまも `same` のまま**である (引数の形を持つ欄を `vocabulary.jsonl` に足すのが次の一手)
-2. **変数として使う語彙が抽出に乗らない。** `mousePressed` は関数としても変数としても使え、原典の `if (mousePressed == true)` は後者。呼び出しの形 (`識別子 + (`) で拾う限り見えない
-
-**この 2 つは移して初めて出た。** 移す前の台帳は 254 例のうち 64 例を `clean` と言っていたが、そのうち何本が同じ理由で外れているかは、移した本数だけしか分からない。
+**この 3 つは台帳では絶対に出ない。** 語彙の名前は当たっていて、絵だけが違う。
 
 ### 止まったところ
 
-[`NoLoop`](Sources/Atlas/Examples/NoLoop.swift) は完成していない。原典は `setup()` で `noLoop()` を呼んで `draw()` を 1 度だけ走らせるが、mokume に進行を止める口が無いので線が流れ続ける。**動くように書き替えていない** — ADR-0022 決定 4 の言うとおり、作ろうとして止まったこと自体が実需なので、止まった形のまま残す。
+**完成していない例がある。止まった形のまま残してある。** ADR-0022 決定 4 の言うとおり、作ろうとして止まったこと自体が実需だからである。
+
+| 例 | 何が無くて止まったか |
+| --- | --- |
+| `Basics/Structure/NoLoop` / `Loop` / `Redraw` | 進行を握る 3 本。止める口も動かす口も描き直しを頼む口も無い |
+| `Basics/Input/Keyboard` / `KeyboardFunctions` | `draw()` を空にして `keyPressed()` に中身を書く例。**面が背景のまま残る** |
+| `Basics/Input/MouseFunctions` | 掴んで動かす 3 つの出来事が丸ごと落ち、触れているかを見る側だけが移る |
+| `Basics/Web/LoadingImages` | `loadImage()` に URL を渡す口が無い。読めないので面が黒いまま |
+| `Basics/Lights/Reflection` | 鏡の反射 (`lightSpecular` / `specular`) を書く口が無い。2 行を落とした |
+| `Topics/Simulate/MultipleParticleSystems` | 押して系を足す例。系が 1 つも生まれず、案内の字だけが残る |
+| `Basics/Shape` の 5 本 | `loadShape` に口が無い。**移していない** — 形が来ないので面が空になる |
 
 ## 走らせる
 
@@ -173,15 +226,13 @@ python3 scripts/ledger.py    # ledger/ を組み直す
 | 原典 | `processing/processing-examples` @ `b10c9e9a05a0d6c20d233ca7f30d315b5047720e` ([`ledger/sources.json`](ledger/sources.json) が刻む) |
 
 ```bash
-swift run Atlas --render-all out 1 && shasum -a 256 out/*.png
-# cf2346e6bc897ea807a86a00cfad4c5128aa522a885ed670fc63085e6ad0b9b6  out/bezier-1.png
-# 05d6d0077fe33581c9ebf62646f89bda013559ad84d19e44f969aa145d3d8b35  out/continuouslines-1.png
-# 0e0ee57ac3c1651c5f7275e4eb5f7dceb073f6de4f1ab034980e92f2f77abbf0  out/map-1.png
-# b1834be0fa1567323fb4fb37c31d0bbbdbb54f3871d34ba181338981c408a32b  out/mouse2d-1.png
-# 94963a46a045893d9e1bc91f4e42facc9160459a3622acb06fac39da7cc6febd  out/noloop-1.png
+swift run -c release Atlas --render-all out 1 && shasum -a 256 out/*.png
+diff <(shasum -a 256 out/*.png | sed 's|out/||') <(grep -v '^#' ledger/renders.txt)
 ```
 
-**マウスで変わる 3 本 (`Mouse2D` / `Map` / `ContinuousLines`) は、窓を持たない書き出しでは動かない。** `mouseX` が 0 のまま撮れる。外から動かすときは窓口と基準を揃える (Ring と同じ手順):
+157 行の一覧は [`ledger/renders.txt`](ledger/renders.txt)。**乱数を使う例も入っている** — mokume の乱数は同じフレーム番号から同じ値を出すので (ADR-0001 原則 2)、書き出しは再現する。再現しないのは原典 (ブラウザ) の側だけである。
+
+**マウスで変わる例は、窓を持たない書き出しでは動かない。** `mouseX` が 0 のまま撮れる。外から動かすときは窓口と基準を揃える (Ring と同じ手順):
 
 ```bash
 MOKUME_WORK_DIR="$PWD" mokume run Atlas

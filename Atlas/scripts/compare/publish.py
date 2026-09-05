@@ -14,6 +14,11 @@
 から 1 バイト違わず出るのは `comparison.md` の側だけである。撮り直さなければ
 `shots.json` は 1 バイトも動かない。
 
+**`measure` が `none` の例は、回すたびに絵が変わる** (乱数・雑音・時計を使うため)。
+指紋は「移植と測り方」で作ってあるので上げ直さない — `sha256` は**上げたバイト列**を
+指しており、手元の絵と食い違うのが正しい。ここを絵そのもので見張ると、38 本が毎回
+上がり直して台帳が意味もなく動く。
+
 **鮮度検査が見るのはこちら側だけ。** 移植・枚数・測り方・道具の版を変えたのに撮り
 直していない、は捕まえられる。原典が変わった、は取ってきたときにしか分からない
 (`upstream/` は gitignore 済みで、手元にしか無い)。
@@ -30,6 +35,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 WORK = ROOT / "upstream" / "compare"
 SHOTS = ROOT / "ledger" / "shots.json"
 GALLERY = ROOT / "ledger" / "comparison.md"
+RENDERS = ROOT / "ledger" / "renders.txt"
 BEGIN, END = "<!-- compare:begin -->", "<!-- compare:end -->"
 TOKEN_REF = "op://Automation/Gyazo API/credential"
 # 並べた 1 枚の刷り方の版。**変えたら全部撮り直す** — 指紋に混ぜてあるので
@@ -140,10 +146,27 @@ def publish(force: bool) -> int:
         # URL を失った絵が Gyazo に残る**
         save(book)
     save(book)
+    write_renders(book)
     write_gallery(book)
     write_readme(book)
     print(f"上げた {uploaded} 枚 / 台帳 {len(book['shots'])} 件", file=sys.stderr)
     return 0
+
+
+def write_renders(book: dict) -> None:
+    """mokume が書き出した絵のハッシュ。**再現の手がかりで、157 行ある。**
+
+    README に 157 行を貼れないのでここに置く。**乱数を使う例も入る** — mokume の
+    乱数は同じフレーム番号から同じ値を出すので (ADR-0001 原則 2)、書き出しは
+    再現する。再現しないのは原典 (ブラウザ) の側だけである。
+    """
+    lines = ["# swift run -c release Atlas --render-all out 1 && shasum -a 256 out/*.png",
+             f"# mokume v{book['tool']['mokume']}"]
+    for example, entry in rows(book):
+        shot = ROOT / "out" / f"{entry['slug']}-{entry['frame']}.png"
+        if shot.exists():
+            lines.append(f"{hashlib.sha256(shot.read_bytes()).hexdigest()}  {shot.name}")
+    RENDERS.write_text("\n".join(lines) + "\n")
 
 
 def rows(book: dict) -> list[tuple[str, dict]]:

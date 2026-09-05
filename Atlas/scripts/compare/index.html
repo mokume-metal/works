@@ -58,7 +58,13 @@ async function runOriginal(item) {
     // **待ち時間で待たない。** 5 本のときは固定の 400ms で足りたが、本数が増えると
     // 積み上がるうえ、面が背面へ回ると setTimeout が 1 秒へ丸められて数分になる。
     // setup の末尾で合図を返し、資材を読む例だけが実際に待つ形にする。
-    s.setup = () => { s.pixelDensity(1); userSetup(); started(); };
+    // **落ちても合図は返す。** setup の中で投げると started() に届かず、待つ側が
+    // 永久に止まる (最初に回したときは資材の取りこぼし 1 本で残り 125 本が止まった)
+    s.setup = () => {
+      s.pixelDensity(1);
+      try { userSetup(); } catch (e) { blame(e); }
+      started();
+    };
     // **draw() を持たない原典がある。** Processing の静止形 (setup も draw も書かず、
     // 上から下へ 1 度だけ走る形) を写した liveSketch は setup しか持たない。
     // 包む前に有無を見ないと、その例だけが `userDraw is not a function` で落ちる
@@ -67,7 +73,11 @@ async function runOriginal(item) {
   const holder = document.createElement('div');
   document.getElementById('stage').appendChild(holder);
   const instance = new p5(factory, holder);
-  await ready;
+  // **返らない setup がある。** p5 の preload は資材を読み終えるまで setup を呼ばない
+  // ので、site が別のフォルダから読む絵 (livesketch-manual) を配り損ねると、そこで
+  // 永久に待つ。1 本の取りこぼしで残り全部が止まらないよう、期限を切って先へ進む
+  await Promise.race([ready, new Promise((r) => setTimeout(r, 6000))]);
+  if (instance.frameCount < 0) log(`  ${item.slug}: setup が返らない`);
 
   // **枚数ではなく到達点で回す。** requestAnimationFrame は表に出ていない面では
   // 回らないことがあり、放っておくと setup() の結果だけが残る (実際、背景を setup で
@@ -80,6 +90,9 @@ async function runOriginal(item) {
   if (instance.frameCount < 1) log(`  ${item.slug}: 1 枚も描けていない`);
 
   const canvas = holder.querySelector('canvas');
+  // **面が作られないことがある。** setup が資材を待って返らないまま期限が来ると、
+  // canvas がまだ無い。ここで言わないと drawImage の型エラーになって理由が消える
+  if (!canvas) throw new Error('原典の面が作られなかった (setup が返らない)');
   const [w, h] = [instance.width, instance.height];
   const frozen = document.createElement('canvas');
   frozen.width = w; frozen.height = h;

@@ -140,6 +140,34 @@ def render(menu: list[dict]) -> None:
                        cwd=ROOT, check=True, stdout=subprocess.DEVNULL)
 
 
+def fetch_manual(sha: str) -> pathlib.Path:
+    """site が別のフォルダに置いている資材を取ってくる。
+
+    **原典が読む先は 2 つある。** 例の `data/` と同じものが `static/livesketch/` に
+    置かれるほかに、`static/livesketch-manual/` がある — p5 が読めない形式 (動く GIF)
+    を PNG へ直したものや、例の data/ に無い絵がここに入る。原典は絶対パスで
+    `/livesketch-manual/…` を読むので、配らないと **setup が永久に返らない**。
+    """
+    into = WORK / "livesketch-manual"
+    if into.exists():
+        return into
+    into.mkdir(parents=True, exist_ok=True)
+    tree = json.loads(subprocess.run(
+        ["gh", "api", f"repos/processing/processing-website/git/trees/{sha}?recursive=1"],
+        capture_output=True, text=True, check=True).stdout)
+    prefix = "static/livesketch-manual/"
+    wanted = [i for i in tree["tree"] if i["type"] == "blob" and i["path"].startswith(prefix)]
+    print(f"site だけが持つ資材を {len(wanted)} 件…", file=sys.stderr)
+    for item in wanted:
+        target = into / item["path"][len(prefix):]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        blob = json.loads(subprocess.run(
+            ["gh", "api", f"repos/processing/processing-website/git/blobs/{item['sha']}"],
+            capture_output=True, text=True, check=True).stdout)
+        target.write_bytes(base64.b64decode(blob["content"]))
+    return into
+
+
 def gh_content(path: str, sha: str) -> bytes:
     body = subprocess.run(
         ["gh", "api", f"repos/processing/processing-website/contents/{path}?ref={sha}", "--jq", ".content"],
@@ -154,6 +182,7 @@ def prepare(menu: list[dict], skipped: list[dict]) -> dict[str, pathlib.Path]:
         (WORK / name).mkdir(parents=True, exist_ok=True)
 
     assets: dict[str, pathlib.Path] = {}
+    seen: dict[str, list[pathlib.Path]] = {}
     for entry in list(menu):
         example, name = entry["example"], entry["slug"]
         if entry["origin"] == "live":
@@ -193,15 +222,24 @@ def prepare(menu: list[dict], skipped: list[dict]) -> dict[str, pathlib.Path]:
         data = ROOT / "upstream" / "examples" / example / "data"
         if data.is_dir():
             assets[name] = data
+            for file in data.iterdir():
+                if file.is_file():
+                    seen.setdefault(file.name, []).append(file)
 
+    fetch_manual(sha)
     (WORK / "menu.json").write_text(json.dumps(
         {"compare": menu, "skipped": skipped}, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
     (WORK / "index.html").write_bytes((HERE / "index.html").read_bytes())
+    Handler.roots = {name: files[0] for name, files in seen.items() if len(files) == 1}
     return assets
 
 
 class Handler(SimpleHTTPRequestHandler):
     assets: dict[str, pathlib.Path] = {}
+    # **site の根から読む原典がある。** LoadSaveJSON の p5 は `/data.json` を読む
+    # (例の data/ にある同じ名前のファイル)。名前が例をまたいで重ならないものだけ、
+    # 根から引けるようにする — 重なるものを黙って結ぶと、別の例の資材を返してしまう
+    roots: dict[str, pathlib.Path] = {}
     menu: list[dict] = []
 
     def __init__(self, *args, **kwargs):
@@ -218,6 +256,8 @@ class Handler(SimpleHTTPRequestHandler):
         parts = path.split("?")[0].strip("/").split("/")
         if len(parts) == 3 and parts[0] == "livesketch" and parts[1] in self.assets:
             return str(self.assets[parts[1]] / parts[2])
+        if len(parts) == 1 and parts[0] in self.roots:
+            return str(self.roots[parts[0]])
         return super().translate_path(path)
 
     def do_GET(self):
