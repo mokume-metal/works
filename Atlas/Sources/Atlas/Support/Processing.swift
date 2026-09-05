@@ -110,3 +110,25 @@ func hsb(_ hue: Float, _ saturation: Float, _ brightness: Float,
     }
     return .display(red: r, green: g, blue: b, alpha: alpha / 255)
 }
+
+// MARK: - 時計
+
+// **mokume に壁時計が無い。** あるのは起動からの秒 (`time`) と `frameCount` と
+// `deltaTime` だけで、`millis` / `second` / `hour` は台帳でも `none` に落ちている。
+// ただし壁時計そのものは Foundation が持っているので、面の外でなら書ける — 面に
+// 無いのは「読む口」であって、値そのものが取れないわけではない。
+
+/// 原典の `second()`。
+func second() -> Float { Float(Calendar.current.component(.second, from: Date())) }
+
+/// 原典の `minute()`。
+func minute() -> Float { Float(Calendar.current.component(.minute, from: Date())) }
+
+/// 原典の `hour()`。
+func hour() -> Float { Float(Calendar.current.component(.hour, from: Date())) }
+
+/// 原典の `millis()` — 走り出してからのミリ秒。**mokume の `time` (秒) と同じものだが、
+/// あちらは `Sketch` の上にあるので、面の外からは読めない。** ここでは起動時刻からの
+/// 経過で組む。
+private let started = Date()
+func millis() -> Float { Float(Date().timeIntervalSince(started) * 1000) }
