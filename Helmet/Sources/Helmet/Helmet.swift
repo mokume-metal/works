@@ -237,8 +237,9 @@ final class Helmet: Sketch {
         push()
         translate(width / 2, height / 2, 0)
         rotateY(time * 0.4)
-        // 切り分け用 (消す): **このフレームで組み直して**置く。setup で組んだものと
-        // 描かれ方が違うなら、絵を貼った保持した形がフレームを越えられていない
+        // **このフレームで組み直して**置く口。`setup()` で組んだものと描かれ方が違う
+        // ことが [mokume#914](https://github.com/mokume-metal/mokume/issues/914) の症状
+        // そのもので、この作品が段 3 以降へ進めない理由である
         if ProcessInfo.processInfo.environment["HELMET_REBUILD"] != nil, let model {
             shape(assemble(model))
         } else {
