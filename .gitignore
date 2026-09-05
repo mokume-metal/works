@@ -3,4 +3,5 @@
 .mokume/
 shots/
 out/
+out-*/
 upstream/
