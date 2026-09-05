@@ -22,6 +22,11 @@
 実行ファイルの名前を `products` から取る。1 つのパッケージに作品を並べると、
 **最初の product が黙って起動する**。
 
+**縛っているのは product が 1 つであることで、スケッチの数ではない。** Grain は
+`Grain slab` で 2 本目を持ち、Atlas は移した例を何本も持つ。どちらも product は 1 つ
+なので `mokume run` の側からは同じに見え、選ぶのは**実行ファイルへ直に渡した引数**である
+(`mokume run` / `watch` / `mcp` は引数を通さないので、窓の経路は既定の 1 本に固定される)。
+
 ```
 <作品>/
   Package.swift        products に実行ファイルを 1 つ宣言する
@@ -61,6 +66,7 @@ brew upgrade mokume                    # 古いと感じたら
 | [Garden](Garden/) | p5.js の Data Structure Garden を 1 行ずつ移した庭。作品であると同時に、p5 の語彙との対応を測る物差し |
 | [Solids](Solids/) | p5.js の 3D Geometries を 1 行ずつ移した立体の並び。Garden が測らなかった**立体の**語彙の物差し |
 | [Ring](Ring/) | p5.js の Triangle Strip を 1 行ずつ移した虹の輪。原形の外へ出る唯一の道である**頂点列**の物差し |
+| [Atlas](Atlas/) | Processing の Examples 254 本を全数で当てた台帳。**作品ではなく物差し**で、1 本ずつでは出ない「どの欠けが何本の例を止めるか」を数える |
 
 **`Package.resolved` は作品ごとに持ち、コミットする。** 作品のコミットへ戻れば mokume も
 当時の版に戻るので、別の作品が新しい mokume を要求しても前の作品の再現は壊れない。
