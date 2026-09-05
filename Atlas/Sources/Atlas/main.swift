@@ -8,28 +8,19 @@ import mokume
 //   Atlas <例名>                          その 1 本を出す (Mouse2D でも Basics/Input/Mouse2D でも引ける)
 //   Atlas --render <置き場> <数> [例名]     1 枚だけ書き出す
 //   Atlas --frames <置き場> <数> [例名]     連番で書き出す (動きの証跡を作るため)
-//   Atlas --render-all <置き場> [数]       移した全部を 1 枚ずつ書き出す
+//   Atlas --render-all <置き場> <数> [例名…]  まとめて書き出す (例名を省くと全部)
 //
 // **`--render-all` があるのは、版を上げたときに全部のハッシュを一度に取り直すため。**
 // 既存 4 作品は 1 本ずつ手で確かめており、版上げのたびに同じ手順を作品の数だけ踏む。
 // Atlas は移した例が増え続けるので、その手順が本数に比例しては回らない。
 //
+// **移した例の一覧 (`catalogue`) は Catalogue.swift にあり、置き場から組み直される**
+// (`python3 scripts/catalogue.py`)。150 本を手で並べると、足したのに書き忘れた 1 本が
+// 「まだ移していない例」と見分けが付かなくなる。
+//
 // **`mokume run` / `watch` / `mcp` は引数を通さない**ので、窓の経路は既定の 1 本に
 // 固定される。いま見たい例を先頭へ動かすか、`swift run Atlas <例名>` を使う。
 
-/// 移した例。**並びは台帳の例名の順**で、足したらここに 1 行足す。
-///
-/// `Sketch.main()` は `@MainActor static func main()` なので `any Sketch` から呼べず、
-/// Grain は `if arguments.first == "slab"` と分岐していた。例が増えると分岐も増えるので、
-/// ここでは `SketchApplication(sketch:gpu:)` を使う — **あちらは `any Sketch` を取る**ので、
-/// カタログの戻り値をそのまま渡せる (`Sketch.main()` の中身と同じ経路)。
-let catalogue: [(name: String, make: () -> any Sketch)] = [
-    ("Basics/Form/Bezier", { Bezier() }),
-    ("Basics/Input/Mouse2D", { Mouse2D() }),
-    ("Basics/Math/Map", { Map() }),
-    ("Basics/Structure/NoLoop", { NoLoop() }),
-    ("Topics/Drawing/ContinuousLines", { ContinuousLines() }),
-]
 
 /// 例名から作る。完全名 (`Basics/Input/Mouse2D`) でも末尾だけ (`Mouse2D`) でも引ける。
 func makeSketch(_ name: String?) -> (name: String, sketch: any Sketch)? {
@@ -85,9 +76,17 @@ case "--render-all":
     let count = arguments.count > 2 ? Int(arguments[2]) ?? 1 : 1
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
 
+    // **例名を並べて渡せる。** 比べる枚数は例ごとに違う (1 枚目が背景だけの例は、
+    // 溜まってはじめて絵になる) ので、枚数ごとにまとめて 1 回呼べる形にしてある。
+    // 1 本ずつ `--render` を呼ぶと、面を作り直すぶんだけ本数に比例して待つことになる
+    let wanted = Set(arguments.dropFirst(3))
+    let targets = wanted.isEmpty ? catalogue : catalogue.filter {
+        wanted.contains($0.name) || wanted.contains($0.name.split(separator: "/").last.map(String.init) ?? "")
+    }
+
     // **面は 1 つで足りる。** 例ごとに作り直すのは走らせる側 (`SketchRuntime`) だけ
     let gpu = try RenderDevice()
-    for entry in catalogue {
+    for entry in targets {
         let runtime = try SketchRuntime(sketch: entry.make(), gpu: gpu)
         for _ in 0..<count { try runtime.advance() }
         let url = directory.appendingPathComponent("\(slug(entry.name))-\(count).png")
