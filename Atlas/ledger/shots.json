@@ -10,7 +10,7 @@
       "origin": "live",
       "sha256": "5776d9e77f1343b8d51d643b53ffca392f91a1b809d0fbb136e75f5fba8eaff9",
       "slug": "array",
-      "source": "6f8a667d356375dd0c6914e4146d13608d7cf8f83dacaab950f7d68db908fa28",
+      "source": "4b75bfd1eb8e0a904b0d6470268b5d686e9e90f66fb6243c0912ba4057651456",
       "url": "https://i.gyazo.com/de1eef549a05299ed0b1a7dfdfb7ec98.png",
       "why": "原典が 2 つある — site の p5 は線を 1 本おきに引く (i += 2)。移植は Processing の .pde に従っている",
       "width": 640
@@ -18,23 +18,23 @@
     "Basics/Arrays/Array2D": {
       "class": "blocked",
       "diff": {
-        "close": 74.0113,
-        "half": 74.145,
+        "close": 63.0299,
+        "half": 63.5247,
         "max": 255,
-        "mean": 34.6849,
-        "near": 74.0599,
-        "same": 74.0113,
-        "shape": 84.5048
+        "mean": 42.8533,
+        "near": 63.2018,
+        "same": 63.0161,
+        "shape": 72.8346
       },
       "frame": 1,
       "group": "Basics/Arrays",
       "height": 360,
       "measure": "pixel",
       "origin": "live",
-      "sha256": "d85a021ac2330997771910a7ca4d3260d4c218ac4b1508d5e5ed9dfb9608a5ba",
+      "sha256": "4fa8145ce0f3307d1767e72576bc88a5477fffd0097d875afd9b74835850ae96",
       "slug": "array2d",
-      "source": "860be94498d103ad2fbf462be64171274c21fdaebbb8a3287cdf67ceef47d688",
-      "url": "https://i.gyazo.com/7a2e54430961d15377980f7e975361ae.png",
+      "source": "83738316b6fb76e502375588e40ec52f5c8a02a2d62b16001bedc57ecbe2820a",
+      "url": "https://i.gyazo.com/7abb4b640c6864cf4149a8a6d1cb9a95.png",
       "width": 640
     },
     "Basics/Arrays/ArrayObjects": {
@@ -44,15 +44,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "f6bacfb51a9e23e8ac9cc7586e2c9037083152b283341fde93076e0f5c83329e",
-        "source": "1fb9ac4c990074d7bc9c7f3eab70c1bc5735d4f09db50aa622719f54f4889c43",
-        "url": "https://i.gyazo.com/571ac38994c6fa789d9a5b5d59a46c30.webp"
+        "sha256": "ff8f7b8ee6fbced0eeb14e01a14486194c3bc48d809d6269748040a4017ff773",
+        "source": "8333ab49499d9ec1444a851e80bff532150966f2ef533915eaf05608232ec537",
+        "url": "https://i.gyazo.com/7708e439e1e70eff2067606978ca3f7b.webp"
       },
       "origin": "live",
-      "sha256": "06b058d8ea59ed3c0cb26fee71660948f674a53718f4f23b6b7a36dbffa7b9e0",
+      "sha256": "a16867a6d3cc1693e3f76bb05f141ba1d9fef349519a32480c3fc5613c69095c",
       "slug": "arrayobjects",
-      "source": "a2993e03bc91ee41d8d4a1f083196580ccb772b74f814302f182077037147e41",
-      "url": "https://i.gyazo.com/07ae696a513c08833e20f22d8c02a436.png",
+      "source": "2609effbb101f04240b8570e8a0db8364c174be83de1df1e6b04de8904d2615e",
+      "url": "https://i.gyazo.com/df93ebe47be3cb385933bcfa3afee216.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -73,31 +73,31 @@
       "measure": "pixel",
       "motion": {
         "sha256": "4a19817a2a872de785bfc0c9e9af0e87ee68410374866f6e2d1aef0e2b2ed50b",
-        "source": "06ea4b93bddd174f95c81ec316266a1c48ce51f4de1f9825b694e30c496821a1",
+        "source": "d8dabf1df8eb9824a1c22048a9d6339c089a70789206df6dbfebdeac706fb58d",
         "url": "https://i.gyazo.com/37e667dde5cfd94bbb3181ed4c8e7ade.webp"
       },
       "origin": "live",
       "sha256": "a0f7b32acd3e1fe6e0be6e31e47f6f0b12e6509faa949453c432b1e5654df6a5",
       "slug": "moveeye",
-      "source": "e8e10676ad62220fb60cc8d9482f8b8c4484a4f0c3f7f3adfe094b3f3767d4db",
+      "source": "14e6d4bc1ae3bc85a55333bc4213289dfed040b6dbb81ffb285b0f5c126a59b0",
       "url": "https://i.gyazo.com/f80f5442ee9764cde56f6aeed5357e8c.png",
       "width": 640
     },
     "Basics/Camera/Orthographic": {
-      "class": "bend",
+      "class": "clean",
       "frame": 1,
       "group": "Basics/Camera",
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "cc13e07ba56beebf8063d4b9349f5ee14d0b69da24679732227d5d1871ee9331",
-        "source": "427fdb625642a3b7726a6471888a01d651aef9e710325af9b9bedb4fbb5cd00b",
-        "url": "https://i.gyazo.com/b918044dae55d47ec2c3cb6df40dc5a0.webp"
+        "sha256": "e51ac91cd00587ed4a66a15630c9f070d0dad15c84d45bd4fb165c161249acb0",
+        "source": "74091d9cf25cc7e3acb187331f50fb8a48a1f2e72545bce37f6737dca7880d6c",
+        "url": "https://i.gyazo.com/8b798272efb85981ca6ced27eeaf69f7.webp"
       },
       "origin": "live",
       "sha256": "ccdd861c5adfe8c73dc75a5deb7d66b5d0d16e279c8938eb820ce0783cef2ff9",
       "slug": "orthographic",
-      "source": "7442d0c88764b864484a9e9e4a128886ec39798db9f1f09910baf60bdba15d5f",
+      "source": "f6e424c72e26f1306d98b864d203e598ac228ac085667183524575a042eb93d5",
       "url": "https://i.gyazo.com/4118c33a6163975a5e55114396d9f977.png",
       "why": "面の大きさが違う (原典 640x360 / mokume 600x360)",
       "width": 600
@@ -118,14 +118,14 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "cf6afbbc68c07079b4a5f2c33e0a47924478e7cae03c0c0205c5ec03137b338d",
-        "source": "18f67c4d3678911f8bbd1fcc3a3e60be32e47a51ba90ee1b81e06aa44a99e9b6",
-        "url": "https://i.gyazo.com/fe669322308421d54f277bd423f27e9a.webp"
+        "sha256": "b416282745fb9c645c799019bf58319bf0ba87e309b68324d902fafd2bb2304d",
+        "source": "07402337fe8f5876ead19720500050a5e3fa53b117005f160c1d063e5a2e408a",
+        "url": "https://i.gyazo.com/b07ac26e622373931ad78794b3fe38a4.webp"
       },
       "origin": "live",
       "sha256": "7fa94a2af40995cae84b62f226ebcdb193a26de691d9f1b2310c90e2d870f37c",
       "slug": "perspective",
-      "source": "757245960c97982c1b85e466769608cc3eb09c4214a6842da7c2fa8ce68990f8",
+      "source": "06bb317ffb6e6ac6668bb1e273fdab4af3d9aeb24e643581eaf564f0cf296cd4",
       "url": "https://i.gyazo.com/fee42201d3c9dba48f5b500d32a57552.png",
       "width": 640
     },
@@ -146,13 +146,13 @@
       "measure": "pixel",
       "motion": {
         "sha256": "1dc33df45b12569e97ceddfba35806dcbc9ae8dc37e6cf9515aa6df69458ebaa",
-        "source": "5aa09e3b7ae74ed79d0cc20a03e8204ea9a840d98030ee5255f651a68f488b38",
+        "source": "94722281731a63887ce541c3028317683ccda0d03d59b49db4c841707127d808",
         "url": "https://i.gyazo.com/ef44d3607263d4ab7722ba253c461fdb.webp"
       },
       "origin": "live",
       "sha256": "1b1fb0a58cdb3f4f8dc4882f3ce465923a2da1a7374cf0e3bc7578038a1cf035",
       "slug": "brightness",
-      "source": "7f01ca02369eed2c9a2708235103142c9c222b07f324a78123cbee0cd28ec75a",
+      "source": "0ce674f883a5768695c2eedfd296cd01a080ed13dcf5b0d06e0f2c287afa4ae4",
       "url": "https://i.gyazo.com/392a24f2b31dfc9a294358ce2c8f0246.png",
       "width": 640
     },
@@ -174,7 +174,7 @@
       "origin": "live",
       "sha256": "7674054fba9c72c84b66af8d09271b7f1b3ebc55d3d71490eb995d6776ff9802",
       "slug": "colorvariables",
-      "source": "64c0ffbf003536f26a4ef3f79ed1d83b8680c1fe3a73cc2cfe2e123c9c758f55",
+      "source": "275d1112a042ce9ed2e4a82f5916dcb4f3ae6d8876460dd066c99b822d32fc29",
       "url": "https://i.gyazo.com/d7d7f87b58baae3d367d54f5d08ef692.png",
       "width": 640
     },
@@ -195,13 +195,13 @@
       "measure": "pixel",
       "motion": {
         "sha256": "ac24bdd2cdab95e7643d00bf2013b2e4824476c1847cb7e36f464e53c8c7997d",
-        "source": "0b7172b27cb2fb19cebf6a4fa7fcfd93bc4488db2865d3e9e468db2544c0e687",
+        "source": "52c84baded2f292b465254510abc74004dc4b957f8fc34f34088dc30b9cbeec7",
         "url": "https://i.gyazo.com/aa66fa611360567388c827a4911341bd.webp"
       },
       "origin": "live",
       "sha256": "44845cb56c125cbc383c7d99a34c9481224fb43906446d7fbe919408cdd28fc6",
       "slug": "hue",
-      "source": "6d66f12b63a4754fba636e4a59fc498f4b8655813c55d9dd9bbed0b37de9eb2c",
+      "source": "47d069f5d8701cff4b781c9e176da7e08deccd2d149ad76819deaa98bce013e3",
       "url": "https://i.gyazo.com/1134d788a2a7959f485d79f986166fb5.png",
       "width": 640
     },
@@ -223,7 +223,7 @@
       "origin": "live",
       "sha256": "fb77c27b2e562c66358c77a05504586342ea4de148405e51ec9d6a93ab575d24",
       "slug": "lineargradient",
-      "source": "122b5d6a062f527b64b3ab2ef31d1cd51eb24bdf7408008f91ab4efc7c9e1ddd",
+      "source": "6285a4bd7080fdee0fd39a750eaad4c519bbbcd9b33fbfb8aaae63d7f7b89363",
       "url": "https://i.gyazo.com/977592bb70b4069e302322630ad36420.png",
       "width": 640
     },
@@ -234,15 +234,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "94f80b3fc6495add3f9fffd65fbe5682356be716374ec3c5782030bc51619645",
-        "source": "3ea12355e468b3e770b575371295cb3176fea18a01030a402dd614f4e6b39409",
-        "url": "https://i.gyazo.com/bdffd7ac7cde214aeaf563db14237c4c.webp"
+        "sha256": "20886e2928b9cbd30151945c2feef72ff4883eaa544b1821870faab299fc8d73",
+        "source": "d5604e52663d7e27960634030aaf6498c5a99d92a9fc002b0680862c4965154a",
+        "url": "https://i.gyazo.com/0b8f38017ad35cd6f3da2e922702b9ec.webp"
       },
       "origin": "live",
-      "sha256": "42eed3851b4ae8f049e3f1c0f3179c1d3b48b3559002d9957cf846f075174cb1",
+      "sha256": "e188c4458283c251c7b5c9395fd9ef96063084487d0bf06bd2040bce47fc565a",
       "slug": "radialgradient",
-      "source": "21d50cf1b39c8836268fa85dedb10590445cb55f109f8290f53aa5ec287d76e2",
-      "url": "https://i.gyazo.com/0b3ccfd716d7c816c08f4ee2dca171eb.png",
+      "source": "f06e39a73b36787cc436db437a025f079b2cacabde5633d9c1399366c38b570b",
+      "url": "https://i.gyazo.com/796bbc00beccab7e332d02286707868c.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -264,7 +264,7 @@
       "origin": "live",
       "sha256": "5fad2b59be07706903445cca692b7867ebcca7cd937365854ef1fbfd38e7ed8f",
       "slug": "relativity",
-      "source": "69decc927734aac1ce2662fa0fb5274332c125eb146cec8bae935f04e88d6f75",
+      "source": "5eae914539fc9bb071ef3cbc9a65fa30374663d1bcd354d481db26aa47531dc6",
       "url": "https://i.gyazo.com/6c434c8117436b250f63bd1e137740b7.png",
       "width": 640
     },
@@ -285,13 +285,13 @@
       "measure": "pixel",
       "motion": {
         "sha256": "e49bdafa7ae5e6628286089fed2b51e2d4d36a762fdec228f0d6e04474b8356e",
-        "source": "38d0f16eeaffc565a348ca4490a9f03920e28cf609da2cede97faf5167f875fc",
+        "source": "0deae8b01a1a8a1e254748bdaa8bdbb8de9f4ec2ba4b76e3e90cc89d791c9754",
         "url": "https://i.gyazo.com/37883846ed8a6be6c9f823361aeb1444.webp"
       },
       "origin": "live",
       "sha256": "d05ce7e73b5e149216f966f69b64a136092aa8c8e99c9c1e790e5949df43622a",
       "slug": "saturation",
-      "source": "08bfadf2819175d58fa1f9c84368ed400567fd6b0091e36c5d02a09bcdbc65a5",
+      "source": "6840c14a678a748c788cca86944522686cee49876ad86a7170aa997e4bd08c23",
       "url": "https://i.gyazo.com/bb30dfa18ff401d2f65db98b1f3f738b.png",
       "width": 640
     },
@@ -313,7 +313,7 @@
       "origin": "live",
       "sha256": "81e7eeecdd7492f850931300b61d486ac62843a30d6f1639dfe9dd98fac1ed29",
       "slug": "conditionals1",
-      "source": "56ca0896ee033e2d4894f094f517965b68aeb84c965dfe72b7ac1cfce6d52b87",
+      "source": "1e2f024394397624021cfa02230851c68de37ca8071b71c1c079f9e2368ac2a2",
       "url": "https://i.gyazo.com/99cca3ac8e171ad48a8ba0963882d448.png",
       "width": 640
     },
@@ -336,30 +336,30 @@
       "origin": "live",
       "sha256": "a4e29f7dcd85d6c0a2ebbe2babd298b56a87330f6c8155370fc0ad8eb29946a8",
       "slug": "conditionals2",
-      "source": "468d068faae2c06531e4441468ba917c8f5cccb2744b2d57bf7fe85fbfad5dfa",
+      "source": "88c1ad826a64995814dc3e12a2f05136c0b6d5f1008ea7810347e42c6d0bd0f9",
       "url": "https://i.gyazo.com/981cd557502f05458a2be728afd94150.png",
       "width": 640
     },
     "Basics/Control/EmbeddedIteration": {
       "class": "clean",
       "diff": {
-        "close": 85.6011,
-        "half": 86.5286,
-        "max": 239,
-        "mean": 13.1155,
-        "near": 86.5269,
-        "same": 85.3346,
-        "shape": 99.9922
+        "close": 83.3993,
+        "half": 84.3607,
+        "max": 207,
+        "mean": 14.1452,
+        "near": 84.26,
+        "same": 83.1719,
+        "shape": 99.9987
       },
       "frame": 1,
       "group": "Basics/Control",
       "height": 360,
       "measure": "pixel",
       "origin": "live",
-      "sha256": "c851789ca8704b9074e1a08d8ae5f720b1dc966bb7feffea93e3f5ef2a4f9cb6",
+      "sha256": "15fd6034f12e0674171e4b0429227ecdc329abe9a24795d9fc41a33e41c40977",
       "slug": "embeddediteration",
-      "source": "b7acee5e3e41d93642250788377cb702d3918544db4f319b3d9724e960156ed9",
-      "url": "https://i.gyazo.com/ef972dca3709132496fdf5f066522d4f.png",
+      "source": "b5e46c28516aaf4ac7a7be0b94635760c124063daee31964527564fa8a7bc6bc",
+      "url": "https://i.gyazo.com/8bd3ad1b6540e1b495926d3f6923416c.png",
       "width": 640
     },
     "Basics/Control/Iteration": {
@@ -380,19 +380,19 @@
       "origin": "live",
       "sha256": "b692433fa30fdeb1f1de8ff2076b5bc68f1e18df48d32d11f4cdd083a55e9325",
       "slug": "iteration",
-      "source": "eb5d1b4182a1c430742e0135a927c561dc202925b8ba72dde5a91040716bc676",
+      "source": "92aa0ea37cf240026c9298d387d7ac13e7f59f2470dec3c469f457eb760603b1",
       "url": "https://i.gyazo.com/a14519e7fc53b5ad258c96be83329e64.png",
       "width": 640
     },
     "Basics/Control/LogicalOperators": {
       "class": "clean",
       "diff": {
-        "close": 81.6918,
-        "half": 99.8394,
+        "close": 81.6662,
+        "half": 99.7882,
         "max": 192,
-        "mean": 5.2361,
-        "near": 81.6918,
-        "same": 81.6814,
+        "mean": 5.2228,
+        "near": 81.6662,
+        "same": 81.6558,
         "shape": 99.8589
       },
       "frame": 1,
@@ -400,10 +400,10 @@
       "height": 360,
       "measure": "pixel",
       "origin": "live",
-      "sha256": "769f3839cd5d8c9e132e8fdb27e7948bdd1c4b49daf8a6a1876ddab597f39d22",
+      "sha256": "386650dbea1e2aabcd2bcfc569b04b39245b6c00977f9179308b1c6189766704",
       "slug": "logicaloperators",
-      "source": "0f42ff1f17af8512b5b7d8f5649f8089e3de8649e0637244fa59a08ab3ce4ee2",
-      "url": "https://i.gyazo.com/08ad3d9813fb976e4d6fc2a756adb049.png",
+      "source": "672ca280702b162c96e56d1941a4ac40196d2712cdeee8e995263d95de7e4bcd",
+      "url": "https://i.gyazo.com/205cddfb4c8d7bb3a6246c6a74f0cf2c.png",
       "width": 640
     },
     "Basics/Data/CharactersStrings": {
@@ -415,7 +415,7 @@
       "origin": "live",
       "sha256": "c582334bae1af26b92efa950b08871ceca0429c0169fd0b2b98b5346a3d50709",
       "slug": "charactersstrings",
-      "source": "3d74e0ebca53fd0b6e70834430673b2c6cd859046cf181fb5fd69b97f494d50f",
+      "source": "ca57e5845472084b6507548d7fa4815773503ae10c0df4f89bd4adc94b22ef46",
       "url": "https://i.gyazo.com/4c6bc5ecff3dae9d2de6f085d12e399f.png",
       "why": "字を組む。原典はブラウザの、mokume は macOS の書体で字形が違う",
       "width": 640
@@ -429,7 +429,7 @@
       "origin": "live",
       "sha256": "b6fb04aa858dd55ed328323a0ed583d061b004f9bb70db5b3fd443c387af1e95",
       "slug": "datatypeconversion",
-      "source": "7480e7b11c075cac6827f493a9902a256b3ae5814ba05c3f39ac4f6330e39efa",
+      "source": "5086cd1b63fd975a7def995c14026eac9c74e08815ec4fbf4b5b77febb861a76",
       "url": "https://i.gyazo.com/06b92bc0d0acfd7fdd30537acb75b31a.png",
       "why": "字を組む。原典はブラウザの、mokume は macOS の書体で字形が違う",
       "width": 640
@@ -437,12 +437,12 @@
     "Basics/Data/IntegersFloats": {
       "class": "clean",
       "diff": {
-        "close": 99.7652,
-        "half": 99.921,
+        "close": 99.6875,
+        "half": 99.9214,
         "max": 181,
-        "mean": 0.2603,
-        "near": 99.7652,
-        "same": 99.7652,
+        "mean": 0.3371,
+        "near": 99.6875,
+        "same": 99.6875,
         "shape": 100
       },
       "frame": 1,
@@ -450,15 +450,15 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "d25663bcc8097524ab83e0a9bc75c8d1725fefc767f7eaa695582c61ef65403f",
-        "source": "192ba7a8c5623e8551180bbf66c746681dc15f9b6c7e8041f205855dc5771097",
-        "url": "https://i.gyazo.com/44888b6d8748a57e77d188ad42dc8f99.webp"
+        "sha256": "7b44df60b7f861a7d1be94e8e8fe000f0818e56ef7f26a8f4aa7dfef8a8aa287",
+        "source": "6ef58559ec50bab27ed1ff9f3ae5620a5729f8b020da3f0127d7e13fcd7ec775",
+        "url": "https://i.gyazo.com/4597021cceaf8fff5948f29167415d2e.webp"
       },
       "origin": "live",
-      "sha256": "af4468d7ce77aa27271e4b477c42c7e2e7adae5e054710af05a516fe2f54381c",
+      "sha256": "18a41628a4cfda4612478a100c8eecdf8d80dafdf8ca006d7844ee20fdfadacb",
       "slug": "integersfloats",
-      "source": "d3f6720333741aa4a29c86801bdbe4532873d807af86ea97ee9148553067ec0d",
-      "url": "https://i.gyazo.com/1591ba1b8e8b44eb3868ab504312262c.png",
+      "source": "2f035617591eeb66bbef4ed28c9344bfbd584393961d30ea1f942ebd8a81a01c",
+      "url": "https://i.gyazo.com/191e5b49d652bacb3731c21169234d27.png",
       "width": 640
     },
     "Basics/Data/TrueFalse": {
@@ -479,7 +479,7 @@
       "origin": "live",
       "sha256": "e69653b07586b3608ab5ecd3fe9a9b7e5850091ffaafce2a1c991f172a684113",
       "slug": "truefalse",
-      "source": "af416bd8415005a19dc683c24574895e3e100e0fb907fa4ea9c119d1f1f5805c",
+      "source": "362f9594a7f9924a59dadfc8c3f0c85b96e9022bbe639e1c7b8c0d2fd0a36882",
       "url": "https://i.gyazo.com/a4da7787bc9d679fb25f225e548568f6.png",
       "width": 640
     },
@@ -501,19 +501,19 @@
       "origin": "live",
       "sha256": "c031ea24f8453b431675886112c815762cb406b8c7f4af013baf837b99805be1",
       "slug": "variablescope",
-      "source": "dc688ecb3672fa7d0b7936366bdad52b3ca48ec77f4c635ac61a9d130078b5fc",
+      "source": "0bd58d94466143411e18a0fd1d1762083c9ce29f5c66dde38539ffb3bb552b81",
       "url": "https://i.gyazo.com/061980b747a0c8799b6d94fe6f5e1093.png",
       "width": 640
     },
     "Basics/Data/Variables": {
       "class": "clean",
       "diff": {
-        "close": 100,
-        "half": 100,
-        "max": 0,
-        "mean": 0,
-        "near": 100,
-        "same": 100,
+        "close": 98.0833,
+        "half": 98.0833,
+        "max": 111,
+        "mean": 1.4698,
+        "near": 98.0833,
+        "same": 98.0833,
         "shape": 100
       },
       "frame": 1,
@@ -521,10 +521,10 @@
       "height": 360,
       "measure": "pixel",
       "origin": "live",
-      "sha256": "d5f267adf810dda04502754dfb2eb309e572dc355be3e1cfe8c221bfb76e0a83",
+      "sha256": "9f8ec71e39afda4a009f566bf4af920d8f3d1d301dea2b8acb8397472080da86",
       "slug": "variables",
-      "source": "ad8be31c84a2c07804895f4d30f669306d2b4e0b10446efc3c734ea148550037",
-      "url": "https://i.gyazo.com/2305d324287849ab6dc9b8f1f838c510.png",
+      "source": "c2050ebb7be46d750994d4d16e86b531f1fe7b8dfb1302e5397dbf3ba09350d0",
+      "url": "https://i.gyazo.com/e4133c65d58248fddfc11a911ef196e8.png",
       "width": 640
     },
     "Basics/Form/Bezier": {
@@ -559,23 +559,23 @@
     "Basics/Form/PieChart": {
       "class": "blocked",
       "diff": {
-        "close": 99.3585,
-        "half": 99.8216,
-        "max": 123,
-        "mean": 0.2451,
-        "near": 99.4427,
-        "same": 94.2726,
-        "shape": 100
+        "close": 99,
+        "half": 99.6289,
+        "max": 170,
+        "mean": 0.3579,
+        "near": 99.161,
+        "same": 93.9167,
+        "shape": 99.9991
       },
       "frame": 1,
       "group": "Basics/Form",
       "height": 360,
       "measure": "pixel",
       "origin": "live",
-      "sha256": "1cc95328f37b3e9afccbf16518ab988fe5fe5bfa8e43ee2dea0d09845dfa9e36",
+      "sha256": "b0be6d3a9bb482129d699b53feef90f3579e628e6376cc1881f4e24186eb4507",
       "slug": "piechart",
-      "source": "822da87a857e8732b5ec7e05ca4cc5b7bbb6763f0ac0bb0b902330757146fbb7",
-      "url": "https://i.gyazo.com/722593716d37b44d8d33a7bb1b29a2be.png",
+      "source": "575f6139d5d550717df8d25faede9a2fd7107677694f5f39709f9e5aaae69f5b",
+      "url": "https://i.gyazo.com/66daf505a597a927cdd25263be837c58.png",
       "width": 640
     },
     "Basics/Form/PointsLines": {
@@ -596,7 +596,7 @@
       "origin": "live",
       "sha256": "795d11e7c5bc67f20b68af310d4e1a3e62e4951e95b9a5cdcbe3640d8a57dfe8",
       "slug": "pointslines",
-      "source": "200004581d18af9811c0606fa93d4ef43448cb4034ff7d2baf318dc2f00a5f61",
+      "source": "ce09cae3749a06101cf97ddaab2be7d58b45b2b593744d09dc0787f3c365e1d1",
       "url": "https://i.gyazo.com/b7d2953af479cd30a4a882c538636eee.png",
       "width": 640
     },
@@ -618,7 +618,7 @@
       "origin": "png",
       "sha256": "5f6d8e35b4f56e60f84e9c30c09fac7c49bc85c06005bc5b763d354d80fafb04",
       "slug": "primitives3d",
-      "source": "6cf524df4e8ed742ace199bc665f5ef61fdbfde089c143dec48c6d42d0cb6b1b",
+      "source": "6f86ee92cf99edd98514b45580e94287b534e6eeb588b85d3b5e6d12cb932727",
       "url": "https://i.gyazo.com/6c232a862640edc0b905a90b9b2c2abf.png",
       "why": "原典が 1280x720 の静止画しかない。縮めてから比べるので参考値",
       "width": 640
@@ -640,25 +640,25 @@
       "measure": "pixel",
       "motion": {
         "sha256": "2360621329f329b66e072d1a7082b2d6f7e3a27b1f5dddad452724dcba745ed5",
-        "source": "ceab992a7895206833e66539558ed8b71a8c800b6e97932103b333655951818d",
+        "source": "728f3c59b335f53acdc5c3b670d46c0eac13b3f5096a8367a7a7c4f96176138f",
         "url": "https://i.gyazo.com/702cf12d22cc02faec98df189150228f.webp"
       },
       "origin": "live",
       "sha256": "7f76b123a665592acf9a86b62ec4e02f084589845c56c4178c5f9764fa28deef",
       "slug": "regularpolygon",
-      "source": "1da295db54987f86c4098a34401daebfae040e71e233e61bd9332e345fffc1f3",
+      "source": "4fc7fd6cc68388d4d117ff79e790f7331cf7df62e86443b740999cf64966c4c4",
       "url": "https://i.gyazo.com/233c8a54f602d4da259f3a306faf9410.png",
       "width": 640
     },
     "Basics/Form/ShapePrimitives": {
       "class": "clean",
       "diff": {
-        "close": 99.3741,
-        "half": 99.5608,
-        "max": 255,
-        "mean": 0.7868,
-        "near": 99.3741,
-        "same": 99.3741,
+        "close": 99.1576,
+        "half": 99.2886,
+        "max": 243,
+        "mean": 0.9168,
+        "near": 99.1649,
+        "same": 99.1463,
         "shape": 100
       },
       "frame": 1,
@@ -666,10 +666,10 @@
       "height": 360,
       "measure": "pixel",
       "origin": "live",
-      "sha256": "9ff096eba734a42cdd1771e5b60a25269e8c8ae243509cdec013f72c78f0fdda",
+      "sha256": "2bed778632379e8e83e7419a029fa48472ca1917664fface0b6d02a587fd00b4",
       "slug": "shapeprimitives",
-      "source": "9b520e4779defc1b6408d26f26cb922ffc30ae89984acc7fe2c292d4c2b2869a",
-      "url": "https://i.gyazo.com/2b09a094394fea7b9b305bed1d6a1ec3.png",
+      "source": "19b70af4d8ea6a3dea88393c33c371e32d12e64d5854134f7414b41ec1e4eef0",
+      "url": "https://i.gyazo.com/f642282b74aa7c405fef09602b747b38.png",
       "width": 640
     },
     "Basics/Form/Star": {
@@ -689,18 +689,18 @@
       "measure": "pixel",
       "motion": {
         "sha256": "264d84d11d9775440debf5ef1d9e7b95cce19f30d16035551581432989e9c2df",
-        "source": "065b50001e466ff771a4ca6370a91535de97de2a52732aa7385985aa673d3deb",
+        "source": "ca27a8673cb684375ca06a4810472bd9cf27dbae2ff197a97762488769e57abb",
         "url": "https://i.gyazo.com/68d97d44b0ad1891213f89f2b5db2dda.webp"
       },
       "origin": "live",
       "sha256": "fcd103463085660e8b660337e4f79eafb050645c665997f37df5732559012090",
       "slug": "star",
-      "source": "f85c02637b9ceaa6a1e6cd9a5872e0cc48b0b29ee4b950ebc62afa9a848a1637",
+      "source": "bb703d33d5fe17e0f7932f2650a29a48afc2fef89a82f41bb029e71baed4c4c1",
       "url": "https://i.gyazo.com/03f2d13ecfe10a55aaad89638ac65afd.png",
       "width": 640
     },
     "Basics/Form/TriangleStrip": {
-      "class": "bend",
+      "class": "clean",
       "diff": {
         "close": 98.1775,
         "half": 98.1788,
@@ -716,13 +716,13 @@
       "measure": "pixel",
       "motion": {
         "sha256": "ba8efcf59633958f33f332761a5062f3fc564bf51ff0acb6a9752b0a0fc517e2",
-        "source": "546035763a5d817b1e3b0c015c8756ce73b582b2af5b3eb547ad5176bbdaaf49",
+        "source": "6b97ffa3f85d9f671b21ea7d04b1418d491832291afc246452666a41ce5e471c",
         "url": "https://i.gyazo.com/7f7ee0e86beaa0f9e57ff04861d04a17.webp"
       },
       "origin": "live",
       "sha256": "70d53dddfac868bdc124494a8f226cf817153482f8abbfcf1d18df7993ae1dc5",
       "slug": "trianglestrip",
-      "source": "84a4afd4c317d4990dc98873b8004838f0fa94f6f4ec8b0a29df40a10b4c8992",
+      "source": "6ebdddd627c980b7093e0fed51eeccc5d0ff5675f89cf7eab487e956c88d25e6",
       "url": "https://i.gyazo.com/72f39cc6388b8b26f19e340a80b74a79.png",
       "width": 640
     },
@@ -743,13 +743,13 @@
       "measure": "pixel",
       "motion": {
         "sha256": "3828cb28e1c92557d9599b2d65b6017f10e42b6582b65cacce89d4a9ec0d4fc7",
-        "source": "cab342166e30beb6c831b0901c0d5040ed8fd62f8ac0c623f9585a18ac806b7d",
+        "source": "5a328b4fff7c92438748b80b31d1789d1d7ba1df17c0d2684745e580f5077dce",
         "url": "https://i.gyazo.com/ee36614a1af9380a62bc08c434368acf.webp"
       },
       "origin": "live",
       "sha256": "9741f672c73a8fa7672600bae826ca32d19b0a04a4f83b3649781c0b27d5b034",
       "slug": "alphamask",
-      "source": "3b597f43b69cdc8dd06e1847739f45f40a10cf9ee7546f337d3f54af5e5e3a4c",
+      "source": "7b2d615bf72e3e6fdf4b3c2bec34e367c4fb38899613c1a9ed6b55b508f3f8c0",
       "url": "https://i.gyazo.com/eb47a8e2e4cf4d2dd2c08247e1003be7.png",
       "width": 640
     },
@@ -770,18 +770,18 @@
       "measure": "pixel",
       "motion": {
         "sha256": "53e2faf6e7cb72d3c84833a0e90ef8a6f2e9f3ef7d1c90ddd669690922814db1",
-        "source": "acb883e6f148f579760270bbcc07730857fad92b5a28c631f3a53a39003f99a3",
+        "source": "e2fab9576c5b4e327d8a1477f0f454c219d3b62bd83d2a31dca86c74ac1f8b1d",
         "url": "https://i.gyazo.com/a028d01e5f2c1ca4a45ca99c6a3e0b5f.webp"
       },
       "origin": "live",
       "sha256": "bd5996f1793325686813184b315892b4dbd9419f03c85b59ec8e9d0cfb05b2a4",
       "slug": "backgroundimage",
-      "source": "27742e7b8d87e19033b869002eb9149c06373b43be589a9a4dc43c20b88bae63",
+      "source": "561aba0f485475eec96b887e9d5a8d183a0f04e9594f406a8d4eba3b9a1712c6",
       "url": "https://i.gyazo.com/baf9de9304ea84e8a3ff2d6fc0120f56.png",
       "width": 640
     },
     "Basics/Image/CreateImage": {
-      "class": "write-only",
+      "class": "clean",
       "diff": {
         "close": 71.7261,
         "half": 72.7986,
@@ -797,13 +797,13 @@
       "measure": "pixel",
       "motion": {
         "sha256": "8ccdb63501883536fa2e9517a7b73d48f382afa85d922eda26bef94f3812c968",
-        "source": "cb6c5766c233e19723a15df9eb541f99b541480a0bc59a04711d1abf9e089d0f",
+        "source": "03d981f95a8973efb1016a11544db361d9daa75b3e5f489517efa0ef4e6cfcfd",
         "url": "https://i.gyazo.com/5ba360bcdbdfb3be9e87e6835c3cd6ef.webp"
       },
       "origin": "live",
       "sha256": "ec18affbbb54df0283deac5d31434ff5a2eb9863299ff7bef1410dbc6817378e",
       "slug": "createimage",
-      "source": "3ab5e2aa113f6eaf2f3d4a6c9f5db9280c2f95b9d4fff469a0f5368be5b46b4e",
+      "source": "1cb4089b399666756c32307957c4788ed88a31ec6dbee14e88dae7443fca6f70",
       "url": "https://i.gyazo.com/80e1e1e5fb09e234945c7f1957d8bef2.png",
       "width": 640
     },
@@ -830,49 +830,49 @@
       "width": 640
     },
     "Basics/Image/Pointillism": {
-      "class": "write-only",
+      "class": "clean",
       "frame": 1,
       "group": "Basics/Image",
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "d1723c15856a944a2ea24b31fff884750b6404c0be2fe4ae881fc9ac0f235891",
-        "source": "fd23e1c2f425ffc77a497c5481ab9a051fe7be63c579971fd63a30e2b6026b8b",
-        "url": "https://i.gyazo.com/b841d14898ee7aaa5dc005f0edef3baa.webp"
+        "sha256": "53eef2cf169062379762bf38b6f20028ccaa919cd1f5d8039de3359800c4a846",
+        "source": "0e36f7f851ef74bcc082c4fe0be27c2af43f482c6cc15f99f6d146554cc74a9b",
+        "url": "https://i.gyazo.com/a1bd98106e4268ba96c796229dc74975.webp"
       },
       "origin": "live",
-      "sha256": "c1c60713df6ead5a5189ba76bb17abae76e145c124a56f4eb9d7d710ec3feb0b",
+      "sha256": "7e9ff4a5779095572f8e4dd13712f4d040cea6bbb99b8f0c64f1b8d7ddbb1fc5",
       "slug": "pointillism",
-      "source": "22e1dc8b4afc905091c660f994ee3e0f0b422982543b2937034e557a105fed97",
-      "url": "https://i.gyazo.com/1aed65163fa6e58eff9371555aafd24b.png",
+      "source": "4618100635b7719d8aa01daf33e7379c11d069a3f82008b07dbc6cce06145f81",
+      "url": "https://i.gyazo.com/b14bb8b41c97eee74eb8257a91029371.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
     "Basics/Image/RequestImage": {
       "class": "clean",
       "diff": {
-        "close": 99.9874,
-        "half": 99.9874,
+        "close": 99.9857,
+        "half": 99.9857,
         "max": 255,
-        "mean": 0.0321,
-        "near": 99.9874,
-        "same": 99.9874,
-        "shape": 99.9965
+        "mean": 0.0344,
+        "near": 99.9857,
+        "same": 99.9857,
+        "shape": 99.9944
       },
       "frame": 1,
       "group": "Basics/Image",
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "df1b68710726de850555c1a18b65164d5694b92c353abd385a8c7a2854f9d7c9",
-        "source": "dd34cbf653b383031033d5c81cde44c715bca9752d66f2fb7f25096eaebfec0f",
-        "url": "https://i.gyazo.com/e557682405611478fd96df3458eb92cc.webp"
+        "sha256": "9cd3954f17dde3ddbf27277dcbd51e1d1066ff3cd3facafaf64cbb7ac0a28e44",
+        "source": "3961f9f9d0e44fe169398d0423ca9cb01e6e4cad748f702936b8e6d73555b74f",
+        "url": "https://i.gyazo.com/ad00efe64c08c45c597820217831f18b.webp"
       },
       "origin": "live",
-      "sha256": "8413515317dcfbb09d6bae3242bfb65fc98fe6734a5fd8da4e054730cf0fcd89",
+      "sha256": "15cc02f9fdadd0693b84ba0bf1126f342589acf1924af7dbcdc79ff7c7586fa4",
       "slug": "requestimage",
-      "source": "9b21871a6a7356eaf404c0b6bd9f71a99371eb83c80965073fd43982cb6d7210",
-      "url": "https://i.gyazo.com/aa52707419405ba259411982fa4dd0c2.png",
+      "source": "a58c853e9f54657c7314674c658f7c79564cca519ffe5b7085e0039944de3855",
+      "url": "https://i.gyazo.com/a4da035ea23b61ba81cf14624fbc8574.png",
       "width": 640
     },
     "Basics/Image/Transparency": {
@@ -892,13 +892,13 @@
       "measure": "pixel",
       "motion": {
         "sha256": "67248a792624a0897305bfedc79487f4d2ebb5a097f720d2869eae3340c02b6b",
-        "source": "5c9addb8caf1d7978af51eb18293301db7871c1085084b6ffc264e973bc833ca",
+        "source": "7105dda37ae740eab39662d30cb2e9de09c87047e2af4d66eb81ed893a242d71",
         "url": "https://i.gyazo.com/3fd935382417ebc0f1e9a24989b625e2.webp"
       },
       "origin": "live",
       "sha256": "e7fcc424ace7280da47082703f325670e297da8e4418257edbc74d94e551eeec",
       "slug": "transparency",
-      "source": "a60f0ee5ae1e7c34b9f7bc18d2c01132bfd9e618c99137cf8cc722960d9b962a",
+      "source": "6ecdce9b638e833c5a50755ecfa2d4cda883496ca276f1df2f4d66652b73b3e9",
       "url": "https://i.gyazo.com/fca829bf4b99e7631db5817aae6d86bc.png",
       "width": 640
     },
@@ -909,27 +909,27 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "5ffd8fcd30a0f08eef4819142a19890f89e74ae717811128b0d8c335b3f10948",
-        "source": "1d8139b6d596ded209ca49f801a9eb345843eb0e00348c57f00a206d96671750",
-        "url": "https://i.gyazo.com/c120eb9a839689bf5f3a38afb18078b0.webp"
+        "sha256": "210eb08bb769f1b3b5f5acd957456b88bb03b4a9632b0e6ba4ba2fc1f1041897",
+        "source": "72aeb719b397fb481b35c82b8dc38c13cd7ed4920f85dd7070667598441ee424",
+        "url": "https://i.gyazo.com/b600c25422df4c3f252b3cedac5dc55d.webp"
       },
       "origin": "live",
-      "sha256": "185f340e38928b91157cd6a9f95ee69566785a897edc639681c1ccbc73d9e312",
+      "sha256": "be4519e744491258fb298a23f479e1a62c311ba01933fd2ab75791092d9877ef",
       "slug": "clock",
-      "source": "e4133564189bea3055ca120cf69aba769cc8b4a73508a975a537d76789518049",
-      "url": "https://i.gyazo.com/003aebbae89e797aca9cb4a5e8628678.png",
+      "source": "ae5c78b22838360455c8ae780bdc0a7d0b0cd333c1206c83b49e4d58c284ad48",
+      "url": "https://i.gyazo.com/f9008f7559912b2a4c846d9e53b33a33.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
     "Basics/Input/Constrain": {
       "class": "write-only",
       "diff": {
-        "close": 99.9457,
-        "half": 99.9674,
-        "max": 179,
-        "mean": 0.056,
-        "near": 99.9457,
-        "same": 99.9457,
+        "close": 99.9175,
+        "half": 99.9375,
+        "max": 169,
+        "mean": 0.0552,
+        "near": 99.921,
+        "same": 99.9175,
         "shape": 100
       },
       "frame": 1,
@@ -937,26 +937,26 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "f20a0831c49ff0d3e678835006f3e005ca4abf0a1e0ad0892d3ce7e70bef0985",
-        "source": "622ab6177a94e3610d1cfe9e1f00f45eeb21d01058fd59c46a5b5d000b0cbb75",
-        "url": "https://i.gyazo.com/292fc1b56e04c1460ebd1ea00627d412.webp"
+        "sha256": "fbe4cdc7723670d75441b29f5cd78a87c2cf874b774f3a04a78e09a31c6c2d7c",
+        "source": "5360b11585811dfa5b56422adc5a69bf2b4ece68501877e6956eaf364ee56609",
+        "url": "https://i.gyazo.com/1b5195887ab4409c58a0d9c878305c74.webp"
       },
       "origin": "live",
-      "sha256": "8694673a30f1685c213c0ab7935479ae6b7d20b893601b63008e5bfc68760211",
+      "sha256": "1c1df06c548797cc121f4eb9d2bce786f2d60092fe1d251777f03b6a452cd7de",
       "slug": "constrain",
-      "source": "f9c3f1b444c98af98855f7b363c2fcefc8d008967afff5c74ca6493a637845eb",
-      "url": "https://i.gyazo.com/8fa56fc0a73cb3ae488ba3e58cbdf7ef.png",
+      "source": "b9b194839b5237579e2d8ad3ec3acdc0fe3ebb185e01c2774f0870da7ff188db",
+      "url": "https://i.gyazo.com/73994e00b42c255b74703232221335a1.png",
       "width": 640
     },
     "Basics/Input/Easing": {
       "class": "clean",
       "diff": {
-        "close": 99.9813,
-        "half": 99.9905,
-        "max": 204,
-        "mean": 0.0237,
-        "near": 99.9813,
-        "same": 99.9813,
+        "close": 99.967,
+        "half": 99.9696,
+        "max": 187,
+        "mean": 0.0371,
+        "near": 99.967,
+        "same": 99.967,
         "shape": 100
       },
       "frame": 1,
@@ -964,15 +964,15 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "19323e04a8dd893ed133c1afbdfb7b137057584c132e3c03ed612f469e85e024",
-        "source": "aa92bfd0d80944e17826e955f129df1171490a5098a25429fdaac32a0a0d44e1",
-        "url": "https://i.gyazo.com/4c4ab11feb0f360e452b93145f91377d.webp"
+        "sha256": "f03c40a0ede8a9a8de80106acfa717d9094c513d771f23db5937b39b206fbc13",
+        "source": "cda2747cc9e50dfa13a96c144b581ffbd314e4c28e39fc841534ab4dfb1729f5",
+        "url": "https://i.gyazo.com/a9b2049d5c8023822c8590da32cb8589.webp"
       },
       "origin": "live",
-      "sha256": "5b622fc46ccc31fea4180bd18950e896e5a6bef5858fab620b89828a87708912",
+      "sha256": "039eafdc79a07f425e103d0d65cef027b0b9fa0f6d6112957897188dca19dffc",
       "slug": "easing",
-      "source": "ec0ba408189776b5fa39185df2c7a8b7dc7c84a738c871cc55cc9963e4570a18",
-      "url": "https://i.gyazo.com/0b4215e3aced54840d238b28c683b0f2.png",
+      "source": "a29e0ab32ec7dfd68d29332e55c366bc5ce3d173cbb092075398737b53d79cb6",
+      "url": "https://i.gyazo.com/4525c5391c2969306dd4a9d5565d4a9f.png",
       "width": 640
     },
     "Basics/Input/Keyboard": {
@@ -984,7 +984,7 @@
       "origin": "live",
       "sha256": "1f6692d6c8caf89c9d23668eab67f5d771306ec052bf4924d47434e2cf52e26b",
       "slug": "keyboard",
-      "source": "e2aab979049862516f476b53cc841f75c6857d43f0df77890c7ed98d0470d80e",
+      "source": "e6b8a6eceb41abf545ee68fb7e246ed202921906ec0fa9551508223f0b7b0c1c",
       "url": "https://i.gyazo.com/3df7fe5b08860222c3cb39ad7d330a21.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
@@ -992,11 +992,11 @@
     "Basics/Input/KeyboardFunctions": {
       "class": "bend",
       "diff": {
-        "close": 0,
-        "half": 0,
-        "max": 128,
-        "mean": 128,
-        "near": 0,
+        "close": 100,
+        "half": 100,
+        "max": 1,
+        "mean": 1,
+        "near": 100,
         "same": 0,
         "shape": 100
       },
@@ -1005,10 +1005,10 @@
       "height": 360,
       "measure": "pixel",
       "origin": "live",
-      "sha256": "47e6e56436e6a9a2bce8812113cf4504876c73394428098f140cb79c2ee92bce",
+      "sha256": "434fc04b4a03f088e76352fd48a603431816a371fed124650a650c0c185da69d",
       "slug": "keyboardfunctions",
-      "source": "c655ee10944e73b5d8da5073b8ff4eca4b54281d57cab26933e9da2eebab8134",
-      "url": "https://i.gyazo.com/ed869d94f2d5139a8955be6e55cf41c6.png",
+      "source": "7f1562a11346d25b038faec33edac29eaa5fa91f72d1680fd961a786e8049290",
+      "url": "https://i.gyazo.com/9bdd220dee578adb8bd246b063b2747d.png",
       "width": 640
     },
     "Basics/Input/Milliseconds": {
@@ -1018,15 +1018,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "fdec880f05c2a4dc5370e21a1c209eed18642897a98a33de50a99405d117bb11",
-        "source": "f8bff268d1541e75636d425afb518397255760b7c07c8169f26deddeca06ccdf",
-        "url": "https://i.gyazo.com/a190f7a5bb9b47b17adde99888baf1b0.webp"
+        "sha256": "dd34aff5ac6d82ba474bb90c2999fb70ef092f6534b8eafa933c3bee3e5ec768",
+        "source": "2a4e83f139d6e6d31a5f428fe1afd62bf838525f64e68b263331668905ccfcc0",
+        "url": "https://i.gyazo.com/7bc01fbf85f420de70fc42c0933eca80.webp"
       },
       "origin": "live",
-      "sha256": "f38072f23f2e6cc546fb233919cd5cc468614c656a457582a00e44427f7259dd",
+      "sha256": "2a774ea23d2475b0f01fea8936ef5168b59b054138cc83a3cf4c4505c578fa36",
       "slug": "milliseconds",
-      "source": "ec085b3d5228815a2e827a5fdcf05ed794be5c794f75a6ea232cb57abed19c00",
-      "url": "https://i.gyazo.com/03c158b715acde4d8413767020b334b2.png",
+      "source": "1e499515f8bcf56e9020a4d6eb39b3ae5706d59ead9c5074524e9fcf959e4b6d",
+      "url": "https://i.gyazo.com/5efba4b45dd681e15556d7c859afec25.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -1046,14 +1046,14 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "4ca33123a5bb320a74aea893f33bb4c6e98fff5ed136ac4e98b296790ef88766",
-        "source": "d338f28a668f9118a55617a758cd0425bb4ce17fcaa7b450b560240333c3c858",
-        "url": "https://i.gyazo.com/8f41931a3c84181ff016d1addd444989.webp"
+        "sha256": "98ff6d5892650588aff10331c27f2cd9bb2efe44e6f1d0302d347c58672b7bf8",
+        "source": "120073a4a9fc02daf97c49326466d8662fce356a51146c55a26017de06927415",
+        "url": "https://i.gyazo.com/9caf012f793a101c3d5e6d2a1a38dcb7.webp"
       },
       "origin": "live",
       "sha256": "af48ae2b167b380a8f044de7ce2e0ed2aaf4d2f5f1242d01b956853e9a659e7b",
       "slug": "mouse1d",
-      "source": "e234092a559e5dfadcb6cc96243efaf10480b8f451a258a1ec8c387795d13e26",
+      "source": "91ac3c945554d8332cf85186ad8abe8d8e9846d6c0695afb385b7e8bd0ba87bd",
       "url": "https://i.gyazo.com/f339ca3d0fc0fd8f99db3b003ab6ea49.png",
       "width": 640
     },
@@ -1086,7 +1086,7 @@
       "width": 640
     },
     "Basics/Input/MouseFunctions": {
-      "class": "bend",
+      "class": "clean",
       "diff": {
         "close": 99.7378,
         "half": 99.9983,
@@ -1102,13 +1102,13 @@
       "measure": "pixel",
       "motion": {
         "sha256": "c5674396555337ac8d9cb56bea524fb33c461adfaf92b16541fdddcaf4218c00",
-        "source": "84f5eeabca1b925dc50aebf551a9a628c169a28191dffd685dcea6fee8f960ea",
+        "source": "d3606dd0e2d8cdafa5c96cebbc5d3dd63ee84a9813897ad82365f89ed8229b6d",
         "url": "https://i.gyazo.com/b17e1312a4726115aabe2014ba1026ab.webp"
       },
       "origin": "live",
       "sha256": "085739cef843d5ad131065fd8dd328bbc5d0ea3e91946ba49de11a3c025c69da",
       "slug": "mousefunctions",
-      "source": "6dd37c4f4ae68211f9a8de71e943ba6ccca828767c41f928673c679785b33778",
+      "source": "416b6ff0a87e2be5a012e2caa592956f95d6d3bb4986e8ab1fc9a5d2fc335abe",
       "url": "https://i.gyazo.com/1d5702fca6283ae762bdefd246d3745f.png",
       "width": 640
     },
@@ -1128,19 +1128,19 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "b16842fc04f382e9e84a04a6fa8065277e1f8379c12348a20c2d2fb1d2aea022",
-        "source": "049ede23278199198b0e41dd67ecd9ab8fb63f9bb905101555da30f5b4cbcbb8",
-        "url": "https://i.gyazo.com/35c9ec6f1327f6b8041356b25d440c0c.webp"
+        "sha256": "ac8cb059a5ca2ff5d199d9ffb0f5027238a7957e96c69c5180476a50b1a93df9",
+        "source": "c0516c08dd82a0a8d0d3c3610fc6ae77b0bae20a775403b67cc29b11370917b4",
+        "url": "https://i.gyazo.com/6fe726bb5191c6ae91f5e0c1227b0746.webp"
       },
       "origin": "live",
       "sha256": "67f3706910267fe5fe54296a5b5bd96f7fc2bf1c598f8981b499c38639750c83",
       "slug": "mousepress",
-      "source": "d755fd27baa64fb3035332d1ead907b338bd9fdac414aead39b9d05b65be5e30",
+      "source": "372b0ad9efca0952ae17b7ad5b89e67631cc63ee084d2fd1db77ef9c03535b4c",
       "url": "https://i.gyazo.com/3affe41ebf6f7d65d635496d6889e857.png",
       "width": 640
     },
     "Basics/Input/MouseSignals": {
-      "class": "write-only",
+      "class": "clean",
       "diff": {
         "close": 99.0638,
         "half": 99.1163,
@@ -1155,42 +1155,42 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "b449dcc4e6b028acd760bc530db3a290360614eff7e106b94ddf4667eede73a0",
-        "source": "032a56617329ccf480570dfad6f946a22eb47e5f668b1c1232c43bd5027ce2e3",
-        "url": "https://i.gyazo.com/80520e976aa83345e6ac59b98f449970.webp"
+        "sha256": "0108100e123ac08779c4a3ebd48a5d830f92f15c4221912e843e1e4b055e2d0d",
+        "source": "bd1a05acf81554383fa9d86edc42f6aac615231833ee930f7c6697055884aa89",
+        "url": "https://i.gyazo.com/6def14c5545d022b7d05541f0fbd5c15.webp"
       },
       "origin": "live",
       "sha256": "f20f60fa7fa596cf0a1dd8290153e26ddcf5dc40fb0d0afd66124245e6a9fabb",
       "slug": "mousesignals",
-      "source": "5993beee88da35ac168f43aa41b6c9b8371ce8edf7c47ee4bd30224e8c7dc35b",
+      "source": "4ddf3ceca1a52acfa16721a77f5993c9f1d8a8622165e0da96c773f62cb6ae1d",
       "url": "https://i.gyazo.com/2c0cdd521499745b94d1e8f600b2eae2.png",
       "width": 640
     },
     "Basics/Input/StoringInput": {
       "class": "clean",
       "diff": {
-        "close": 99.9484,
-        "half": 99.9744,
-        "max": 154,
-        "mean": 0.0293,
-        "near": 99.9622,
-        "same": 99.9323,
-        "shape": 99.9996
+        "close": 99.9388,
+        "half": 99.964,
+        "max": 165,
+        "mean": 0.0392,
+        "near": 99.9505,
+        "same": 99.9214,
+        "shape": 100
       },
       "frame": 1,
       "group": "Basics/Input",
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "6e4b223c2c6ba6d0de7c77b16d027757923decebadfe55e8e47622fcbc1a8898",
-        "source": "63ebcfd9a2c8e09b90d82ec469fce8d460e7df58a8196e9e87993f65eee33258",
-        "url": "https://i.gyazo.com/4821a160b81790522e90055c00cb7a77.webp"
+        "sha256": "c8913abde1af71afa6a5b528ac7683c16c6ad00b19411901ef008d46c1a27d07",
+        "source": "840144b0389330d0f92baca12cffc8c9d4a85e0225cff69aeba3d2fb167b1f34",
+        "url": "https://i.gyazo.com/fe3e7d64123e2105b904df1488ccd5f7.webp"
       },
       "origin": "live",
-      "sha256": "db07f407f3c3967e88fb5d72365a02ca7ba82ffc6a070c7f6aede2cce9f030b1",
+      "sha256": "a3c33b59b8a2a655a0c93eec8f1fccbe30d654fd7737f1a4124b70a527872b71",
       "slug": "storinginput",
-      "source": "3e57e045695d2e69c5f99a5e6f0d38390bc025967a6cbd00db42c6ad1817f009",
-      "url": "https://i.gyazo.com/da68d98c5a012c178fd0ff06382c4af9.png",
+      "source": "d7c1b649a6f9e83fe5a61c0a732006d5db0e38e5ef4b48ffcf61c87de9c51781",
+      "url": "https://i.gyazo.com/79bd99701dcd7751eb24ca0f10c29279.png",
       "width": 640
     },
     "Basics/Lights/Directional": {
@@ -1210,18 +1210,18 @@
       "measure": "pixel",
       "motion": {
         "sha256": "cfec1fb85ee83733135b6b5ce4ab06c44adfb0a29c35ace726f74ad44d40fa7c",
-        "source": "0effb8073d8af12a042c634293ced3b668e5efca06e8ce93673446e10481f2d8",
+        "source": "5ce0d602cb690e12b11489709094d06561e674d612de3257a42615a253e925e3",
         "url": "https://i.gyazo.com/f1ca74bae7a939405841e501d96411e6.webp"
       },
       "origin": "live",
       "sha256": "225bee89ce8ce21be5f22b9f24892426b23832d95450226a3fc20b71f9585469",
       "slug": "directional",
-      "source": "e1cd763b5b69ec404749831c8be0a7fd48f91810699a06ac79bc170992bf1651",
+      "source": "a6a948285dd0aa05ffccebcb0fdc45291f742db419796524aabf5b76a94b70a7",
       "url": "https://i.gyazo.com/e8f2719331fdf89f066b362749c46c6a.png",
       "width": 640
     },
     "Basics/Lights/Mixture": {
-      "class": "write-only",
+      "class": "clean",
       "diff": {
         "close": 83.1558,
         "half": 83.1558,
@@ -1237,18 +1237,18 @@
       "measure": "pixel",
       "motion": {
         "sha256": "0a65ac997a9c773cbdc498f5d75c61abe7413467347f250391e2e18171991196",
-        "source": "59b784174254d8912fe675e0d23887f439d992dc872bb02f75f0d969e289d240",
+        "source": "566fdf9f9b71f021b804107417053745f391115edbe6df5e83247eec3f169ef5",
         "url": "https://i.gyazo.com/cb32c5d30ff36e4cd49351b5b461c595.webp"
       },
       "origin": "live",
       "sha256": "52727610796c78de4d53b846b17a16c498fa1757aada9f3d72f55f4dfdb99563",
       "slug": "mixture",
-      "source": "8a9642641b48c7195054d12838318ef305c137c8999ac726ab6dd300b64660d5",
+      "source": "371c478e31001ceb442bf89643628a50bbbbdfe1fcea89a298837a100b9ce9c8",
       "url": "https://i.gyazo.com/688af6dbde49d23fa09d730f0ad0deb5.png",
       "width": 640
     },
     "Basics/Lights/MixtureGrid": {
-      "class": "write-only",
+      "class": "clean",
       "diff": {
         "close": 8.1962,
         "half": 20.0846,
@@ -1263,14 +1263,14 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "77417a2cdfeba8ff215a31fcf95a8025c8db609e5688feabc7714395ad3926c4",
-        "source": "625d4de3d08fdc1ec9ab81679f761bebadfadad1e3dfea470c2ed7258ec8f1ea",
-        "url": "https://i.gyazo.com/3cb8d4f50f8cf14fbf66dcc247f321a7.webp"
+        "sha256": "bbc3ec7f33e41db1034d07ad25400170515c7deea16d51696edf3dc289dd602c",
+        "source": "aa502ae21925ed8d1552cd2b66e66d8a945d84193b62160ff0e1ccbf31527597",
+        "url": "https://i.gyazo.com/0f008eef29d07fb269aaa79faa161674.webp"
       },
       "origin": "live",
       "sha256": "ad119f9453ebeb8c457c290624cdb659e55a6450ae286636a3df200827f28f9c",
       "slug": "mixturegrid",
-      "source": "4630de183292926a0120487e1e2d97f89b1f450eed7149c72ac067af5b98e127",
+      "source": "5ffca9eed85456d0af8127e940a057857eb82a76b78cfc897e7224cff2794bbe",
       "url": "https://i.gyazo.com/2e735070e91c012443448d8cd9cb4a30.png",
       "width": 640
     },
@@ -1291,13 +1291,13 @@
       "measure": "pixel",
       "motion": {
         "sha256": "b80273ec89e720407d660c3ec1cc764d1a5005347d8a45141161bcbf1aaf4d02",
-        "source": "3c18e20584fb3b9165204aca8e7a6b4910014d2c9fa7080f796f56f6c9118ffa",
+        "source": "9411fac980cb5da5e72fb7295f871b3b217a71a3e9617e93305f1cb4a1c888a5",
         "url": "https://i.gyazo.com/d5beee7f583bcd39d81b306232fe5ed2.webp"
       },
       "origin": "live",
       "sha256": "386114455a94851ad54e1c9c0b76435eff911b4b003e18f37da1317054936326",
       "slug": "onoff",
-      "source": "14f7a40034bbe0499e2e8e5692bc5b1c1a9e0aab0a3a60df5a9e3c484b546464",
+      "source": "25542adda84ef24f25fb7bc52ea9239f389725f29cdd966a7b61f51ed4917484",
       "url": "https://i.gyazo.com/66e5997a798f07acbe9ee795d6350311.png",
       "width": 640
     },
@@ -1319,7 +1319,7 @@
       "origin": "live",
       "sha256": "d038068b6ae6466840e1a0b30d6958e34bd6b570bc76409ac95e1d623f6fc00b",
       "slug": "reflection",
-      "source": "c3940e7de24c099da46597350406a0cbec36474e913c84e956fa5944fb906f9e",
+      "source": "dc9af326607e8eafb278ed8b94a7e25a6f21f86bfee7381b2042be73e5a25f42",
       "url": "https://i.gyazo.com/a474267e10947c391866210a73d7d17e.png",
       "width": 640
     },
@@ -1340,13 +1340,13 @@
       "measure": "pixel",
       "motion": {
         "sha256": "0dcebfbae9cc105f547d04cb0f2d184497e6425ce951a3eb2587adbf77e28338",
-        "source": "9592e694db6a80177f849b16dc72dbcfdb141ef93ec3a689a49f9a5614017a8d",
+        "source": "ac49528308feca018eed02bba8685f24b5b54e7035fa6ea868161e2e7f3a6709",
         "url": "https://i.gyazo.com/b8dd79d5979119d618c64d491d07932a.webp"
       },
       "origin": "live",
       "sha256": "301b5f7b3302f4c28d61214afc13bb7d1434f08cc4f2860bc0fe70869c24ae38",
       "slug": "spot",
-      "source": "c9d65e6bc40f62403f65a7ba39108376f316ae30cced1fabd0a0530fb40e9515",
+      "source": "5b0c26a4affac412470a249213647753aa62e64a9ab30d22ebec5d3acdbe2975",
       "url": "https://i.gyazo.com/c3130de446d2d45fd2a179954dae7c22.png",
       "width": 640
     },
@@ -1357,27 +1357,27 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "bd3c67ce52f2a5a6b8efaccd0f4a5cf349f719f872994fb305b71eaaddc8f257",
-        "source": "74998311107daec12324973818ae3d0768080e7eccd90720978bc23425f5b490",
-        "url": "https://i.gyazo.com/ca24b4323440bef8e5f9a0f67e2a717e.webp"
+        "sha256": "207460f75f72182dfd070fbfd394522e7e1c6a647844ea7959a6d269373099e8",
+        "source": "b644fdeca7bfd9259c9f1240d689ac9676e92a74228e8645f38e44d4889a7a26",
+        "url": "https://i.gyazo.com/abc38523414d3acc22515a85db53a51d.webp"
       },
       "origin": "live",
-      "sha256": "ef8f05deef2c3f6fe92f781f17d6efab785d333ed2d6813e593508e507b4f2ee",
+      "sha256": "d98c9fdfb27e2a7a5112cc0979ccb14c5c5938cf2c235b28c26a65dc3a962d61",
       "slug": "additivewave",
-      "source": "ea55404fcc897ad018a9ab6f95007e415459952bc84faaf848187d5a0537ed1c",
-      "url": "https://i.gyazo.com/7635805434c6e34bc3bdd2a583e036e7.png",
+      "source": "90dbfed72be2fd5b8abf92d146f31b88ac444b7d14e0615fd48bb6a66691707c",
+      "url": "https://i.gyazo.com/19b4ee95d736fad18744b5360299f67c.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
     "Basics/Math/Arctangent": {
       "class": "clean",
       "diff": {
-        "close": 93.872,
-        "half": 94.1185,
-        "max": 255,
-        "mean": 1.473,
-        "near": 93.872,
-        "same": 93.872,
+        "close": 93.5595,
+        "half": 93.7552,
+        "max": 218,
+        "mean": 1.4691,
+        "near": 93.5998,
+        "same": 93.5473,
         "shape": 100
       },
       "frame": 1,
@@ -1385,15 +1385,15 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "e9c64fd6273fe1fd9d1a0311107010e760c8479186426d8b731778dcc7c191f9",
-        "source": "eba3cfd6badb1832d7374bd440c7a92730ec51f69ae7f76806c540a8ce40c6d7",
-        "url": "https://i.gyazo.com/4df3c2791065efe1c47a6191622a9e9f.webp"
+        "sha256": "839b8b76e6133ead8ecb1bcc31d82aea7d1ad85716453dfdd1f4f96c27e32158",
+        "source": "83e262e90c22507b211bfca5f131022af40aff196ca5977df776749a30346689",
+        "url": "https://i.gyazo.com/3e0e1db6e907016bdd109f200374c012.webp"
       },
       "origin": "live",
-      "sha256": "8064c6a9b139a64ec1f004f8060d80e887883ce8e4c2bf4cb84e8b8c1d339c1f",
+      "sha256": "4d60756fd539f0c0e7698f5fd306c974068dbc121a075d9898cdc016582d6651",
       "slug": "arctangent",
-      "source": "db7ce3e112ee21ca3f3fbf23689598446bb31c2c312cc0b31efbd55349ccc275",
-      "url": "https://i.gyazo.com/31ba2c6f316a815ddc9a4f807f6c5d5b.png",
+      "source": "d10ff751d438b52826bf80465ac5279c5f83cdf2eb22d89aaf97452241795a88",
+      "url": "https://i.gyazo.com/38e1104c14914510983bc11ee3a384ba.png",
       "width": 640
     },
     "Basics/Math/Distance1D": {
@@ -1412,42 +1412,42 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "6d054d0a1745c0991e70b395ebd4ccc1ad52029ea86bc837033637a817241712",
-        "source": "f6d7617b12795139d0b157e324100175f206f6320543967eb1100009f21e82e3",
-        "url": "https://i.gyazo.com/347b62ae38c6ec83169fc4f4c8b4215c.webp"
+        "sha256": "121395d105832e7f3ad77a41a85f61a850c618cb9d7d2f24c877245bfe1633b3",
+        "source": "4cf1dd534d3705178d920a357459866f85802c39cbb750597a2b7e96246e9327",
+        "url": "https://i.gyazo.com/a9c50e38edc9dd2fd14c37b80c52a4a9.webp"
       },
       "origin": "live",
       "sha256": "c6921588863eb9f306c3be76d01a3fd9aa99b5b7cb56f989aaa2547b429a140b",
       "slug": "distance1d",
-      "source": "0192d66d3fd12fccf3f048f7c8159d527c3f5d78696dcd9395d0e6478d75e9a0",
+      "source": "b92c2889dbffc8368b5105da8b20fcefcf48578687afd5a95602babf818335a4",
       "url": "https://i.gyazo.com/14ef6768271f5abecd394d473a0eae77.png",
       "width": 640
     },
     "Basics/Math/Distance2D": {
       "class": "write-only",
       "diff": {
-        "close": 97.7669,
-        "half": 98.7365,
+        "close": 96.7517,
+        "half": 97.1762,
         "max": 255,
-        "mean": 3.2542,
-        "near": 97.7669,
-        "same": 97.7669,
-        "shape": 99.9822
+        "mean": 3.0212,
+        "near": 96.8854,
+        "same": 96.7001,
+        "shape": 99.9939
       },
       "frame": 1,
       "group": "Basics/Math",
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "b5d6258c2171ae68fa5e0693bae3c560df12d1bf26ab7dd5271111e07ceea48a",
-        "source": "76912409b13df7ca1873344e126269dd510448d75f4ef22ba8cd8318c3042913",
-        "url": "https://i.gyazo.com/d3c7e55bd91aa781a08d27663c59cbca.webp"
+        "sha256": "1df638ee51993ec9ab1445b9a96ab8c26bff98a3a3f5c532e7b8291ffdccbe81",
+        "source": "8654f0ea2368a2dc380baca4e9a16ae54031f36e808724f33ddcc58d7142f2f4",
+        "url": "https://i.gyazo.com/cf4575205f332a859c19e9704d7ad145.webp"
       },
       "origin": "live",
-      "sha256": "a6712d73fd1471769b38ba5db0e8b2b74665016ee8a378268c7a3d460897e463",
+      "sha256": "03c7dd1da253f7c80ef4d587d74fee66a01115e0938c9b1780dbb6f95e9b3392",
       "slug": "distance2d",
-      "source": "7c97acf8146c9347eac50d44059340a1a89e044b2c7cb45b12c4159ee4ea07e8",
-      "url": "https://i.gyazo.com/44dd34688e4cfe483befab1ba4c24775.png",
+      "source": "697f6c0fbff9bb11a6ef2c06c73cd6eaa3ab139dd79e21b8b7f7dbbd08e7cdc8",
+      "url": "https://i.gyazo.com/2a4b67e3575440a0a7ee97bd9f883327.png",
       "width": 640
     },
     "Basics/Math/DoubleRandom": {
@@ -1457,15 +1457,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "1a631a5b3d74f3132ba28aa30ea9a1f7a0b128104ab5215dd451d09b6f8ce0ea",
-        "source": "9bfa197e95971339ab465dd0a00a72ea40f85399ff6dbd63860a8d04962034ec",
-        "url": "https://i.gyazo.com/022f7156ca6ba980a0d02c1e5a077b49.webp"
+        "sha256": "8503f51531954ff29d1d5982460d94a3c74c12b2ab0531971de42a054336b47f",
+        "source": "696e842e0cddfd926c4fbd91715d0cf65390eafc95cd192aad6c40d5dad5eeef",
+        "url": "https://i.gyazo.com/7829ba101653b2c1d3f7e88818b4cb44.webp"
       },
       "origin": "live",
-      "sha256": "9709ac7d9b63170d76654cc5fc1b658eb9b7cf570365e7ad0b419387d229ce64",
+      "sha256": "0b9076739d448012b594bf266bd29ca9e8ce82a843847bc559b6afd6b2ad488a",
       "slug": "doublerandom",
-      "source": "6dbaf863a94be3a747d9e2e6ddb8bc87fedf86df2b2ddf2126d52955cc51435b",
-      "url": "https://i.gyazo.com/60c746ee5cbc88cbc167e7d8240cca57.png",
+      "source": "c4e72b48597cb68ae6ad33986d98abe780dd6f1cadb829d2b7993eb753eb7527",
+      "url": "https://i.gyazo.com/85715e1227e94bbb44bb92f9e27b26a8.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -1486,13 +1486,13 @@
       "measure": "pixel",
       "motion": {
         "sha256": "a01e8fc016edd32e8643f93dc0a4df4ae90e8571fc5ef9f89d371f6416ebed6f",
-        "source": "d0082aab58b20e3a9ecca7aedd6f43ebe819bb55383912795c225f79a98bd957",
+        "source": "954021bab41d85664e07d9e6e0a58e5da85473badb0af5368ca36d774c8926c6",
         "url": "https://i.gyazo.com/5476fc1d4cec455df69c85f85404b4cf.webp"
       },
       "origin": "live",
       "sha256": "5c814787858c9577306044fcaafa67d67ff650509f96af0340b6f65f1ab1c829",
       "slug": "graphing2dequation",
-      "source": "2d1c8e4cb23b62b57c55b622d029ad060a4e3b07fe3f3f0db8492f09dfa34b70",
+      "source": "75b6fce619916755886e9fc22e5cc5c3f4e6a34c212ac4bb63abcc5ac18bb77b",
       "url": "https://i.gyazo.com/366cdaf35d265e4121828c0221c92266.png",
       "width": 640
     },
@@ -1513,25 +1513,25 @@
       "measure": "pixel",
       "motion": {
         "sha256": "89d78de3521b73572a349c7da34dd18e9cad749b9a74ae790afe3f86c707cbcd",
-        "source": "0205511a242c050b6177cce92473beff4b9b1bd34309e829569f09b024f491d3",
+        "source": "95da1f56516f8fb09f11bc15af1fec69d09a8fb09b8605af23d1962bfea19ffa",
         "url": "https://i.gyazo.com/faec52cc2908df18c364b77f5d462a6f.webp"
       },
       "origin": "live",
       "sha256": "1bf219794ad291551bf250f2b78a7efa0f23dbd0a682503ddcde2c2dbdc6c13c",
       "slug": "incrementdecrement",
-      "source": "6fa62fc1b19ca98f6b46b036fb2173645d543caeef5e76393dd3efa296a4b620",
+      "source": "0e98bb24e9b42a373efac3be93221422dafca4ebcbd4d8aa7434889e438b3131",
       "url": "https://i.gyazo.com/fc5fde10f1a489abf04294abe40985c7.png",
       "width": 640
     },
     "Basics/Math/Interpolate": {
       "class": "write-only",
       "diff": {
-        "close": 99.9783,
-        "half": 99.9857,
-        "max": 204,
-        "mean": 0.0288,
-        "near": 99.9783,
-        "same": 99.9783,
+        "close": 99.9661,
+        "half": 99.9718,
+        "max": 203,
+        "mean": 0.0397,
+        "near": 99.9661,
+        "same": 99.9661,
         "shape": 100
       },
       "frame": 1,
@@ -1539,26 +1539,26 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "bec4c5d23a7dc7261c0b7c094ea359f237b85ac9820a9c74da3f27827a5b62be",
-        "source": "c67a77dd38a400eebbc75c553d899ddbda39c78cdc10384cfc7e253e001fb98e",
-        "url": "https://i.gyazo.com/6a2270eaa96506b115115b308ad1c6b9.webp"
+        "sha256": "86bc68cfe75ee76aa3c162a5e4261cc74574d2f167b7e1a7cbe8bdde33879ce4",
+        "source": "4999897cd76571c5e1587aaf00728a37a4a2fe895b1a83397195f7bd301a5eeb",
+        "url": "https://i.gyazo.com/b5300e82351147ad523e6662bc946e45.webp"
       },
       "origin": "live",
-      "sha256": "eb777b2b6b1c6e16d9dcfc04df9239854147c76fc4560c255a82a3426c9eeb3f",
+      "sha256": "3fda2785ea76ca454958c4b69e7cdaa3191d7afda35311521dde9be4333bb251",
       "slug": "interpolate",
-      "source": "e04c5ebbd9962419141f750f8cf9e14123bd5a17d48c136f6c094267de4c2c0c",
-      "url": "https://i.gyazo.com/a2100aa129b5b97d85a72b0994bdd7c6.png",
+      "source": "0973498824a3fe849089e549ece3c6624a352d05a7f5b0b9d2dd243cc08cb681",
+      "url": "https://i.gyazo.com/86cf9b4ff23f0a930c0750f3212ce5c8.png",
       "width": 640
     },
     "Basics/Math/Map": {
-      "class": "write-only",
+      "class": "clean",
       "diff": {
-        "close": 99.9562,
-        "half": 99.9701,
+        "close": 99.9375,
+        "half": 99.944,
         "max": 255,
-        "mean": 0.0664,
-        "near": 99.9562,
-        "same": 99.9562,
+        "mean": 0.0693,
+        "near": 99.941,
+        "same": 99.9358,
         "shape": 100
       },
       "featured": true,
@@ -1586,15 +1586,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "d9ef3bd7ab3d3fcbe85119f5402ef9658911eec344a5e0a8d5c9dfcdb7ed3248",
-        "source": "086568869f73e7ce1c78233135c5eb1894928027c96486fd56e8c5f1448b36e8",
-        "url": "https://i.gyazo.com/64e18feaaa3c9441466b58412a9eb35a.webp"
+        "sha256": "3e80dafa0f9655d02207ab4ccd9da0b38a9d21c700e0d976d97e399fec5e3cea",
+        "source": "7861f57a2f342d44c83eb8133ae44adf5117733d64335483186c898780462138",
+        "url": "https://i.gyazo.com/01af599481238dda8b136ba748a1b0bb.webp"
       },
       "origin": "live",
-      "sha256": "f36950173a683eca6d5a2ce032a1951809300f6d60d9bd20a982ef3c6e7a4ef6",
+      "sha256": "5e6c6c11631683bc7bbb79b57d27ec0662b7007367db5ae71bc597b5e84e41cb",
       "slug": "noise1d",
-      "source": "df75d055f43196f2d2837358211c961a65e2eb66896f648b70bce2f4bcf013a4",
-      "url": "https://i.gyazo.com/66e17c9601ab09a20b74ad43c3313634.png",
+      "source": "ef16bc87e2282f1d1bc6711e0554bf01cae88b6de264fce930d9f2a05adec44f",
+      "url": "https://i.gyazo.com/bfed73cb271601edfdbb122cb6c818d6.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -1605,15 +1605,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "a6493c493bf96c4ac11f9250e11edcedd3ceb7b95fa4ea71d175746e561d22ba",
-        "source": "a8fe065bf67f00162f0b814d00f34cff8ed9c6b2f573de1d3b73da940a082a2c",
-        "url": "https://i.gyazo.com/721491c57591a00957fdba4559852fba.webp"
+        "sha256": "a834d74c7ca8f263871bfd9e3c66fde1914f4dd0fad054cba9714f4903fbd40c",
+        "source": "2fcc7b2b7d65e5d5aeb902b30bfad7b3c088658e437962424c0ebff56b3f7e5d",
+        "url": "https://i.gyazo.com/8fc7a3fecd1ea8f180ac01cd71a544c2.webp"
       },
       "origin": "live",
-      "sha256": "c8f3b3fad94d2c4c02bbf998270fa18715b03f5833e297c294cc1916cf40ed29",
+      "sha256": "7b37176ab18b0337b49a6452939c0fb3c8d8e7946e7cccb2abbf396dd037ae8a",
       "slug": "noise2d",
-      "source": "f8fd36a32e9846e9c6376b90c1b6cffbffcccd43ca8b33f1aeaac765b321f6a6",
-      "url": "https://i.gyazo.com/7625e79e3d23acda6f3401c40de6e7dc.png",
+      "source": "7a96839d5bc8f5b42e7a3a21b1b4d9d353562a3f2a41dfb7261d6480c871dd20",
+      "url": "https://i.gyazo.com/f0e08381039f13f920425127a6b5d9e8.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -1624,34 +1624,34 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "f23474ac038fe35cc612dea8df32d6a4e20c10e939f2ec500fc4907b2a4c63fd",
-        "source": "bce7f5c1e32981a1a3274ec59eb152c41bb59f87a9c05fe70f9c8bc126f483ce",
-        "url": "https://i.gyazo.com/4e6873fcf120a04a57f5e57d7b86d3c3.webp"
+        "sha256": "bec66f5bd1a98e2ede234589db8bd17b474be9e1b6eb0ebd2daa40fa5a54596e",
+        "source": "c59f9016345612228d9160122c2079d3204b040175480682a68c11ad8dd69b6c",
+        "url": "https://i.gyazo.com/cea8d23ed142cb040c2fae9ec7c3691b.webp"
       },
       "origin": "live",
-      "sha256": "707e16ee70cac7e6afdd6b008e29cf178832bbe846e80f4f95da48ceeb247109",
+      "sha256": "09192379e56c3d0a9cb147c7ae1fd8fad027d6eac56f04b43b5695e3918e2463",
       "slug": "noise3d",
-      "source": "a2e68e437ca22af5e05187268c4a31b4c289a80bf64ca77a4c7bb99d55b648dc",
-      "url": "https://i.gyazo.com/0b063b7b92edcf2b5ab1458445556edc.png",
+      "source": "48633113739c666fa3c35db7a92b7b6bc37d98f5f457f9037a20cab6c8041e7d",
+      "url": "https://i.gyazo.com/7f97dbf0827d71317b9b0710af8cd1ed.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
     "Basics/Math/NoiseWave": {
-      "class": "write-only",
+      "class": "clean",
       "frame": 1,
       "group": "Basics/Math",
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "1a74dbc2cc9025fd921514ddf913df05a38b1ffcf818728e6268b7687dc0cdb2",
-        "source": "215b5216bc4f63b3a7a42aebb04794bfe79514ee0d07c7ed8baa5ebf9a644a72",
-        "url": "https://i.gyazo.com/5eb53355223ddb9c8aa4ff936c295bc6.webp"
+        "sha256": "3b36d12a05625e000cae075647202459adbdba0d20fe52704f5409ec12b4c4a9",
+        "source": "26f523591973dcc6f24a99e80c742f4744502f8d33c127fc597b1c005514d3b2",
+        "url": "https://i.gyazo.com/18e790e486c8b0785a1eb7994ba265fa.webp"
       },
       "origin": "live",
-      "sha256": "e8697da162ee92782c319c5b168706891168a47683fa00834058d3b100f278a7",
+      "sha256": "dd4c8b0299205755710ec0dd9e65afae85cf92fea5a94b0f212001210f36aee6",
       "slug": "noisewave",
-      "source": "eb0e4a29f40e0dd880765fd49e021352847b9c4dad0e4dc95365654f87fa445f",
-      "url": "https://i.gyazo.com/719f4b1cbfe6b964181ab4539dbb98b6.png",
+      "source": "6f414f9a15d11fb6e29ad81a5c2983ee4e1c480824e9efec623da625da71d977",
+      "url": "https://i.gyazo.com/061652a68c2149e42000c209d6450890.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -1674,19 +1674,19 @@
       "origin": "live",
       "sha256": "6d897e95aa59a21b7586620b26ceb944013ae27ef38c3b1aae974880c85bd229",
       "slug": "operatorprecedence",
-      "source": "e9ee8f516b0cce39c5267aba648c43358710ebb532fa6092af482cda0edd7cd3",
+      "source": "d07cd8d46fd7328e083fd8e4aaef5f0dcaefedf249d064bf05e0f23800da5ff0",
       "url": "https://i.gyazo.com/41fd34f96bf659d4d6ec529ca4d72f2f.png",
       "width": 640
     },
     "Basics/Math/PolarToCartesian": {
       "class": "clean",
       "diff": {
-        "close": 99.9648,
-        "half": 99.9787,
-        "max": 200,
-        "mean": 0.0412,
-        "near": 99.9648,
-        "same": 99.9648,
+        "close": 99.9431,
+        "half": 99.9588,
+        "max": 189,
+        "mean": 0.0431,
+        "near": 99.9466,
+        "same": 99.9414,
         "shape": 100
       },
       "frame": 1,
@@ -1694,15 +1694,15 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "87f2183b802409be5f8df7bbd0597300c0065e93e551a330f11cb5012cd69cb8",
-        "source": "fa33d8ac5d1343285a66c510bb92bb8b0290c73abf6c4ec2cf452951abe12ddd",
-        "url": "https://i.gyazo.com/b200bf68162f006dff41c78562d41859.webp"
+        "sha256": "1bcdce8ead5c28b006a5068b054256766e6b001f1630d8b7a3fadbe23f99661b",
+        "source": "8c5f50199d50c12ff3257b4df737a58e85dc5fb22383c2bb95823976c9422f5b",
+        "url": "https://i.gyazo.com/0fcf5bad995af32e9850c55b483992b7.webp"
       },
       "origin": "live",
-      "sha256": "c95068a9df9edaf3b8fdab01d11ee49d18e7a8ae093a9f8c7c492999c7a95600",
+      "sha256": "e3813d68753ad41630a5296afb4beb2006f75266fa21c06f4674b84b49b4d7d6",
       "slug": "polartocartesian",
-      "source": "edfb95395490e643ba3a5c8744d0fd3b08b58b8a067e986ff779ac38c4244051",
-      "url": "https://i.gyazo.com/f3db7e15cd9f0b5ebcdae31c1939cf13.png",
+      "source": "2d5299aaf8265f6d75f317b84e0b7fa2f2a397e56ffa4a4e975454fb84c11d87",
+      "url": "https://i.gyazo.com/a117940aad84eecddc4c8ac6da03bbfa.png",
       "width": 640
     },
     "Basics/Math/Random": {
@@ -1712,15 +1712,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "afb13a454d81fb8935cf0eea6886f72f1912b369ce5ec56138d9cb29ae8ed9f3",
-        "source": "a4eac258cee646f1cd58c00e2f13fa8e9e73a58d53c00d1759bfc86ced771ab5",
-        "url": "https://i.gyazo.com/0171853139c5de5a993b952c510c40a9.webp"
+        "sha256": "a35c55e8bfde0678cf1698f1f3c62d8e48d2b03eaa0ccba6ad9447af52b353f8",
+        "source": "376bede374e79263721974fa94e4037d90af166f1874e9be1f00d564434fa886",
+        "url": "https://i.gyazo.com/1efb04926cefefd8e26aa931bfab97b8.webp"
       },
       "origin": "live",
-      "sha256": "5f98f1fa18a051913bcae8f6ac0f227a3e01adbe5f28a62c9b114d4e33554b19",
+      "sha256": "9de854b96227720c20492c1a1f6fb9554eb5ba8479fb8ba91038a67a11233a8f",
       "slug": "random",
-      "source": "72a86879ea91b99ca5a1e704da33cd4dd635baaadaee726db6ec5a17a8f40bf3",
-      "url": "https://i.gyazo.com/815fffe12da1aae9cfc65a3a3fe0a587.png",
+      "source": "19f3e009244027d67ea83a9e4428bce01903a5bbda582e47e84c815acda58990",
+      "url": "https://i.gyazo.com/74faff4f6b3e950deed983b777a640a0.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -1731,54 +1731,54 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "0a7a50badd9f43622541041a14fbe52b743c69a36c6ff637bb0819928a0f7832",
-        "source": "8c6470756d3a87598cd884710aff02a7a41070c2a657182c07efc86783511450",
-        "url": "https://i.gyazo.com/817e98c9b489048847783e9bcc307b10.webp"
+        "sha256": "451dc0df0e9d604d2b342a78fdaff224bfd86b30b4c96326094eb3aa2c008b52",
+        "source": "009dd9f70e1206411311452ec223df7baf0538221a1bec28508c8ad4c70a48aa",
+        "url": "https://i.gyazo.com/29376036d49795efb517aa15c5002bbe.webp"
       },
       "origin": "live",
-      "sha256": "0888ce14a0110154b2a2998f8f1ac36c1724ca80ec31f63878b7ae6fdf4db0ce",
+      "sha256": "da1c73c358d96271c067ac0831052a1ac3c62b834f31afc57c06b87ca4f857e8",
       "slug": "randomgaussian",
-      "source": "e6d923ef6b12345fcea28cc232997fcedd03d1fc5ce636e3aa9c2f539ef2e949",
-      "url": "https://i.gyazo.com/79ab46fe36e4b3ad5a77f234d67b095e.png",
+      "source": "d116076c8565a8e926ac2be5c5a7486140fd0b4444aad4e5247c93fffe7cea80",
+      "url": "https://i.gyazo.com/131549e2d7b8e187d84eea588c8d026f.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
     "Basics/Math/Sine": {
       "class": "clean",
       "diff": {
-        "close": 99.352,
-        "half": 99.6246,
+        "close": 99.0356,
+        "half": 99.1398,
         "max": 255,
-        "mean": 2.0419,
-        "near": 99.352,
-        "same": 43.8976,
-        "shape": 99.9839
+        "mean": 2.0318,
+        "near": 99.0694,
+        "same": 43.6949,
+        "shape": 99.9865
       },
       "frame": 1,
       "group": "Basics/Math",
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "504d223573ef6199abfa6872c1b029cfea965fb2670542d6b3a05b3bea64d6d2",
-        "source": "ec388d2c211d6f29119e1baad07db8db8038f99da9b82631fac466eb088c5ece",
-        "url": "https://i.gyazo.com/b3ac49f853d9c6acbdf9c6a693856392.webp"
+        "sha256": "33e552f0c71b6cdcb58aa9aa5afe7b230b566ba85f9735cdc01ef57351a8a45e",
+        "source": "8832b03a15bec742b4f73a3e57087f126284b235127b27a9f48792fe46a2561d",
+        "url": "https://i.gyazo.com/4ea1c92e0bc128a5573c28fe37f49f59.webp"
       },
       "origin": "live",
-      "sha256": "3112b1bb6995dd8687e4cd3fdf1336f77ba24606c789a1080502ebc237f1a782",
+      "sha256": "0b0e2aea6e7c2b13c17597049e6382bb4f713162e2cba22fbdbf20e3746a715b",
       "slug": "sine",
-      "source": "a25c0a9bed834bbfbb3791ffb207aa3143c35f3bf198c95cc4ae32ff1d5c5cba",
-      "url": "https://i.gyazo.com/ed5b37ada9113af9524d9640aa73525b.png",
+      "source": "35c7fdf50268c928d7f45d06d6cbbbc32d1da897373e1d351e95c2dbb4a401a3",
+      "url": "https://i.gyazo.com/27b2d3cde14f749ccacbb86549d7b9b0.png",
       "width": 640
     },
     "Basics/Math/SineCosine": {
-      "class": "write-only",
+      "class": "clean",
       "diff": {
-        "close": 96.4314,
-        "half": 99.8038,
-        "max": 255,
-        "mean": 0.6302,
-        "near": 99.6667,
-        "same": 93.1962,
+        "close": 96.2908,
+        "half": 99.599,
+        "max": 246,
+        "mean": 0.6111,
+        "near": 99.5226,
+        "same": 93.0677,
         "shape": 100
       },
       "frame": 1,
@@ -1786,26 +1786,26 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "0bd6b64566d4c899fd7488ebc74be0c4183df6eeadc97c591a3c83a682eb9bf9",
-        "source": "835064c7c40f1848c51f377029b67516d2a61cc29a1b4979a232e0461d1a6dd4",
-        "url": "https://i.gyazo.com/8904e9712bf730c877271f3f3d4112fa.webp"
+        "sha256": "e8fcaebcfa4cb533e8d0e84591d8c4aed338b164d202bacf482ac00caf4441d6",
+        "source": "c66e17583d7a5ba331f083221597ddbe7a6e4b3c1e9a7e23c6008c4688993cac",
+        "url": "https://i.gyazo.com/d5c675dbb09f10d89c3bea0d6fd2d1d8.webp"
       },
       "origin": "live",
-      "sha256": "68d5f9496320df5cb3f866cb5d5ccf0bd6f72d743f4805e83486d1bdbb716e9f",
+      "sha256": "564df87e2714466bb7f0c64a52b25e89d037654d76ed250a364c979b62dcd297",
       "slug": "sinecosine",
-      "source": "ec8ed75d969d8e80fbf31fab1add6fe048ed26b6993d3f18f6e4e9ff6aab24e7",
-      "url": "https://i.gyazo.com/e58011f59782aca1df86f0a3ffdfc618.png",
+      "source": "3b358794096d1b5537e29a63b5033da44728ec2a8a617fb92653f5601e4fcdc7",
+      "url": "https://i.gyazo.com/db4880069987c3346ebcc519878d8fd1.png",
       "width": 640
     },
     "Basics/Math/SineWave": {
       "class": "clean",
       "diff": {
-        "close": 99.247,
-        "half": 99.5812,
+        "close": 98.8741,
+        "half": 99.0122,
         "max": 255,
-        "mean": 1.0912,
-        "near": 99.247,
-        "same": 99.247,
+        "mean": 1.092,
+        "near": 98.9171,
+        "same": 98.8663,
         "shape": 100
       },
       "frame": 1,
@@ -1813,26 +1813,26 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "3dc7cd48b6076c5506cfb79e14095089c5ba51eb6f58abba19c0121788d3db98",
-        "source": "b4d18bf7d44f2eb56075ec5a73389cbc3e5e3b6576209f3b708258c008220526",
-        "url": "https://i.gyazo.com/ef68fe222205cc77642c018d265e134b.webp"
+        "sha256": "0d141aa2cc52996e23d6c0b56b0666bc348b53094ac32cf7f685732aed895bcd",
+        "source": "c32fa062db5a4f7e18f16bd642b60a4ea14effb79a8f1de4cf5ad79a019d020f",
+        "url": "https://i.gyazo.com/82a3fa68c693a52d969a58aca5e6472c.webp"
       },
       "origin": "live",
-      "sha256": "06540f36db458b64db07fc80ddc22a2ea42825312e7213ecd3c2bac5c2c23fb6",
+      "sha256": "10c84ef9e421a8b37111ed9c609010d1b9b6b38fd6098f97be483106aaa658bd",
       "slug": "sinewave",
-      "source": "c527d645e16fe1732c99eafec60e5d2d33ddcd76dd43f98e9f5928fdce926711",
-      "url": "https://i.gyazo.com/44a1f011488d4cb7fcb09d0db15e9d7c.png",
+      "source": "390b2f3cc5cc134e00cea84dc5341f6ca5baff3353eb8114568b95e74df9b68e",
+      "url": "https://i.gyazo.com/55dccb035e190126399d71af2c236e06.png",
       "width": 640
     },
     "Basics/Objects/CompositeObjects": {
       "class": "clean",
       "diff": {
-        "close": 97.2387,
-        "half": 97.2513,
+        "close": 97.2318,
+        "half": 97.2669,
         "max": 255,
-        "mean": 6.6371,
-        "near": 97.2405,
-        "same": 97.2387,
+        "mean": 6.6335,
+        "near": 97.2517,
+        "same": 97.2318,
         "shape": 99.4983
       },
       "frame": 1,
@@ -1840,73 +1840,78 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "3b010782bb14590f2f8fa67a82bd28fc42006d276257ef91353866d3c9e7228e",
-        "source": "ba18cf652c11635fedb90af388f7674fbeb1554e97e8f4eafafe3f6e35c0ff3d",
-        "url": "https://i.gyazo.com/294d85c03cb83d1499e17cbc811c1133.webp"
+        "sha256": "bbb006cf171962168c25c3ce0a0fb6a12a56a51decc702e2770bd42fda74109c",
+        "source": "9b8c48de3dd546d2d48d9a75cfb6e68538959fbb9ee3323b27be8202cf90469c",
+        "url": "https://i.gyazo.com/25e5b4786d1432ec7876472595f852ec.webp"
       },
       "origin": "live",
-      "sha256": "7b6ca98490082b6574ce0fd224e33c7503d11ae30ace3c94162af7d9c4d65ad3",
+      "sha256": "07383457626250adcd28ec949881b972c19f51982109e83dd7310e30a52d79e3",
       "slug": "compositeobjects",
-      "source": "9952789cada3693c1abaa6afdd319c8d0cde3fab601d8f847d337530a536cc43",
-      "url": "https://i.gyazo.com/98697f827466458d045b8363da6f531d.png",
+      "source": "bb3af6c045dfa655bd6d7a7e3520144621cd22a0ae1b944e887e2938c714217e",
+      "url": "https://i.gyazo.com/ead6d27a24f6419cdcb77d522e1cce40.png",
       "width": 640
     },
     "Basics/Objects/Inheritance": {
       "class": "clean",
       "diff": {
-        "close": 99.7196,
-        "half": 99.8173,
-        "max": 202,
-        "mean": 0.1275,
-        "near": 99.7209,
-        "same": 99.7188,
-        "shape": 99.997
+        "close": 99.6237,
+        "half": 99.8668,
+        "max": 147,
+        "mean": 0.1036,
+        "near": 99.6806,
+        "same": 99.6033,
+        "shape": 99.9978
       },
       "frame": 1,
       "group": "Basics/Objects",
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "6bb49fde6609767695fb5d0b3ed25023c7c0cd745b84e4c8fde509b44e97a1b9",
-        "source": "775baf3f569fca8ef159f471ff3d694feb574e7883bd8a1fc88c329540b300ea",
-        "url": "https://i.gyazo.com/e43d322feb893190f7fbd1fd16707059.webp"
+        "sha256": "d352218da99af7054e55816c0a80ec08a2c556f342ea3e2e8882463e812a3396",
+        "source": "7ea1c7cccff149d559ce5987c9caa1b092beb278b813272607a025adc6fb0866",
+        "url": "https://i.gyazo.com/dafdd93cca177400fe64f34082a5c74e.webp"
       },
       "origin": "live",
-      "sha256": "62a116fced6c9aa839888b687e3fc0e31a64b2642a18bdd0f29afcfd67f49c0e",
+      "sha256": "10651d37c38e8e8dd6d05f642a1831fafde63347554596f3bc12647c324c1e84",
       "slug": "inheritance",
-      "source": "864f88939df996a72f40e67aa5cee7c6e6885d9c2015c236d603023733c00d89",
-      "url": "https://i.gyazo.com/1c96fec66dd8053d64deb71a369c4b55.png",
+      "source": "431e3964d2efc5c745348cc01253f0900ffe7c9115e96824d78c59824b4c0021",
+      "url": "https://i.gyazo.com/5dd2f0583f6b8379952ddb04d7455c37.png",
       "width": 640
     },
     "Basics/Objects/MultipleConstructors": {
       "class": "blocked",
       "diff": {
-        "close": 99.253,
-        "half": 99.253,
+        "close": 99.1376,
+        "half": 99.2005,
         "max": 255,
-        "mean": 1.0837,
-        "near": 99.253,
-        "same": 99.253,
-        "shape": 99.8867
+        "mean": 1.1221,
+        "near": 99.1641,
+        "same": 99.1172,
+        "shape": 99.8815
       },
       "frame": 1,
       "group": "Basics/Objects",
       "height": 360,
       "measure": "pixel",
+      "motion": {
+        "sha256": "ad4a29d4f7246365f9babad1e11e9e946fe57140c31b8434204b25b288391917",
+        "source": "58c67b46c26b47a208e66885e78d31e1aee16052c0e152a94556ab5eed1881e6",
+        "url": "https://i.gyazo.com/09b797766596806e41af906260e1b0f1.webp"
+      },
       "origin": "live",
-      "sha256": "f304194fc403f07ab2e5c4d304c8655b10889bce18762b8877218b673e8a583d",
+      "sha256": "9f26e1f99fbeb0fe94d4b0778370a8f67971b0a16391ee3d16606048926842cf",
       "slug": "multipleconstructors",
-      "source": "7813b7a3316f4db520b9b9d223615f8b00205aab92bba98bfcd55578b9550d00",
-      "url": "https://i.gyazo.com/93e12afc3ae2feba1f49567ec6d3cb7d.png",
+      "source": "5427383e57f480250937c86b0366576ebd8c416922c4a665e22e454fbd49dd19",
+      "url": "https://i.gyazo.com/8ed28415aa022054188801b046a60045.png",
       "width": 640
     },
     "Basics/Objects/Objects": {
       "class": "clean",
       "diff": {
-        "close": 90.2257,
-        "half": 90.7235,
-        "max": 125,
-        "mean": 2.5948,
+        "close": 90.2266,
+        "half": 90.74,
+        "max": 67,
+        "mean": 2.5567,
         "near": 90.7209,
         "same": 90.2057,
         "shape": 100
@@ -1916,15 +1921,15 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "6eb921448ed59e5648cd00e986dc26906b6730280cc69b5a50f9126013631b14",
-        "source": "8cd9e9dd16e055c6585a74af81018bcf7b9332215b798144c9b2bbcdd506c480",
-        "url": "https://i.gyazo.com/2426c3bc59a973f1f0f8dc0fcdd10dc4.webp"
+        "sha256": "65266b936cc11a24e9ac8863591fa9836d52c2edbe145c3e73bcf210f55c5d6f",
+        "source": "813ad16e21b78225e8cd174c4be63e53d8bea3a8f60cffcc181d225daef50a88",
+        "url": "https://i.gyazo.com/39d0f89191f48dfe4ebcbd53b5768cea.webp"
       },
       "origin": "live",
-      "sha256": "d05cf8c5b72f78e97cc194675962d8ca2b1a2180199098a908be1e291748e951",
+      "sha256": "361007eb349f2dd518da0394b57a49c2729a7e859e397b578ed17b6def642d2c",
       "slug": "objects",
-      "source": "ef73c40c62c4f0d38d09b53cb45f4789c65908d535b88f7ad28b94b35b771f39",
-      "url": "https://i.gyazo.com/e5e7ae01e616831e488b6d0854b016f6.png",
+      "source": "00fc20996c90a445275a7e490fa37b15d71113502fcd419277c58251570abdac",
+      "url": "https://i.gyazo.com/c67753b29747fdab9d35d47203506291.png",
       "width": 640
     },
     "Basics/Shape/LoadDisplayOBJ": {
@@ -1943,14 +1948,14 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "53465000997431566328e5bfcc6396a6362b2f1f1b315f4c2a8ea84f89b545a0",
-        "source": "354294ce0e4f36096042efb386e6456fc3eea74416006f339cb88bd81b3d5bc2",
-        "url": "https://i.gyazo.com/83702721071317cd7c2c257d9ef3887d.webp"
+        "sha256": "2c3e99b8c4ebef6d165d6dc91c2cab94c954e0488f93924c531c60c67a9b66a3",
+        "source": "5dc9dc1f0b44273a7e679ee257f0ea4f410f419a6be68f80b784425753a51712",
+        "url": "https://i.gyazo.com/8d92e4aca2c13b0bfaf64e3febb27745.webp"
       },
       "origin": "live",
       "sha256": "ce7c1d02fb3cf920a4b39be453d543e235d65022d374cafc78208ec6110e516a",
       "slug": "loaddisplayobj",
-      "source": "4a42f7916ef313c233da1260809eaab09fba9a38e5b32628a953d5bf9fbea4bb",
+      "source": "dfcd80f111bda2ad09283fb6b41d85ef7dc0e9bd58d08e4b5624b922e0d8dc36",
       "url": "https://i.gyazo.com/a9ea8c8aa5cdaa56d79aaa93407881ca.png",
       "width": 640
     },
@@ -1972,19 +1977,19 @@
       "origin": "live",
       "sha256": "aa9f9f2add1bfe2942b23b37328e7b275e4f3641afe3c5722ab450c3b918ffa0",
       "slug": "coordinates",
-      "source": "bf1b975975371afbd48a8be6dc8806606a0b6f75b2dedac3e1fbb290900b9744",
+      "source": "e8e732521d39ece3b9f4ca8f85d77ae582f7a1ed26e7d0286954e18a202d1670",
       "url": "https://i.gyazo.com/a12d6b3631f4be5ababe9e85f1bc7852.png",
       "width": 640
     },
     "Basics/Structure/CreateGraphics": {
       "class": "clean",
       "diff": {
-        "close": 99.5738,
-        "half": 99.5859,
+        "close": 99.5586,
+        "half": 99.5699,
         "max": 255,
-        "mean": 1.0521,
-        "near": 99.579,
-        "same": 99.5738,
+        "mean": 1.0871,
+        "near": 99.5638,
+        "same": 99.5586,
         "shape": 99.5929
       },
       "frame": 1,
@@ -1992,37 +1997,42 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "1fa53119e697b337162abd76629e6e67ac48b65f90d013cae9a8318fab14a888",
-        "source": "eac43c4ab66fb4252180053e269fe2d48c338b734446525206708a1788d783d6",
-        "url": "https://i.gyazo.com/bdd55db1a5eed25771b0b892b4fdc06b.webp"
+        "sha256": "88216c1b84fef4a8d96b764a728cb42c3dc55f4c64f0ce8af15b2a337bcea05e",
+        "source": "4595b263b6dca2966e23bea4fcf3983eefae8abeb0a648e43bebe587ff0ac0fa",
+        "url": "https://i.gyazo.com/f0c8b3de5f30c75b1039cfcc59be0f9f.webp"
       },
       "origin": "live",
-      "sha256": "383001d55d8a5016588bcb6e6278f6e1b5dac0cea1c960829ca1dced5c79d40a",
+      "sha256": "b038b65bddc2e65822c18c9cb4301843529deafe167d2d19844c251855ab6a02",
       "slug": "creategraphics",
-      "source": "e277dba659f556606698beb3ef16a49a9568f3b0451780158631e68d0cf048a9",
-      "url": "https://i.gyazo.com/e3696d2bf27f0546d405d95319c6d05d.png",
+      "source": "7dff37cc2dddfa3590dcada597f7dc44887c4845c22f4a779d57ef72e97c091e",
+      "url": "https://i.gyazo.com/9c012c30bdc2fbffbe24d785dc620b76.png",
       "width": 640
     },
     "Basics/Structure/Functions": {
       "class": "blocked",
       "diff": {
-        "close": 90.0052,
-        "half": 99.0577,
-        "max": 189,
-        "mean": 1.1935,
-        "near": 97.684,
-        "same": 66.3338,
-        "shape": 99.9965
+        "close": 89.2335,
+        "half": 99.4701,
+        "max": 163,
+        "mean": 1.112,
+        "near": 97.4805,
+        "same": 65.9822,
+        "shape": 99.895
       },
       "frame": 1,
       "group": "Basics/Structure",
       "height": 360,
       "measure": "pixel",
+      "motion": {
+        "sha256": "7196bd504dabff4a558944de6d8bb0b181f2f5ba2f51028045ced015d9ddb914",
+        "source": "3218c8e26beac9ea9125e860fa54138fbab3edebb78cfaaade79686e5ad98874",
+        "url": "https://i.gyazo.com/f7c20d5e8695ce3dfdfe30c37fa838b8.webp"
+      },
       "origin": "live",
-      "sha256": "e8f20abeef98896f11d09eba283c30a3decb471650d9d41c5a7112d74272766f",
+      "sha256": "cca217108a6012f0a5ba52a2bd58ed66d4e39434c5b20670dc03bb048a5ae094",
       "slug": "functions",
-      "source": "a6f67ffb0c52549fb81088f5d4f11c6988c65e8cf1b59f11b6680e705aa35120",
-      "url": "https://i.gyazo.com/7848fe08390a6fa1bfc62153a0c38d75.png",
+      "source": "10ea6ffe83fdfbe815b4cb0c6e692692a48c581fdc752a1abb10d8937c0da58a",
+      "url": "https://i.gyazo.com/a87790221bb574b3986dc9a00738967e.png",
       "width": 640
     },
     "Basics/Structure/Loop": {
@@ -2041,14 +2051,14 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "521b622bad287724f66eb1b62521b9f7c6eff6f8fe4e633e06f284660cbfc79d",
-        "source": "9fe1abb2b1310f638ddc5efbd266eb98e112a9c1be11eb84ee64b829261cb284",
-        "url": "https://i.gyazo.com/872f9738003c81eac3a77cfce226d662.webp"
+        "sha256": "17dcab48154eda9571a8b817dc77b7fccc4c4e912220df22154a87b1cd515f5b",
+        "source": "2f8a6631e4e65de5120c076a6f75d119bf283a71e4e0d167b2aed8a57637a078",
+        "url": "https://i.gyazo.com/6be09b3760dcd39da3de39da13f76801.webp"
       },
       "origin": "live",
       "sha256": "f8f8685a044b67d8cef630249d217403a8bab650d1b27b8fccfa9e33d53d3f00",
       "slug": "loop",
-      "source": "79237e23ec9599f2ea769afdf26905a9ec36006389dadd0de724a2ad4871514b",
+      "source": "5a38ee0644a1729771a03e2fce0e45dd9a74321359bbf10673e4f086848cd6f2",
       "url": "https://i.gyazo.com/ad85028b34242961979c6f7e61f7e03e.png",
       "width": 640
     },
@@ -2083,23 +2093,28 @@
     "Basics/Structure/Recursion": {
       "class": "blocked",
       "diff": {
-        "close": 96.224,
-        "half": 98.651,
-        "max": 190,
-        "mean": 1.472,
-        "near": 96.7999,
-        "same": 61.4349,
-        "shape": 99.8819
+        "close": 95.51,
+        "half": 98.6224,
+        "max": 255,
+        "mean": 1.3068,
+        "near": 96.7418,
+        "same": 60.7917,
+        "shape": 99.8889
       },
       "frame": 1,
       "group": "Basics/Structure",
       "height": 360,
       "measure": "pixel",
+      "motion": {
+        "sha256": "e69dcc4cbfc08a84b1c3d457b0ae936e503bb2cfd2cb775234098b6410e8475c",
+        "source": "639803e0e158a84b37b81ee3e5185bc166126252ef88e3bc161539c22ae6f2b0",
+        "url": "https://i.gyazo.com/b1b606f4f0ca2dcd5f55b9a8c411682a.webp"
+      },
       "origin": "live",
-      "sha256": "54cd8c3f74690fc015300bfbe6fbbbbe683f6917869dd2f63f9c2fffa933d92b",
+      "sha256": "57fad006b81fb68d88a5cead7e7f1d9bb622aec959d2ed7f1c54ac286b2e4070",
       "slug": "recursion",
-      "source": "3705d1ec331bb71177315d30ef448a33f9fafd9786bdf7de6b5c567f1cf95348",
-      "url": "https://i.gyazo.com/caca61179c6a64736235f9ed995360d2.png",
+      "source": "dd081233dfdd24447461cae87e7846661597828e849d7d719522dfa749846300",
+      "url": "https://i.gyazo.com/3ba54fb22cd32fe667cb93590f038870.png",
       "width": 640
     },
     "Basics/Structure/Redraw": {
@@ -2118,14 +2133,14 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "89b36007b474d4fb07bef8724f816e68e30320130cf0a03a687f1812e8bab6e9",
-        "source": "770353889a113684bb5af65082fdcff61fef3ad2bbfbbcb3df9c2eb67694c06c",
-        "url": "https://i.gyazo.com/9eee3f16305ed3d7d79f3692f3b2da0d.webp"
+        "sha256": "951af81438951b3b0dfe03d0f80901f3aaa1a73f62b5977a2643af9f4ac5b193",
+        "source": "eb4a74a46104bfb6cf8d9f4e7a5486acc423efc7acda9ef8a76fb0df1039a3ea",
+        "url": "https://i.gyazo.com/94db59fbc9a6b3ff34350a4ae497432b.webp"
       },
       "origin": "live",
       "sha256": "95af25addc578c147aab12a880bc96a911e6eda8d8d2702578ef6227d9e8522a",
       "slug": "redraw",
-      "source": "83546813a12f4099038c27af9b127f295f05c4767acffbc4b7f1a4c6d6d06363",
+      "source": "4b5abfcd97f069183b6f91c73c73a44e8465bf24546d5eea21ff6893745cb669",
       "url": "https://i.gyazo.com/212b1bb0fdf3b9a2718208e6ddcd26ee.png",
       "width": 640
     },
@@ -2145,14 +2160,14 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "de7261074e9312ad873ed9e822984a50e6024c5633065706df92b86562b7f472",
-        "source": "fac3da1564fae850af1eca3db5530536ea21901d10054deb8e34fa2dbe83ba95",
-        "url": "https://i.gyazo.com/6713d04d1ef7eb37cef7893d5fb8510c.webp"
+        "sha256": "1676e19d6b084894b1a2cf54e98185c190e39cad65908e41edaf0cdef851c7fa",
+        "source": "5438e616951cb51f060338b528adbf2a49cb7b760b436a07173921f79ab8d507",
+        "url": "https://i.gyazo.com/670a056f2539382d2bcef125d67c10d0.webp"
       },
       "origin": "live",
       "sha256": "3e14d0fd7d23c80e76447eed3f05451a28d082f890c97ba0e352c36511c44166",
       "slug": "setupdraw",
-      "source": "bd264851b49b6c8e478db51f68a1fafbea411757cc2e1cb3335961925143631e",
+      "source": "fb00b50847c41fa85013ad75d3076be5f04e729140be3868bef888ecdaed22d0",
       "url": "https://i.gyazo.com/2252844d4dd9a1f28c2141e735b195fd.png",
       "width": 640
     },
@@ -2175,7 +2190,7 @@
       "origin": "live",
       "sha256": "3ac24b657a76788b3fbea2b74c582ccdda25691e8791b27dc5a97a599707a5e6",
       "slug": "statementscomments",
-      "source": "e3ae064d83b95cc68d59f8a0f828a1e017005f61616a922136883a7d264a0134",
+      "source": "59dc2a9db54bf5d529fe1a60ec044cd69a438e2c41a0abc2bbf170cb2b6c107f",
       "url": "https://i.gyazo.com/ceb34e9673b0ea3b92c5bdf068e845ce.png",
       "width": 640
     },
@@ -2198,35 +2213,35 @@
       "origin": "live",
       "sha256": "9c0255be018e0a7ff83c776253fb1279940d2a08665284d8fea287b8b211e730",
       "slug": "widthheight",
-      "source": "9cc4a21a7fcc2af2cc3a8e57bed998081f4a429457e167736815120ecc932be4",
+      "source": "b7054d15325a14a7289511cf2f4a460c19df7286cba381790ab24bad7b5b2324",
       "url": "https://i.gyazo.com/7653a6633dab7b25179100ea855c0015.png",
       "width": 640
     },
     "Basics/Transform/Arm": {
       "class": "clean",
       "diff": {
-        "close": 97.092,
-        "half": 97.1176,
-        "max": 211,
-        "mean": 1.446,
-        "near": 97.0951,
-        "same": 97.0911,
-        "shape": 99.944
+        "close": 97.0017,
+        "half": 97.1037,
+        "max": 192,
+        "mean": 1.4174,
+        "near": 97.0938,
+        "same": 96.9996,
+        "shape": 100
       },
       "frame": 1,
       "group": "Basics/Transform",
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "65c239abbfcf3adb14e1693c3c12389ab1382d172ac22138c45fb3c1d32a7384",
-        "source": "262ee96101de6d48259a867d944a6ab60558402d29f743f1b1f8689551ea40b5",
-        "url": "https://i.gyazo.com/ebf3260d74a030416ec51f04646e3441.webp"
+        "sha256": "03c8f89159590b6ddc7802801c2a33280358e160a0118f9ea0e932cf2d36b1b1",
+        "source": "81acba45b9b43335c98c825a415f4ec5ee76ef52df07a2cb0f0f7768e5bae3e6",
+        "url": "https://i.gyazo.com/bf3d89076926e859b7bad181294312a6.webp"
       },
       "origin": "live",
-      "sha256": "7bcd4350417bcd0c955ce46de4004346b92162799b1c7acbcdf7448e2487a51b",
+      "sha256": "afbd06ef4dd2c1f2c152dba574937fa3569b190abb7c4d71b947757174f14173",
       "slug": "arm",
-      "source": "3362b984519e0af3c084cb44739fb936035e1c0655466b1c85df8b738e84bdb0",
-      "url": "https://i.gyazo.com/83ef8c6862e27f59264ee96f0c0d1437.png",
+      "source": "2396da2c2380ca6b06b10f873d54435f8104e2b3b97adb1160c74378ca9abd5d",
+      "url": "https://i.gyazo.com/4d7437bed669cdc8d38a4f5e8a3d1d22.png",
       "width": 640
     },
     "Basics/Transform/Rotate": {
@@ -2236,20 +2251,20 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "79f152cdadddf9f17d8c9242bc330b7ed4fc7854eeed3aad41fde38c3f700f72",
-        "source": "a04f14a518794509b00182cb30d5f155cc8880bd2c5e52474d120d03eaae77ec",
-        "url": "https://i.gyazo.com/3e8ba3ad9557cb9ffdc7d863f7e0fecf.webp"
+        "sha256": "26e0023e4dd397d5652b0e56068fc2ef82fd98d9849cc32397617ee6c3bf2788",
+        "source": "fccb35889f38c7390fcc85c161f8b968872e7dfb9f91718c0d49c9c46c15bf5b",
+        "url": "https://i.gyazo.com/7c8bb0b8d634b48a48548d98dbc69450.webp"
       },
       "origin": "live",
-      "sha256": "3fafc5acc65ea3107c72744b32e8b2d405d61e2e5d6ff1a5bddc461620cebe2e",
+      "sha256": "1b3b149f45aa47b2c6ce558c1f594197d42311c0ff35bc43c803226807e7372a",
       "slug": "rotate",
-      "source": "288ed673d1306405606692604c8153d6f0b4c2238bac26c2b9e3dda8a0b84268",
-      "url": "https://i.gyazo.com/0f272a67aeda15a63f1c1d830571620c.png",
+      "source": "985a9bb61e7822a742f4d0120ee81cb37ee774795ce7571b6914339ecf20dc02",
+      "url": "https://i.gyazo.com/b817f67b533d8a1fd85d379b0428285c.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
     "Basics/Transform/RotatePushPop": {
-      "class": "write-only",
+      "class": "clean",
       "diff": {
         "close": 54.8047,
         "half": 57.4909,
@@ -2264,52 +2279,52 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "916f528d9cb7a9326c123957b0bf9eb11e87425632783229080a142bf03032df",
-        "source": "fd3893531e41ab006f34487743d5034464408ce2b7cbac9d1321de5de45bba02",
-        "url": "https://i.gyazo.com/e0da4da553f51688dee2f120395e89bb.webp"
+        "sha256": "f56309b7adb74300de70ae42f373ba182859efe50fc501277cf91d662788f938",
+        "source": "fad1d763568061c2f78cd559aabb991ea61158bc9f85845234048bd9a0011847",
+        "url": "https://i.gyazo.com/a03bb6ae23bff8d9449ee1bc7593c97f.webp"
       },
       "origin": "live",
       "sha256": "7d5432187be150acc9dfda9f86de60809770aa387bdd9f29b248ceadccb2c960",
       "slug": "rotatepushpop",
-      "source": "cc818c2e3ab7233c10453f588865cc352f8203ba7150f7e0ffcfa639fe690f87",
+      "source": "a65a57d9bc9d79162848af4f161b84039c71a8a4c33a21d1868c7d3bc0d1de50",
       "url": "https://i.gyazo.com/a46b0925b21d63fc86d6fd6a21e6a495.png",
       "width": 640
     },
     "Basics/Transform/RotateXY": {
       "class": "clean",
       "diff": {
-        "close": 89.8646,
-        "half": 89.8646,
+        "close": 89.8307,
+        "half": 89.8307,
         "max": 255,
-        "mean": 25.2862,
-        "near": 89.8646,
-        "same": 89.8646,
-        "shape": 99.7721
+        "mean": 25.2051,
+        "near": 89.8307,
+        "same": 89.8307,
+        "shape": 99.773
       },
       "frame": 1,
       "group": "Basics/Transform",
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "6a712c63dd71fa29f3f8a8cab7e72e2f5ba87e0f143a366c975fe470e570265f",
-        "source": "ec80a2067e2072bc8705236a99e938f56a26f7e5d89a807b94bae85908ccda29",
-        "url": "https://i.gyazo.com/9da5157a4e695cdb809824b09d8567ed.webp"
+        "sha256": "5f17ea14d4fa28a3069dd37ae5a6fa5c602b3b0f3faa9626b7380124215c6a71",
+        "source": "1f2e589d78627bb2a23c3dc806ab81036a03ca1d03d4e8001c1dc5d7e4d8b0c7",
+        "url": "https://i.gyazo.com/cbfaad7c5dd35207d6051090e342709b.webp"
       },
       "origin": "live",
-      "sha256": "df36e9b28fc043a1e47275d72953b2f59d61bdfcb1579e03f4736e642abf3f59",
+      "sha256": "11ee60d731a3d3e6c9aa78f0c6ffb3a0eef70b4b13b4bede110299671a452afe",
       "slug": "rotatexy",
-      "source": "329a258b3a9e7b2595167fa5b8402ac1d2464e251b4945ce79f460d0bcff556b",
-      "url": "https://i.gyazo.com/396721625a7672486ab2b9da01297f47.png",
+      "source": "aa3cfb43395aa4fe5a4e9dcc90179a01016d2fa243c6c3b245a8c57aae114b9a",
+      "url": "https://i.gyazo.com/808a5fa6ea2937fb7752c4c8cb7c198f.png",
       "width": 640
     },
     "Basics/Transform/Scale": {
       "class": "bend",
       "diff": {
-        "close": 99.5681,
-        "half": 99.5681,
-        "max": 147,
-        "mean": 0.3406,
-        "near": 99.5681,
+        "close": 99.6545,
+        "half": 99.7409,
+        "max": 14,
+        "mean": 0.032,
+        "near": 99.7405,
         "same": 99.4826,
         "shape": 100
       },
@@ -2318,15 +2333,15 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "d9b791c429e7d11a0ea77817ca5fa6e9d5e3dffb7e98fd00bb9a7103938881ec",
-        "source": "3275fdcf87fe20be7e56affc25d45e0fcef2f75798808b61c1ddde3fb99b3eb9",
-        "url": "https://i.gyazo.com/4ef08fb5443064f3719b5f9bea1f38dd.webp"
+        "sha256": "69c11878205f825e819e921e23533964b5b866d404a6db4ea1df31c42554dbdf",
+        "source": "c348e00225e0979f6f7fdaee1e244ff8b045b19c3d5bb938e1d57312024d9432",
+        "url": "https://i.gyazo.com/2d6bcf0425ceb0ae3e8eedd10f3e90f1.webp"
       },
       "origin": "live",
-      "sha256": "13e7c1824640a5477602d4aba6b33ee42b1291e0dc62f0b0c2d33c174d05e712",
+      "sha256": "f9e602f33782cbc9ea5ee034e9151d293dfdce9f0d2715d347daa7f2a5fc3070",
       "slug": "scale",
-      "source": "692aa26323226eb1e280d273854f7d9aa63eee6f547e200110526e168f0bf21b",
-      "url": "https://i.gyazo.com/1d98f52d051cd051c23934d295fde365.png",
+      "source": "eb34c90e755522fe25923e4eaa561e93b4d015bd18f958d41768580d4e68580d",
+      "url": "https://i.gyazo.com/fbe0f75dfde7f5f824e12368908b4bef.png",
       "width": 640
     },
     "Basics/Transform/Translate": {
@@ -2334,8 +2349,8 @@
       "diff": {
         "close": 99.9306,
         "half": 99.9306,
-        "max": 41,
-        "mean": 0.0247,
+        "max": 24,
+        "mean": 0.0118,
         "near": 99.9306,
         "same": 99.9306,
         "shape": 100
@@ -2345,15 +2360,15 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "eb754063c299cb2f7fd8441c4136571428941a844765a0ad59887de885b778b4",
-        "source": "abccb3f3232d5405fe1f4e2f1d7d925b958f93498c20345808c0f488549f381a",
-        "url": "https://i.gyazo.com/44ea59ebc563ffbe53fbc91d1aa7b37d.webp"
+        "sha256": "f01fe728cb39c3536dd5d8f4148db68a79e9b26987df7cd69501264fa046baed",
+        "source": "25475cf68bfae2f1fb368d1713bac14d2393eb6400124fce870595b1b7635521",
+        "url": "https://i.gyazo.com/023185a551269db49d03978cf78f5739.webp"
       },
       "origin": "live",
-      "sha256": "537e85299dee7382923a8b337cacaf4db3d62b28d14caa29628c41fb62f956d5",
+      "sha256": "6330d3817d121428b4d91de7f116673ac691af7dad52214945711221442ce60c",
       "slug": "translate",
-      "source": "e2516d8ca570cda98a2e560c2ec71aa303f336109da250e99f72f2bf621e36a5",
-      "url": "https://i.gyazo.com/c0b0851d7fcba0185ccbf1c52d795dee.png",
+      "source": "360510920ddea27805899325915a9e08fd46f1a2279b6183aaf2e6d9526eda2c",
+      "url": "https://i.gyazo.com/342586fd2f7122c57acaab8bcc786043.png",
       "width": 640
     },
     "Basics/Typography/Letters": {
@@ -2365,7 +2380,7 @@
       "origin": "live",
       "sha256": "68b1e4a47f368a89ca0e91aeb071534fe08aaee1547785e9858621c51f5e43b9",
       "slug": "letters",
-      "source": "8cebee023e43248ace670f7c24d3d397dabc810290f11711e9bd072798ca8146",
+      "source": "0b4fc081a52a0658b9d06f8a6668dd084e0db362130c79997507c676c4fb3e32",
       "url": "https://i.gyazo.com/1a102d7b9fc626849d2d9608f1a0f983.png",
       "why": "字を組む。原典はブラウザの、mokume は macOS の書体で字形が違う",
       "width": 640
@@ -2377,15 +2392,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "7f911f07f488844007e73f1ceca98e3fb5f15ef403c4769a79c4f2ede947147e",
-        "source": "e32cb5c67141f0f4f1f7b86673d68d4e84423467684426fc0ad887e97b91b1f7",
-        "url": "https://i.gyazo.com/ac13fc4eeae34c7b38bc4a1c10f02fca.webp"
+        "sha256": "37e969cae7cb3d90e175ce93674c21bbb5075861a287936940d289f646d2cb7e",
+        "source": "65f3984a1f2eb01783d27ec7d0ea75d65945ecd5110677228dc4510269cca3c8",
+        "url": "https://i.gyazo.com/ad20eeca427c0d216de501d2e1751d24.webp"
       },
       "origin": "live",
-      "sha256": "9bec8b1005aab5d33c66c0f01736312b5c4a0cb7572c79976d14d3b76b2dfdaf",
+      "sha256": "3c01b399c5376b93825e17d00f9a73c85f2b118f37e10498e27cc9903ffc0bf2",
       "slug": "textrotation",
-      "source": "5a72fbf0393fe508433efed1260d3ebf7d769bf5179450fbb26a2d5edb52fc70",
-      "url": "https://i.gyazo.com/f0cd0452787c7500024c1c80c89da7c9.png",
+      "source": "b294ff9981e02fd326666b68713ca8f295c34f44998182f3284c376ee4417699",
+      "url": "https://i.gyazo.com/48a8fd4a5a3445e08d044ae59a95b6df.png",
       "why": "字を組む。原典はブラウザの、mokume は macOS の書体で字形が違う",
       "width": 640
     },
@@ -2398,7 +2413,7 @@
       "origin": "live",
       "sha256": "d9affdcc6519fcc0e4f57d0ca7f1fba17de65140f3b784ebb067e04ba126c13a",
       "slug": "words",
-      "source": "0bdc3ce76dc908746c2735d074fbee41aec0c446cc81595e31976e92a46bcc02",
+      "source": "02702fc5be4e1179b937b44003f986a4b4a604d37f0b5f61de37acb976e692e3",
       "url": "https://i.gyazo.com/48a7b14a39cb416df3124c7eb46d4612.png",
       "why": "字を組む。原典はブラウザの、mokume は macOS の書体で字形が違う",
       "width": 640
@@ -2406,12 +2421,12 @@
     "Basics/Web/EmbeddedLinks": {
       "class": "out-of-scope",
       "diff": {
-        "close": 99.3741,
+        "close": 99.3663,
         "half": 99.3741,
         "max": 255,
-        "mean": 0.7179,
-        "near": 99.3741,
-        "same": 99.3741,
+        "mean": 0.7206,
+        "near": 99.3663,
+        "same": 99.3663,
         "shape": 99.6892
       },
       "frame": 1,
@@ -2419,15 +2434,15 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "1accb0045fad7785716109ae33248fbd18cda802d4a2fb712f7a533a461e872f",
-        "source": "9cd3d3d180bdee8d42a2ca647aebe8e26f8c23ac7d4677b16256502b14f04f8f",
-        "url": "https://i.gyazo.com/e8d301d5c309e1e7045fecdbf6c82d9c.webp"
+        "sha256": "5e24abead8d16c2a61709bdd18ba4b3886a7e03191926e8a06e7f7a0a8d7b94e",
+        "source": "ca7431d7164ae409255731ed716d3420e9284cf372558be1bcaecbaf7098750d",
+        "url": "https://i.gyazo.com/c9394f2fbc11cff69431889b6733c6b1.webp"
       },
       "origin": "live",
-      "sha256": "dc0a86fe3e0ae8ec05d7bcd72479068a1b32111e88bfa6323c7f8294793b2392",
+      "sha256": "5e896abf3a16e0ec35427bb78688a6e3bb9437d2247ed769664581d35bed9afc",
       "slug": "embeddedlinks",
-      "source": "3268e39f2c46be4cefa932127ae744078c04d31722f05db32175b1576ee111b0",
-      "url": "https://i.gyazo.com/05b11dfce2c6a9c88605d06dee88778e.png",
+      "source": "24795611000cd8c280ccb3d40a6d67b1b9dc6b6a0f08f4e76015026fffcee7a7",
+      "url": "https://i.gyazo.com/36db0eb5bb435ac952f4c9ff585cf49f.png",
       "width": 640
     },
     "Basics/Web/LoadingImages": {
@@ -2448,19 +2463,19 @@
       "origin": "live",
       "sha256": "dba57907b250f4c22ac13fcf91db5905609f045967c20a6d630b1a25ced4abaa",
       "slug": "loadingimages",
-      "source": "02a6600be162675704eb46d91bc4ca7b7d05025e7f678a588dfdeef834159f79",
+      "source": "1cbf1592d1cdc5c051a063cdb823eba66ab90e001c3ae200cfc89dc0f7d1af0a",
       "url": "https://i.gyazo.com/9e34ddbd683d1fa1f297ee4fe8597411.png",
       "width": 640
     },
     "Topics/Advanced Data/ArrayListClass": {
       "class": "out-of-scope",
       "diff": {
-        "close": 99.9757,
-        "half": 99.9852,
-        "max": 255,
-        "mean": 0.0332,
-        "near": 99.9757,
-        "same": 99.9757,
+        "close": 99.9575,
+        "half": 99.9618,
+        "max": 201,
+        "mean": 0.0341,
+        "near": 99.9575,
+        "same": 99.9575,
         "shape": 100
       },
       "frame": 1,
@@ -2468,15 +2483,15 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "987ad26dc40703743a2838560ea2605989a10036fd2ac56ac7e17cf7f576be27",
-        "source": "2065e935a8ac213b16b656223c28a1fc3f855b147fd02324e010c743b173827e",
-        "url": "https://i.gyazo.com/98422d472591031ba96c60aaeb1f28ff.webp"
+        "sha256": "68ac32553cdc71a550d6c06f4c93c2a8b3c6c399716f9a5cd0cf0bbb7713010a",
+        "source": "a4326596a082380d0eb7a1479047261e0bd6a3fcdd253de5cd4bc2e68a6d4ae9",
+        "url": "https://i.gyazo.com/dac1fcfe99c56ad22553952242dc036a.webp"
       },
       "origin": "live",
-      "sha256": "6f0f08ed8d660999cb2e835e3b15dac7550dd164eca2741fbb24fd126dfafbe7",
+      "sha256": "73945501df2e6cfc4d71965c911d3ae1d2ae713b45d143869ba32384c49d9dee",
       "slug": "arraylistclass",
-      "source": "5be51bcb3b41c2d6eeca8367c6ad292e50966a1a42d2a45f2810c4f561c0b629",
-      "url": "https://i.gyazo.com/247f78fe783541a93c6635a6bb4d7f4e.png",
+      "source": "4255251d45774969be8dbe6b85c17604cd70fc1a9c74a467f6c75d2577655fc3",
+      "url": "https://i.gyazo.com/82211eb9fd188c4a4e6c5a46f9d6ebe4.png",
       "width": 640
     },
     "Topics/Advanced Data/IntListLottery": {
@@ -2486,15 +2501,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "62cb374cc369e7a576b300bb0e61d62744a25dfe6fb7656435625e16c00bb690",
-        "source": "4a6353149b7ad731f67f9f57b436aadf6391aeb94f84aa8ef75cee9a58a40477",
-        "url": "https://i.gyazo.com/e63f94302c07507b60748e051cd81b40.webp"
+        "sha256": "562d65db824067a8ab7bc634ba2acd583ed0db58871cd66a42a607c9858ffdd0",
+        "source": "03c96f70fea81d58d76bf0b4ad7c3910306a2d063a41c357f77c226fae3f7a67",
+        "url": "https://i.gyazo.com/af70409cb35f83841838d002179e37d0.webp"
       },
       "origin": "live",
-      "sha256": "b7eec9c62d1b910cd0cc143e9088fe2fc8b66308928e2bfd16656bd793636dce",
+      "sha256": "d1f09acdf064662591e874176692e4454fe58db753d81053ffd03b9d19b2c1a1",
       "slug": "intlistlottery",
-      "source": "7649ee24767edb36e881a9707b88d7bf2ae36b79c1ba001730ed1a22f4805c9d",
-      "url": "https://i.gyazo.com/eb7c7d9525154d5ff100a0903355a67e.png",
+      "source": "9a2b0fe5d8dadb9db6bfa8c95fd869289780d21c4bf64fa414a26c2b08d20f5a",
+      "url": "https://i.gyazo.com/ac0f46a7c11a35730abf308cb11dd09c.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -2505,15 +2520,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "ef83ec0ce2e3eae2a3514fa9964a88ae8be64749b4fab0dbf7603efba23f309a",
-        "source": "0527c6902717b49bae6416d02d86586cbd355b51d44f60879cf663b1016d24de",
-        "url": "https://i.gyazo.com/1c851b6aa5aa5175989172a615c3a1e8.webp"
+        "sha256": "d62875118f7e3653658fc0df6b1430719f6e3d666eab85adf2072f55812cfa1a",
+        "source": "ab6907ff81087f460b46897ea87f7cdaf7d16a5e1591d13ecb75188412d578b3",
+        "url": "https://i.gyazo.com/c55287c16743912fcb96ec08187a877a.webp"
       },
       "origin": "live",
-      "sha256": "912c08cbdf943667d89b37de4c7917796d204ba5893d6a0f2357c10400f89161",
+      "sha256": "a652676f0173e32412fb7dcfc01ad77342d0e6fdecde1d1ed5173038026d26f1",
       "slug": "loadsavejson",
-      "source": "b1bf43c8d6c41ae174a51bb36be3c0f03eeab3eee70d552a060fede8692d7dc5",
-      "url": "https://i.gyazo.com/f6a8f5f3ea2ad364b7873fe4551684ac.png",
+      "source": "0c06e253d4ebf787fc37f980db491bb3efb0a0eb2c9d781185dfcda244fda39f",
+      "url": "https://i.gyazo.com/0dafb7785377019867395c42ab635f5b.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -2524,15 +2539,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "fd871bb476ef0db0f0734b8e699c668542196b0aab302bfa0aaed46f21b79d44",
-        "source": "e7a18f32ec3f1ff48568d1fdc1d6be2ed7c31a96a1d24acec9a9e08f62ddd31d",
-        "url": "https://i.gyazo.com/aba9bfba249d4bf5b79867d63b9334e8.webp"
+        "sha256": "89cf20c9ba9388fb963607a14eee9d0c3ab3b8ce97a6dc0daa718a00ebe24f83",
+        "source": "10c9b5740f457702e027beddbc411b5292622dad22a7d0e28c5673b167939fca",
+        "url": "https://i.gyazo.com/870c4447c5847c0c2d27735828d7b007.webp"
       },
       "origin": "live",
-      "sha256": "b64c69c0f780e92cf42a3b89069a99f1a7cce7c116cc863bc06089fb35cca91e",
+      "sha256": "5124360aec01b712f931b8bb857f4d05a482bd0a1e22f9b8897ac139d8e24a59",
       "slug": "loadsavetable",
-      "source": "ba44ab07e752c82d85b452b814c307d960739f1442786b571b8ba21fe3d8ca73",
-      "url": "https://i.gyazo.com/c02b2720359f5cd6e48ecd9880b6099c.png",
+      "source": "51a168ee8b1b44a74d45a80bd12cc48c51a25de6a0b36b9a1971086ad673e5d0",
+      "url": "https://i.gyazo.com/0bb424f2b6527046cb828e156dd1c745.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -2552,14 +2567,14 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "e1e29a95e329e52d617c143ce168f17d29a3446b716261a977eb861fc38d0bfa",
-        "source": "0b61ff02931e55831bda1fedaefb1ce97177dbb07cf982e5e4d3f848589db89c",
-        "url": "https://i.gyazo.com/bd85fb253ac98342a45ac2301b2332ef.webp"
+        "sha256": "7f77792d67a61ebe0b9590270a811a4e8714210b0b9690f947e201462ab13d46",
+        "source": "e570ddea74a08e8967e4f7af6ec7afc7e469ffc9604dbf94abeaeaed92df9d2e",
+        "url": "https://i.gyazo.com/0c918d85e4489a68349424fa9703bc36.webp"
       },
       "origin": "live",
       "sha256": "6914b0bbb54aabfa340b194ab34dae1563ae0628f1382c6e435eecb2f3a97ae7",
       "slug": "animatedsprite",
-      "source": "19a2d81e0fb3a33725245a2febf87805cb63fd69376fc66377e775c3a09b7ed2",
+      "source": "b2c6a1a8b593a8a7e09250f6ac6ef7f779ad29672c8f1828a8b6b77f535d35da",
       "url": "https://i.gyazo.com/6300271c404eb47b374d604d7ff831cf.png",
       "width": 640
     },
@@ -2579,14 +2594,14 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "752e341d70519f3260efce9d5001dc2ee078e96e1ff1af918ab094ee3606985f",
-        "source": "16c40a58324f3b1b1d0aa83639b583fa1725d66e914597ee232a210075555aa3",
-        "url": "https://i.gyazo.com/8810caec1c8c61c6440490ff7a9d3b2d.webp"
+        "sha256": "bf39a850d6f94245c563fa2f2e90a5571960e2eee903c3d6cdeb407e83fcfedc",
+        "source": "cacdbd7271294d8011d03eb3854c10b65350c69380b9a10fea3f4b5310531693",
+        "url": "https://i.gyazo.com/cb94d88b0dd1e2d6786ea6eda693ae41.webp"
       },
       "origin": "live",
       "sha256": "e19b9749ba5c0f40e65477428baf037f72b2019ad858b3e0e1573014eb1310c5",
       "slug": "sequential",
-      "source": "3b65182ea741ee9e7012dcadedf4bf02108f7e0ac692bde2081e004c7391085b",
+      "source": "55930fb213da932eba68fdd62ef1c9bfea2b3e0a32296cbfa427390376acc85c",
       "url": "https://i.gyazo.com/02a16c251c6db6872f5e90d4b946ce4a.png",
       "width": 640
     },
@@ -2597,33 +2612,33 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "a5c176e64b6591bb0c2db3369032b1ee0a67ba5c8a420b206e95d88525421a4c",
-        "source": "942aaad300b0e4c2ce38ed76dc6dd9654fe2b9b8d84b72ac10064f137567c9a7",
-        "url": "https://i.gyazo.com/1e5bb5e820c73998c2605749e1812b10.webp"
+        "sha256": "74a0db4d6116347806dec8d533d053c16bed51e17b8d2eaabd2c4d7c06748e4b",
+        "source": "be34144c6db1497a4f9e2c6919e81a4a5fe8f257b6bc7280f847e4347b27c2d3",
+        "url": "https://i.gyazo.com/6a92f39a58a20cdd22979e6dc8d83a9a.webp"
       },
       "origin": "live",
-      "sha256": "fd35b27bc20b35d9bf5364aa0e5a279bdd0a0f8c853771918be98acd267e1dcc",
+      "sha256": "b5513ab2abf44cdbd3ce8c84b108ef68b2d20584c55eaff31993e967d1cce736",
       "slug": "gameoflife",
-      "source": "2b928455ad35721297327cb876e3723b2b41c52307ba8ef6544c06e923e4c11c",
-      "url": "https://i.gyazo.com/dfad46d62f4a7bc6752dff014baae554.png",
+      "source": "59986d97ca3ae491792d5b0917199a714c941991d3ffe990dd02facbdc475854",
+      "url": "https://i.gyazo.com/d9ab71ab515ef2fef9cc755332e9f2e0.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
     "Topics/Cellular Automata/Wolfram": {
-      "class": "bend",
+      "class": "clean",
       "frame": 1,
       "group": "Topics/Cellular Automata",
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "fe3e201307c051e14e4aaf2daecf52689c0b092d0ebf40686c87f1f81c5a9b87",
-        "source": "ae4b46207f270c59f95f65d47c51fa6205511fc5bab9368441759eabf56fa340",
-        "url": "https://i.gyazo.com/fcef7a3f0cc86e2efd635fe7027d9e9d.webp"
+        "sha256": "bdff51e8b5b1fb34ab272fcf7e97368a725fb719613103cea67fb01079eb6fea",
+        "source": "88683da2bf3db744352dbfbc1deee9e544a7986cb6527328224525ab5b7b6ea8",
+        "url": "https://i.gyazo.com/64db9da838bb44ecec0b205dcd36cc81.webp"
       },
       "origin": "live",
       "sha256": "93de9f2636454be7008fa1dcfff095c6f0046cc82bb845ab1c16750450a063b7",
       "slug": "wolfram",
-      "source": "b8facac2d780ca2e2906b47f2835a3b04b7fcf7d00563c4661037c1fce69a1c1",
+      "source": "0063c688478da72264aaf4fa91b9e57e9eecbfb5b411a73faf658976c6bbd6c0",
       "url": "https://i.gyazo.com/f91db95541ab09c0ddca0ba97a6a8f49.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
@@ -2673,19 +2688,19 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "f7476f1986a6ef6067207c8b297df16c549fb5d20518cb4da83e5aa47e11ecd2",
-        "source": "626308e09dc84b8a9d47df9a0732ec5ff603022bb4eea92e61723292c2c6e2e2",
-        "url": "https://i.gyazo.com/8d84ae71ac43f1e9cc91ec174ace6304.webp"
+        "sha256": "e5b59fccdd6d69894edf903bdffd70181deac9112da134e817b949ce23869270",
+        "source": "0dec911dedc54963453126baf8dd62ddb962094bf8b46f33a87e168fb10f7f90",
+        "url": "https://i.gyazo.com/2b43f6f10873a1fc4fceaf7ce5512827.webp"
       },
       "origin": "live",
       "sha256": "ebd079e51fb2fb9ccfb0d2d6692b4bac8682e3beada2e8c185db7fe42c945aeb",
       "slug": "pattern",
-      "source": "ee4503b81a585ed8f5b09b412a742799f1ea25dd54445d5d005a587952d222b7",
+      "source": "5447eb8dd110188526eeffb7c766ecfa9361d1d30cfc272446c1986e70fb82c2",
       "url": "https://i.gyazo.com/00a4ba7fc82c81c6c6b16ebafa201fdd.png",
       "width": 640
     },
     "Topics/Drawing/Pulses": {
-      "class": "write-only",
+      "class": "clean",
       "diff": {
         "close": 100,
         "half": 100,
@@ -2700,14 +2715,14 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "be4788fceedd68096a20e7b8fc1b4d1d25449616d9ab8937f354b7ae39ede89a",
-        "source": "a2d15b427872b4cd3e6390d47d0ce814c9548d4de3f800b47b0827cf30a14813",
-        "url": "https://i.gyazo.com/41f9cddcc7e56533c8dbcf6de0137b56.webp"
+        "sha256": "28c76f9264afae2f398df7fa4e0b9eff3bb281697c04cf41e8fff358e0dae22e",
+        "source": "ebf9776cbb7de96125221c833027cdfa273dc7a984c58344b40881333973988c",
+        "url": "https://i.gyazo.com/da60491a37115b0bf7ce4bca9221fab3.webp"
       },
       "origin": "live",
       "sha256": "0950764fde71ba0ae28b19513905103bac442237e906de8864d06dcc5b99adcc",
       "slug": "pulses",
-      "source": "29a5b06d402f9ff3aa617b6f82464cbacc55ed6812415f29fcb6dd091b6a133d",
+      "source": "d6d4254e181ebb11b7a6b9f62e090ea627ad20d66e2330e144ccdf811a88f447",
       "url": "https://i.gyazo.com/c5f499cf25cdcf1d2c4cc034922ab32a.png",
       "width": 640
     },
@@ -2727,14 +2742,14 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "6f8f78193fc44a39e6aff18ce84dcc2c1bcaa5333f45770c78fa385349d9cfc3",
-        "source": "eae43df3e3c531389480124fb53275305d26bd1243d6e052a8c2731b74f36ffe",
-        "url": "https://i.gyazo.com/28f024d3168185d39a272db1e8965e38.webp"
+        "sha256": "c0765c45cc12c2a092467ccfaa40fd66d7ca6e601726c04a4e793125fc89ed4d",
+        "source": "b63505515c45580046cd59118840044b10d6982676d8e0cc77db3877b6b92968",
+        "url": "https://i.gyazo.com/a0d2694b20c981ecd93a9931fed9bdfe.webp"
       },
       "origin": "live",
       "sha256": "0397f22a0b2e53ab1b90905c14dd1a58ef406f8d70c0bd44085caff96a30def5",
       "slug": "loadfile1",
-      "source": "156b940e71e6c87fc62d81264eb71c00645a2630954b2a4b86ebeb65b009dd76",
+      "source": "8f814421509138cf73822416a14974a17b6c419ef0abb6adc850b5f93a7a8cfe",
       "url": "https://i.gyazo.com/2cb70dd9ea06e230f8bf91242a54c6fb.png",
       "width": 640
     },
@@ -2744,10 +2759,15 @@
       "group": "Topics/File IO",
       "height": 360,
       "measure": "none",
+      "motion": {
+        "sha256": "4549f1756808883b658edc08532f7d946aee756d83dee3dff5bd937e63483804",
+        "source": "9d3e93ccd2791a8aafc401e5a7ce615bea4cfc4246145bf6ab6c9d068e9d2ede",
+        "url": "https://i.gyazo.com/d890ae7224785309f2ca87b6e7fbd9fc.webp"
+      },
       "origin": "live",
       "sha256": "769207428635f2f0faf429ab54c0da3a9e40b961c4572d3f6ea6b12a32ef8331",
       "slug": "loadfile2",
-      "source": "8083c6b6b5d185191cda00ef8640f6351677b636ae17b8d9a996d8c66da23fac",
+      "source": "db785cc0689a3ae02e473fe0df2c332955439dd0448052ad4f0f6849abc6f341",
       "url": "https://i.gyazo.com/6f8a2067c014832fcb1be9dbe3f3f65b.png",
       "why": "字を組む。原典はブラウザの、mokume は macOS の書体で字形が違う",
       "width": 640
@@ -2768,14 +2788,14 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "afe92765a9842080cd066fefed6fda3e10bf34a8701ca2a9d06073d5aeb1296c",
-        "source": "0e2e6081496b0164cfd09a41fcd634addf8203f9714a8e0a919aa705f805ea6d",
-        "url": "https://i.gyazo.com/db506d21f76649d108d29ceec260da65.webp"
+        "sha256": "d9e5c0c952688f313212e4a1422fdf36ed2fc968c18cc5b0fb3723c6f3d06f13",
+        "source": "71ce4d511a7bb97d096a62dd2d0f17a50ddbac781e3c1a9a65ced536029b24ad",
+        "url": "https://i.gyazo.com/7102f5137e74dcc944d69a0e56eec51c.webp"
       },
       "origin": "live",
       "sha256": "f20a8bf410c4750b347b57472079f786949c0dd9c83e0d7dd5fedd2308c149d3",
       "slug": "saveoneimage",
-      "source": "8303cfc797fb264661aebdb432adcc0fedb71c26b7fb3c67925b40de6efee8ae",
+      "source": "f29603fb40537d10dce9d101d1578fb7ed981d7431e6f04637200d2ba9ebb4d3",
       "url": "https://i.gyazo.com/d86fcf06a8f2a13480c810b83f19b7ae.png",
       "width": 640
     },
@@ -2795,14 +2815,14 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "25677945886a0b2c747f3a0a1951f6578c42c717fce8e542f7dffd5312b87b06",
-        "source": "c2c4f9c3c1928537761570ad33e778ccbb5c5f10c65f374d6db45027303a26f5",
-        "url": "https://i.gyazo.com/b0f64bc006b1b2d15f9ab9f6e4dc01b7.webp"
+        "sha256": "9b5a656db3ae5d4d46bdbb430c2bd5bfbae95905162f4cc9c90a263c8e25996b",
+        "source": "d553ed1a33a1283613dfc69c449dc3dfd59e8ad12f8f2931db2a874cb1908e2a",
+        "url": "https://i.gyazo.com/f5566873264a3f96f66e39be95bd51c3.webp"
       },
       "origin": "live",
       "sha256": "dac7b4fd2353b80c009129b3d2a6b944a547b12d20d58787baa2fe526a10917b",
       "slug": "koch",
-      "source": "a9c0f963cf2a94cb4005626ce2b097ba0d3d09f35dc8ea5c096a83986f755f1f",
+      "source": "2393e30a49181bc52b3a0c3539f06d9338ad514e12bebfe48f5ed432216ca92f",
       "url": "https://i.gyazo.com/b80b55036feede07fa1333649ba38654.png",
       "width": 640
     },
@@ -2824,12 +2844,12 @@
       "origin": "live",
       "sha256": "3bf68f27cbe1d3704d48f3cdb77a526f2f99dea282c5e42618218fe1729c1022",
       "slug": "mandelbrot",
-      "source": "a22ff14e93121eb8557c1964ed4d44cb29827f946a182b103a16ae02d3e123fe",
+      "source": "2247bb0b16b53794e9b381c8592a58d5c2957bc4b8e0c532d627743b6497247d",
       "url": "https://i.gyazo.com/bf614eaa4ca2dfe7e106b775cc87f786.png",
       "width": 640
     },
     "Topics/Fractals and L-Systems/PenroseSnowflake": {
-      "class": "write-only",
+      "class": "clean",
       "diff": {
         "close": 99.9948,
         "half": 99.9948,
@@ -2844,26 +2864,26 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "b5cece0e1d9556a379aab3f90be70850c5adee2a38211ba2e77f9f4202206050",
-        "source": "5c995996464ca11d7ec061168cd556fa0ac331607c62c4db881e108fe7b35535",
-        "url": "https://i.gyazo.com/2f1ec8b2ebe20e640430e8aaafd9eabc.webp"
+        "sha256": "6188cf7c472725e46a2d6acb30bb775ef6985ad0e0a636ec3ed201e165935969",
+        "source": "3c14e679e55479ac82a646ed33b9f0928504e2c23d85027bfbc2f9e46d5341a2",
+        "url": "https://i.gyazo.com/5091a762cb50ef454adbff0dcae65acc.webp"
       },
       "origin": "live",
       "sha256": "bd7cb63c3f0db0ff0bface9f6c4865e5e043030b0fe6f9c8de047e0dec5f1e61",
       "slug": "penrosesnowflake",
-      "source": "910f186a39fa14949764b3177a77ed2798a6a76571e4740cef10b915d9773961",
+      "source": "b398f7267d27f9259069f4d217a689f7c58eda2325dabe63f08cba408458c294",
       "url": "https://i.gyazo.com/34504e4e767521b10c92a6057907e2bb.png",
       "width": 640
     },
     "Topics/Fractals and L-Systems/PenroseTile": {
-      "class": "write-only",
+      "class": "clean",
       "diff": {
-        "close": 99.9479,
-        "half": 99.9523,
-        "max": 137,
-        "mean": 0.0324,
-        "near": 99.951,
-        "same": 99.9466,
+        "close": 99.9405,
+        "half": 99.9449,
+        "max": 116,
+        "mean": 0.0351,
+        "near": 99.944,
+        "same": 99.9397,
         "shape": 100
       },
       "frame": 1,
@@ -2871,26 +2891,26 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "f6d26e05b8b8258c9215ca8a70b5333399026c2f4d4f8a56b3812c2542506af7",
-        "source": "8d162be9f7eadb2d88b02f92715bcaea27bfe5e556dec57cd0bac609f3bdc12a",
-        "url": "https://i.gyazo.com/163387bd58f114a76e54c48ce2d4e875.webp"
+        "sha256": "8ca12198cfdcd4e41591753a147385adc1953d7ce7c4e0a0f8eb113c51f31a69",
+        "source": "17e1461b837149cca755353ef7f512f1ee334618b2f6fe56a765571a374f708a",
+        "url": "https://i.gyazo.com/1333de6111ed30e10e5341772b111011.webp"
       },
       "origin": "live",
-      "sha256": "090c27718012c76274540f2ce42c5f52606ee139453f3d83d4f476e676c89185",
+      "sha256": "ad0c515f1c5d09606d0e13ad03a19fb51f6630ac56133b20da6505e631111f39",
       "slug": "penrosetile",
-      "source": "10645a68f63e24443cab440791b83eba0f1d186a7c3de6d622ec3ec64f41aa30",
-      "url": "https://i.gyazo.com/9fb55fa95b8b9246faa6c1346bb84c3c.png",
+      "source": "b0c55d89a18dbc5a7af75ad7ddcf7d2141f867d871a9467b52def2df7b1ec9cf",
+      "url": "https://i.gyazo.com/87acfb675afffc406cdeb4b1d7fe211c.png",
       "width": 640
     },
     "Topics/Fractals and L-Systems/Pentigree": {
-      "class": "write-only",
+      "class": "clean",
       "diff": {
-        "close": 99.9766,
+        "close": 99.9748,
         "half": 99.9874,
-        "max": 187,
-        "mean": 0.0244,
-        "near": 99.9766,
-        "same": 99.9766,
+        "max": 180,
+        "mean": 0.0246,
+        "near": 99.9748,
+        "same": 99.9748,
         "shape": 100
       },
       "frame": 1,
@@ -2898,25 +2918,25 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "dae72748ba262fb4da83c3b0e597702ab4ea5b64b3ead5f9c54fa5b94339bd86",
-        "source": "e17a8643d5e613e79595f5af194abf43120207319eb4d47400337f8f2caa2e46",
-        "url": "https://i.gyazo.com/e567c853cfaeaae7ac0bc11c3dc156c6.webp"
+        "sha256": "c7c6d08383bd2925bd91374c9634a6f98cd959598e3e69eb3446b345cd98b9dd",
+        "source": "cc3150ee6672e7eea14c2c4084a66c3ba3c0c8256ea3924437aeae8c65737247",
+        "url": "https://i.gyazo.com/766fd15830ab32a92c7d66aa02b48124.webp"
       },
       "origin": "live",
-      "sha256": "a66e15ea1a5e60ae5afa21e26d3c31e40771691a3de3b415e3c733b28110720c",
+      "sha256": "26442a8dd0c89b22f3994946c5711de154f433b518ab44f006aa5624423a5a5c",
       "slug": "pentigree",
-      "source": "b46c766989bc9f7328498f3abd9e6b20e9f681d6e8e7a0b13245e00eded5eaf8",
-      "url": "https://i.gyazo.com/7f8fa226c7e30f1ca8c5cf8c86bdf4eb.png",
+      "source": "f296c10589c01274a34348b0f8c1c1d487eefc2f39cefa037fe5602a300b4e69",
+      "url": "https://i.gyazo.com/c5750606585593e5ace507d4e3eb49f6.png",
       "width": 640
     },
     "Topics/Fractals and L-Systems/Tree": {
       "class": "bend",
       "diff": {
-        "close": 99.7396,
-        "half": 99.8433,
+        "close": 99.74,
+        "half": 99.8438,
         "max": 255,
-        "mean": 0.3863,
-        "near": 99.74,
+        "mean": 0.3852,
+        "near": 99.7405,
         "same": 99.7253,
         "shape": 100
       },
@@ -2925,26 +2945,26 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "f777d368c6cca8cd7bd157253aa6073ce4978474671463932c2273e6b29a0c04",
-        "source": "fb844619051bed8bf544fea14269633db0265562cf0c16f67759b4f3234b1627",
-        "url": "https://i.gyazo.com/7810ee5360ccc327ae41fc5e408480fa.webp"
+        "sha256": "19a6abdf2b6d59f525769117897d19250873b50e0c8b3642ee95d3f8fb91b772",
+        "source": "8f4f2848ce6c530023e4c28a275c9da1c8eceb23f4bccb7ef5148b0a02d0fdb0",
+        "url": "https://i.gyazo.com/a3d3563375406a025e08bf423900e852.webp"
       },
       "origin": "live",
-      "sha256": "624659cd5bb828be46799cd55a2182c86f56da537026618e25a7f6db91e5a7a0",
+      "sha256": "c4f6291384f9b1a8a755ce447bed93362d350efd12b4784f47f80f1282f58953",
       "slug": "tree",
-      "source": "aa6b6ceeaf3fd76f8833f23c272f56a091e233a24e9febce32b04949ba225e63",
-      "url": "https://i.gyazo.com/ed9c70a707136a475ab0f43af7b75d18.png",
+      "source": "9fe7cbe18195d14274e558bf5c7346008c08029d4b3664dbdc8fac8cb8afa4de",
+      "url": "https://i.gyazo.com/86b8ee6cae1ad2661334df34f4eb2d11.png",
       "width": 640
     },
     "Topics/GUI/Button": {
-      "class": "bend",
+      "class": "write-only",
       "diff": {
-        "close": 99.4683,
-        "half": 99.865,
-        "max": 255,
-        "mean": 0.5359,
-        "near": 99.4683,
-        "same": 99.4683,
+        "close": 99.4054,
+        "half": 99.7756,
+        "max": 243,
+        "mean": 0.5003,
+        "near": 99.4214,
+        "same": 99.3941,
         "shape": 100
       },
       "frame": 1,
@@ -2952,19 +2972,19 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "09a137feadbc246a8cb43010d076dd17bdf8fbaaeef19a4cf8a894cf70a67293",
-        "source": "3e5db780f51eb43ab8fb9172d749751a9c0a204691321197b6d9f29e81f6f563",
-        "url": "https://i.gyazo.com/e675a465d6f653763f3d86c833fd91e8.webp"
+        "sha256": "78a055a3196e0297e93dc01ed4a87cf07c0fc329df9c676ec41c237064dbacd0",
+        "source": "ad0c68ccda51243ed326d1f3a2d5522435accf894447b1d74372e1c6dca4c07a",
+        "url": "https://i.gyazo.com/f09e97773708b46a4229e489ddb26efd.webp"
       },
       "origin": "live",
-      "sha256": "94689707eba47ab7b2cc3e6540453bee3581c1e42fe0184a5e562d3061e80b0f",
+      "sha256": "7604106e625be615efe49d650e035769a29da388ae3f87e4e3d8ee36e6a406ab",
       "slug": "button",
-      "source": "31179c41cf0904f299535da4caa3a569140e1d4b5bd804fd400689801d98898a",
-      "url": "https://i.gyazo.com/6c47909fbbe0aed7aef7de99e02e8217.png",
+      "source": "78d65fa1685bafef586f83b6c3dc861148ab7f7e169bceb8497907dc22fbee55",
+      "url": "https://i.gyazo.com/aea607aa66103e48897de6fa9382a27a.png",
       "width": 640
     },
     "Topics/GUI/Handles": {
-      "class": "bend",
+      "class": "clean",
       "diff": {
         "close": 98.1198,
         "half": 99.8759,
@@ -2980,25 +3000,25 @@
       "measure": "pixel",
       "motion": {
         "sha256": "45e9f82dceee8ee37c40fe82a3523ef076d38143a14156022111c88d7d9d4ba4",
-        "source": "18ea7813bf7a6e6373e00cf66542b59ea5867cc7c9079da547cb327dbabd0d05",
+        "source": "78bcbd0a914d8951552d5515e23569363780606951a93611b73222564388673a",
         "url": "https://i.gyazo.com/93117ff1c07040b3fbec67229b1fb4ab.webp"
       },
       "origin": "live",
       "sha256": "0148a2789b57e450eb90cea25e9a1a15bef0397020c9794dbc08b6ce203d51ac",
       "slug": "handles",
-      "source": "3a6c4dc0234e2595c6978ab8189663f3e5af9a8bfc8df78b4f2c793b07c79d4e",
+      "source": "8baca1c80d723ffec6d94bb8403b8ea5db75e12c0abab709ea384a1734442c80",
       "url": "https://i.gyazo.com/c0947a26f468cb6e86436a274c2713e0.png",
       "width": 640
     },
     "Topics/GUI/Rollover": {
       "class": "write-only",
       "diff": {
-        "close": 99.4683,
-        "half": 99.865,
-        "max": 255,
-        "mean": 0.5359,
-        "near": 99.4683,
-        "same": 99.4683,
+        "close": 99.4054,
+        "half": 99.7756,
+        "max": 243,
+        "mean": 0.5003,
+        "near": 99.4214,
+        "same": 99.3941,
         "shape": 100
       },
       "frame": 1,
@@ -3006,19 +3026,19 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "c56cc3a886df437cb35f02b5ef5383182da1b20beb369243eaec52cc361ba0eb",
-        "source": "0e1618bb1e6bbfb5b280aeedeb04e2edf96b67d40e4555cc5e7a34bc0b0ebcb9",
-        "url": "https://i.gyazo.com/79c3e6a0cf77c8ef7c088b5e7b5914da.webp"
+        "sha256": "20965200db32e4c2ef1bc4f3fefb12f14a9b1a0208eb0ceb25314d43594e229c",
+        "source": "60364e9bd55a55982640e4d1111597403432520ed9a367e8f2a71c851c5bafa1",
+        "url": "https://i.gyazo.com/9eb03167ae9a5a612c1144a9534c6243.webp"
       },
       "origin": "live",
-      "sha256": "a6099a1cf0fc4c95204c83e2bb86d982c6c4490363ff62e1826b611b089782f3",
+      "sha256": "fd29a60f5ad6d091446bbc080d4beb8132dd886b2b96953e47b776a7ded25bae",
       "slug": "rollover",
-      "source": "c25174aedff35dfadc082193d1306a189b733c6d9c6fec8520937b3b66625932",
-      "url": "https://i.gyazo.com/fc69ac0ca4ef40c3d84f4e76d32e9322.png",
+      "source": "4782d9c94a434a85a94154f3b2bbde77138c3214df905fe5369b291a487c7796",
+      "url": "https://i.gyazo.com/9535984ffdc2f1b891bb20853dd6bc8d.png",
       "width": 640
     },
     "Topics/GUI/Scrollbar": {
-      "class": "bend",
+      "class": "clean",
       "diff": {
         "close": 99.2713,
         "half": 99.9983,
@@ -3034,13 +3054,13 @@
       "measure": "pixel",
       "motion": {
         "sha256": "a4b5b61b7adac2c2d9f920a498050aeb04016855b6fd82270bb9aaa5a336dbe3",
-        "source": "e8040ca2631104b684a2ffca79357ef4e9f5f288173460af91cb711074c8762b",
+        "source": "77fd53363339940059aef36f698e31f01c27ce3957b4aff80e230ad519d8156b",
         "url": "https://i.gyazo.com/e904ec3a3365cabf243b3a8a680b51cd.webp"
       },
       "origin": "live",
       "sha256": "ec98d679230abf77196446b841f3d90f1e67b1eb068379cf7fa3fc862c425432",
       "slug": "scrollbar",
-      "source": "37058fc14f872bf1f63fd00c1b166a6c22b1b251bfb2595213f1692c36286272",
+      "source": "9e4875dfd6760708070a3c2397cfd8652b89d5a04470b8d06f26822fc8c440f0",
       "url": "https://i.gyazo.com/aa7d94f306179cfab96b489d46f9878e.png",
       "width": 640
     },
@@ -3062,7 +3082,7 @@
       "origin": "live",
       "sha256": "64b734b1739ae1db366cc86b4f9ef3d0bbcddaaee81631e76f85179779d224d7",
       "slug": "blur",
-      "source": "d1cdf348ae2c7c0fe949850bbf801745958052670a2b3db500898accbd1a1adc",
+      "source": "d4e06c0bc844c876a368e95fd86c96c7d4bd27c2493c0f411688c396d3982270",
       "url": "https://i.gyazo.com/1c13e1735ce9825f285ad205a32e53f9.png",
       "width": 640
     },
@@ -3083,13 +3103,13 @@
       "measure": "pixel",
       "motion": {
         "sha256": "59225449dc69e6e51f4ec0556cc1cf8c533481ccfd8af40927704e4fa38f4eb6",
-        "source": "3f66111e2fe2ed990c7307ba0c6893a7dab16d5330f63b47bfdb48cc60997a27",
+        "source": "e190bac6187baa94d51efd4dc57aeee69cb7b7a2ab6392818702a49a4da6ce5a",
         "url": "https://i.gyazo.com/f9754bd7df869d5f9b9abe23ba34d13a.webp"
       },
       "origin": "live",
       "sha256": "75370dabd98ebab67035263999c7f7ec58c979ff6bd7e279edd6111fda91352a",
       "slug": "brightnesspixels",
-      "source": "9422433b51557d6d7b4c66903c8b83c69352e79ab003d54f6aa0eeddd619920c",
+      "source": "dc2e4cf2162156df6b3de026d0d59d1e2269aede49b9070001c6c53cceb9cb06",
       "url": "https://i.gyazo.com/21a276134624cd666e8e75e7f2b54a8e.png",
       "width": 640
     },
@@ -3099,10 +3119,15 @@
       "group": "Topics/Image Processing",
       "height": 360,
       "measure": "none",
+      "motion": {
+        "sha256": "7b16d52491884759bdf9cbb6de88ccf4577bb1c115b5c13edf3349bc7aa3b546",
+        "source": "effb6768cfdb54f2a0d0d6fa38bd18aefee1a20b8b38282c1ccb5ad037c5bc19",
+        "url": "https://i.gyazo.com/2bc975a9bd4ffa40da30bc3274561a17.webp"
+      },
       "origin": "live",
       "sha256": "05d8bab8b300e6e27db1489644b9ba56bbd55401a1722b4d02c78c7b4f563541",
       "slug": "convolution",
-      "source": "f76129d15c5bf6c9da26defcb5589e11aa1f2eaf06cce171878c2c862c124bc8",
+      "source": "9da3e69690ad0178699f1f2b06fa22057a7174fae2d5c8c5be1610954689d4f6",
       "url": "https://i.gyazo.com/459184944f159dab06fd90ac322276bf.png",
       "why": "字を組む。原典はブラウザの、mokume は macOS の書体で字形が違う",
       "width": 640
@@ -3125,30 +3150,30 @@
       "origin": "live",
       "sha256": "fc826dd1daf188d4999fe005938f1dad286f4dca60fb83bc6362b2650a2e5d7e",
       "slug": "edgedetection",
-      "source": "cdaa0a073b5ca030a03fe234b201c725c632565385f3f9cea7c69d3e3cf023f6",
+      "source": "dae3bae61ad09f486f75d893db8558a7a0c7a83134804b9d5ac5783f8a9fe6c1",
       "url": "https://i.gyazo.com/6ca865ff20bbaf19bac8b38a213568a5.png",
       "width": 640
     },
     "Topics/Image Processing/Histogram": {
-      "class": "blocked",
+      "class": "clean",
       "diff": {
-        "close": 78.681,
-        "half": 90.7917,
+        "close": 78.6697,
+        "half": 90.7786,
         "max": 255,
-        "mean": 15.4973,
-        "near": 79.1406,
-        "same": 55.4831,
-        "shape": 97.0191
+        "mean": 15.464,
+        "near": 79.1458,
+        "same": 55.4714,
+        "shape": 97.0109
       },
       "frame": 1,
       "group": "Topics/Image Processing",
       "height": 360,
       "measure": "pixel",
       "origin": "live",
-      "sha256": "8c1a332ab4e6f446d92f53d35adf71d9b99354baf2c512c9d5791fddf5b94eb7",
+      "sha256": "8a138a532b1c1ea09d9996e2f4108b4da7df07ffe4b8c0bcc0a668b354bcb88c",
       "slug": "histogram",
-      "source": "7410759053960eba8c48b0164eaea54b9c6d30da65982198e2ecef8deedb7eb6",
-      "url": "https://i.gyazo.com/b3eb891db98e3dc0409091fc83c5491a.png",
+      "source": "c41cfecbb4b39b5bce9cd215d75833b1c74b7cacb43e47a8032a3a4596e3d122",
+      "url": "https://i.gyazo.com/c46979c3f875228b95e8c51030a5a492.png",
       "width": 640
     },
     "Topics/Image Processing/PixelArray": {
@@ -3167,53 +3192,26 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "e809bd79d0ece57c2880ef075d89b5f450c09212dc54b6de7c0c9077e58344ff",
-        "source": "2b89fb51622fc8a4feae40f9704f387934fd83aa19288293c90a999b03d80107",
-        "url": "https://i.gyazo.com/2bc4ee6c3e761901a5d030dfce097d20.webp"
+        "sha256": "27b2f51ee2d06ef5c8fbbf2286f6d8c1ff9c6f2140e4e2510f34f7b0bfdf80d1",
+        "source": "6e48014a7dd661aba8ed19414ed579700e9178a0e24bc67e38efefcb8e37391c",
+        "url": "https://i.gyazo.com/8db3c16565d80082410e8eb8b2127bc2.webp"
       },
       "origin": "live",
       "sha256": "d85046068812f27a8672115f3f4873f7dcc672609ebe55a36327e2cc28019b3b",
       "slug": "pixelarray",
-      "source": "37cae0561bf6f17674f4d3c2472698af220a0173a86d4564406d42392476c2e1",
+      "source": "bdf99fe82637a2564b9af24389596c41262ade38ad09a55784ca5354e7591b1b",
       "url": "https://i.gyazo.com/13df204b2785ce30b4ca4d5af1066a96.png",
       "width": 640
     },
     "Topics/Interaction/Follow1": {
       "class": "clean",
       "diff": {
-        "close": 99.2661,
-        "half": 99.2674,
-        "max": 228,
-        "mean": 0.8421,
-        "near": 99.2674,
-        "same": 99.2652,
-        "shape": 99.8811
-      },
-      "frame": 1,
-      "group": "Topics/Interaction",
-      "height": 360,
-      "measure": "pixel",
-      "motion": {
-        "sha256": "615709aa9401902fb7b8c384237bd4b9830d737e2a538023e20c2aa16a9b6c49",
-        "source": "21563eac9882ca61aed0508aadeee09746f7fd6e316a8205ab814b4ab869cecf",
-        "url": "https://i.gyazo.com/ad2703be354dc29304465fea68fcbbcb.webp"
-      },
-      "origin": "live",
-      "sha256": "6001ef5d728913344e1a05aca6f676856cbd423dd476c7cdcc67cef436d3372f",
-      "slug": "follow1",
-      "source": "3bc948e4736d20a0da387bff7188cd714bda3c5aec8858a7c5556d081a9a63f7",
-      "url": "https://i.gyazo.com/7bc9ab77600b418c180a8c7245e8e8af.png",
-      "width": 640
-    },
-    "Topics/Interaction/Follow2": {
-      "class": "clean",
-      "diff": {
-        "close": 99.9631,
-        "half": 99.9657,
-        "max": 168,
-        "mean": 0.0211,
-        "near": 99.9631,
-        "same": 99.9631,
+        "close": 99.319,
+        "half": 99.3299,
+        "max": 157,
+        "mean": 0.449,
+        "near": 99.3238,
+        "same": 99.3168,
         "shape": 100
       },
       "frame": 1,
@@ -3221,123 +3219,150 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "28780ae675505249404a0fd37205cfa882e2c08ff36b1bec1dfbb075ebbbf5fa",
-        "source": "029279d506498a7a154c2058a59ebb5b595f5095c5abc8fba0e1b5bb012c6195",
-        "url": "https://i.gyazo.com/880f24556c03c268df239f223458096f.webp"
+        "sha256": "85de0265843c97bd731cdfd4986f8ae666967f1561277613acba7842def17524",
+        "source": "749611baac514255624e46d210efac6716ffdc21b3d68065505b65f6c6723054",
+        "url": "https://i.gyazo.com/c56d9ab4b4d846ce8578098a4abb69ed.webp"
       },
       "origin": "live",
-      "sha256": "774fbf9721c0ba1dd88f3c78aef7f9003638c2e371c3170dacf34348a9619180",
+      "sha256": "cabf47f35d5e248f6f3cf2bcd90ebed888428f0e8807582806503ea832a0160d",
+      "slug": "follow1",
+      "source": "133950371948867877a0371f65dfee631aad9018b19a189ce7fe4d4579e5f040",
+      "url": "https://i.gyazo.com/8c3f7c611915c756030c12639d8efa3f.png",
+      "width": 640
+    },
+    "Topics/Interaction/Follow2": {
+      "class": "clean",
+      "diff": {
+        "close": 99.9575,
+        "half": 99.9575,
+        "max": 178,
+        "mean": 0.0286,
+        "near": 99.9575,
+        "same": 99.9575,
+        "shape": 100
+      },
+      "frame": 1,
+      "group": "Topics/Interaction",
+      "height": 360,
+      "measure": "pixel",
+      "motion": {
+        "sha256": "9c2a714a59ed6c6daf88b8324d356ff7135d4abdb3db25105deaa26cbee9f447",
+        "source": "94d543cbb4e211d4b05d70985f3c3846ecc22833d21fb12c1b911d8e86c23cd6",
+        "url": "https://i.gyazo.com/1c23ac842335a0f6f6e08fba59e3834a.webp"
+      },
+      "origin": "live",
+      "sha256": "eee32a40754a74e24ba8937342b0736ac4f9d89f4f21aea18ab49cf7ed378577",
       "slug": "follow2",
-      "source": "6788e35832fc99254246b5a41bfdb901daf5b33675caa64d31df892f0ff3c51b",
-      "url": "https://i.gyazo.com/04a0c7f94509be285521f1a252897f08.png",
+      "source": "795671a595bedd6b610ed1d9ec0e40c000cda3008e8d98889f7c6c65e66ab9cc",
+      "url": "https://i.gyazo.com/acfcdf33b327e8d3ff7a59ad541cc741.png",
       "width": 640
     },
     "Topics/Interaction/Follow3": {
       "class": "clean",
       "diff": {
-        "close": 99.9102,
-        "half": 99.9119,
+        "close": 99.9032,
+        "half": 99.9041,
         "max": 255,
-        "mean": 0.1638,
-        "near": 99.911,
-        "same": 99.9028,
-        "shape": 99.9653
+        "mean": 0.1731,
+        "near": 99.9041,
+        "same": 99.8958,
+        "shape": 99.9596
       },
       "frame": 1,
       "group": "Topics/Interaction",
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "6977c62704a16633c003ead8a12d09d291ff466a76b05bdfaa9d5232fa2c916b",
-        "source": "4c72845610ca128327bddffb205a77fbb8b63fd73f05d717616aa0bd228d1720",
-        "url": "https://i.gyazo.com/20d65a658f530c25afb9df35cc4e5b02.webp"
+        "sha256": "fa732dec9c130090acf5763bcbfa6f2000783d9b415963af998444002b6da8c4",
+        "source": "049db1e24314546ae8e458d39e20b2924807cfecfe12665002ac9eb9e0a631d9",
+        "url": "https://i.gyazo.com/46a81ccca54dad65b51cbe9b11742f65.webp"
       },
       "origin": "live",
-      "sha256": "63fd2d06a5bde060ba549d5efc1d9f1d13ed485a6002524fb32c0ba929c296c9",
+      "sha256": "339b0c546af65fe12a9e38b8dcd26e70d2762ab2d25db85a3cc343fe2da56dc4",
       "slug": "follow3",
-      "source": "1e6e5951e40f04d55088e1416e8fd69112439d42b8c58d9f8a550f5c95389835",
-      "url": "https://i.gyazo.com/61e7c0834f567295c4533435dd9d3b5e.png",
+      "source": "f84c47648f4fe096182c74c7feda6f4fde3dc10f3a7d00f4258ddd317fb0dba8",
+      "url": "https://i.gyazo.com/aebaa72b37f93ea04a3806a97fc65525.png",
       "width": 640
     },
     "Topics/Interaction/Reach1": {
       "class": "clean",
       "diff": {
-        "close": 98.3997,
-        "half": 98.4167,
-        "max": 168,
-        "mean": 1.1333,
-        "near": 98.4106,
-        "same": 98.3919,
-        "shape": 99.974
+        "close": 98.3759,
+        "half": 98.3815,
+        "max": 138,
+        "mean": 1.068,
+        "near": 98.3815,
+        "same": 98.3707,
+        "shape": 100
       },
       "frame": 1,
       "group": "Topics/Interaction",
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "017780ff4f5b5af6dddb154a806647fa098937394fc178cbf0d01607d9f5c876",
-        "source": "7c7b5baec83a47c1d95b70e62b0cc59b66c7103d312ae14e253981636d9e8a56",
-        "url": "https://i.gyazo.com/d5d668b01e1234a05a11894db5136fe2.webp"
+        "sha256": "ca8cd75912eec0aae6b4d4fc54d8b0bfe12556b632ea18e4513542787399841c",
+        "source": "6cdb3418ebdeeceb2fad75565d0b6e976d07b74a9dfa0462cf826e0e0f83c6b0",
+        "url": "https://i.gyazo.com/97e92f22fd6b49e46d6678bf4105c3b1.webp"
       },
       "origin": "live",
-      "sha256": "a8c13485d1652eb9c56fcd9c0d83c042454c65c1056146a8f817606101292bf8",
+      "sha256": "5872236f97abba1ebf31f2c52895cb65b365f111ec9a2732f6c433310f37c2b2",
       "slug": "reach1",
-      "source": "64952eae7c74bf243897e2760d460ef361666211ab51f3a8b9ca57b6663aed6d",
-      "url": "https://i.gyazo.com/71cebb3c5dd670ef49a0da6d4b8a4b15.png",
+      "source": "9ee7161cf5402c6d32e8dceacc256d1734ef7cd0fa71b932bbead552398f24dc",
+      "url": "https://i.gyazo.com/0086570b205d8817e652daee5e541ff9.png",
       "width": 640
     },
     "Topics/Interaction/Reach2": {
       "class": "clean",
       "diff": {
-        "close": 99.0773,
-        "half": 99.0955,
-        "max": 255,
-        "mean": 1.1987,
-        "near": 99.0881,
-        "same": 99.0755,
-        "shape": 99.6701
+        "close": 99.0634,
+        "half": 99.0794,
+        "max": 254,
+        "mean": 1.1631,
+        "near": 99.0729,
+        "same": 99.059,
+        "shape": 99.6545
       },
       "frame": 1,
       "group": "Topics/Interaction",
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "5225ed0ce88a5330d8b8eaa646d94fce1c39182eb7f5d7cda98d791bb27c9636",
-        "source": "34a7306eff76640b246ddaadcff4f09a12c4d4e3d3795d8a0337ca7071757f71",
-        "url": "https://i.gyazo.com/c8dd6b0641b63fce92b185aebabcd931.webp"
+        "sha256": "5314b3e5dcce36fdfe2c00da4b68c824476f04dcfd099ba6ba06e2c7bc73ff5c",
+        "source": "5d8140f2b1614ebf3deb2414b044e0ff610f14ce137875c4357e94b44eb8dbce",
+        "url": "https://i.gyazo.com/e5131a14ed84f440fcaf8eb049f7eea6.webp"
       },
       "origin": "live",
-      "sha256": "c8e7c3ff59fbdab3dd4df98836aa10d837e7a7cdd5cb53bb00c2eee7e15fb473",
+      "sha256": "fc286ac1f5ab504fb53a28d812a3524bb04e223877ac29bc6d2ded2089f65acf",
       "slug": "reach2",
-      "source": "f15d8abbf93af54b25c079733743c149573195250b9726b7bb48cf7bf927e326",
-      "url": "https://i.gyazo.com/e5999de1b48e4712e570a6ee73f33d17.png",
+      "source": "1021b57d5e910a959b2f58bb6234d69f80f7864183eac877a139efbff4c0fab1",
+      "url": "https://i.gyazo.com/e20f496da887cf5c756e2c6ca2a67a84.png",
       "width": 640
     },
     "Topics/Interaction/Reach3": {
       "class": "clean",
       "diff": {
-        "close": 98.8043,
-        "half": 98.8655,
-        "max": 249,
-        "mean": 1.4428,
-        "near": 98.8585,
-        "same": 98.8038,
-        "shape": 99.9123
+        "close": 98.8854,
+        "half": 98.9679,
+        "max": 161,
+        "mean": 0.6623,
+        "near": 98.9657,
+        "same": 98.8841,
+        "shape": 99.9987
       },
       "frame": 1,
       "group": "Topics/Interaction",
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "e8cc81cb358895eb1bb927049677a339e5b5da8292fa6973ad9629d86dcbbdba",
-        "source": "7e9bbedab32999a417f6ad2c2e2e97c9ce891ad1748bcf7e0f5e8e0af582d8a1",
-        "url": "https://i.gyazo.com/45843696d93077e0424d4674355f92f1.webp"
+        "sha256": "863b707094e31556661680815f317268bbf25f4011a4d665dd17aa2bfcd5f1b3",
+        "source": "7c4399458d7aa8f817b997235d5a802844c9991c77850d2e1776bfd4f0b3e046",
+        "url": "https://i.gyazo.com/09427affd964bf41644a2498935d0c16.webp"
       },
       "origin": "live",
-      "sha256": "6f3827652adcf2c7b58b8d02b91ae86e7490b3a310219441428999ca777d145b",
+      "sha256": "cf83328a3d481e9a62de6c3a8d55cf9ee8d98f2f0c2a623f3d6ee8c105fe0b80",
       "slug": "reach3",
-      "source": "0101638c523f427dad540e342f3e60c86bb2f91c39901c23510cd736b7cc3b22",
-      "url": "https://i.gyazo.com/b31dd45584e71dd96590571eef9cc321.png",
+      "source": "9214ab53d293a72027976af441d2471001e9bfaf584b6f0d7b0b554a57aa2ccf",
+      "url": "https://i.gyazo.com/e891324b16e79a4bfcf2a20f15814cac.png",
       "width": 640
     },
     "Topics/Interaction/Tickle": {
@@ -3347,14 +3372,14 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "885de9ba926e360c26eaf7eabe65c59275facee606ce02e8b20156ca137cc127",
-        "source": "aa704d1758bb82fef5966a04d3ef79583d42165f447f871df4faf8c3f16ae1c4",
-        "url": "https://i.gyazo.com/23dc7942924a0d7fa3d484f8e11fc588.webp"
+        "sha256": "22362d104dd5d748257b827d0a4e632c75800213adb2994383e53cc46ba075a1",
+        "source": "59c3f9a47a29655534bc8345f1599c8bc825649caa8c351e127943fcdcd3a31c",
+        "url": "https://i.gyazo.com/0fa7371415aed79afd22522ca91c4e3a.webp"
       },
       "origin": "live",
       "sha256": "294b81c243ae7f87cb83b37a799e740f177ce5db8fbc49a3dfb8acf6dfb68658",
       "slug": "tickle",
-      "source": "6e37ee632c5b28ef254bf67afa0342ab0bb4dbcab453449ca0d2821addb20de5",
+      "source": "c119dd394ff5e466c1326436f72883f3e58ccf619733809e05faccfe9051ca3e",
       "url": "https://i.gyazo.com/90ac909037b677c599a64d58de6e33ef.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
@@ -3362,28 +3387,28 @@
     "Topics/Motion/Bounce": {
       "class": "bend",
       "diff": {
-        "close": 99.8576,
-        "half": 99.9175,
-        "max": 153,
-        "mean": 0.1267,
-        "near": 99.8576,
-        "same": 99.8576,
-        "shape": 99.9987
+        "close": 99.7917,
+        "half": 99.8511,
+        "max": 143,
+        "mean": 0.1173,
+        "near": 99.7999,
+        "same": 99.786,
+        "shape": 100
       },
       "frame": 1,
       "group": "Topics/Motion",
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "fd8a0bdf620e894d4d60fafdc043e0332c1a592cb788a159d9c7135cdfcba3fc",
-        "source": "89f3de26cdc4b2f44cd4f750ff9d2a16ec6135edc30024522379a8e3b62fef73",
-        "url": "https://i.gyazo.com/17491ac693f95fbfd51c5c6204a14fa7.webp"
+        "sha256": "f5c43f6dee42ac2ba2428b2990ce9dfa017c80daf4a1de6817d178d12f804564",
+        "source": "671a1e824d1f14dcfce7df6b6f640accd6ca43fdeb706e4c569636494523cb1b",
+        "url": "https://i.gyazo.com/15411cf3c0e916ce9f24f0ab7d7a5f1d.webp"
       },
       "origin": "live",
-      "sha256": "91918f0aeda0bbfca378c2c1ea1536bd6d40f0818618cc0013d08067dedd5980",
+      "sha256": "7977c104e55a84517014031c7ae51be7bdc37c709321396c2c46c7d325ba8d86",
       "slug": "bounce",
-      "source": "bd6a6ce33b958964e2d6ba1c8f1e237d05adbc4ebb897407b587d2f01d5e51d6",
-      "url": "https://i.gyazo.com/68bb8149176c6ee11267abaec5874a29.png",
+      "source": "802aee4d518fda943180294e547ebed12662f53eb954e3f45b0548b1284e8509",
+      "url": "https://i.gyazo.com/89c171b281b9f6490202e0ca5c8a8724.png",
       "width": 640
     },
     "Topics/Motion/BouncyBubbles": {
@@ -3393,15 +3418,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "a5536fd00ebca743fb2cc8ad014ca41d82e6b4e6bed5396850952b3ff408a473",
-        "source": "967391657c80c170b55e67551cd29694c20700bb920baec0857f472bbbdd4f4b",
-        "url": "https://i.gyazo.com/96e253a21236adb1c7a9c2f29f76473c.webp"
+        "sha256": "152eb7b01a7ffd4ec73867a1670c62c46f0db635d17b5286467d03ad83854646",
+        "source": "a62f711a3296327ea7834097f308456a47f1f63219880aba47a38b19a3e17cf3",
+        "url": "https://i.gyazo.com/c950ff3767520cc5380041d2d85fdf56.webp"
       },
       "origin": "live",
-      "sha256": "51702693d2e64689c852de263dc3fbdb678ea2de081f4cfa3777b204504cab7e",
+      "sha256": "09451f4940526783328fb35b0b0ef70ae0f483ad48220c04bba86539cc8950f6",
       "slug": "bouncybubbles",
-      "source": "0a00d005fa62a97cda78405b299194260070e4872269e018463377474d661a22",
-      "url": "https://i.gyazo.com/88529c49e1f654307addd776e4e91556.png",
+      "source": "874af80cb0847fb6aa973de6aa03096e53402ee66b683f435e6387d955095c0e",
+      "url": "https://i.gyazo.com/992601e255539d3b54883996f1045b53.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -3412,43 +3437,43 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "3975e74b8d19574db68400b2b6a5e1aa3978a1fdd5d642de2df4007db2ff3302",
-        "source": "2d72a2ec4cb0c01980e2551bd0d87248bcce124a1c4d6448bd8c5320914b4972",
-        "url": "https://i.gyazo.com/8285be984ab1ccb8a959f2130b7bad96.webp"
+        "sha256": "3c231ff147a409a242f177b28b9dba61385eeed3506f63da53d0fe1ea609e851",
+        "source": "ba49d874f3aa5b952baafbc12137512077976f39a589f9178853d114f2ce0c10",
+        "url": "https://i.gyazo.com/915ef7f339c8d9f47fe15f07c4d85ade.webp"
       },
       "origin": "live",
-      "sha256": "d8c1d4ebaf10ac32384ae51dad8e2da3b0ccf709745ffd28077b7021f7e66804",
+      "sha256": "e7948d7ecba771b0c90d9380c783b7043c1348edaa4c07e196055d2f72ac8da4",
       "slug": "brownian",
-      "source": "3657d3c8d4a62aed38fc41abbd7a94702e5e97428616e616e1a4f5569970d244",
-      "url": "https://i.gyazo.com/cc324d8358046a87339ab53bf013d661.png",
+      "source": "07106fd2e99051ee8a67435de8c07dcd885e223c7876ea48f95943d0d351303b",
+      "url": "https://i.gyazo.com/d179ead0583e52893972e67c25bbab55.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
     "Topics/Motion/CircleCollision": {
       "class": "bend",
       "diff": {
-        "close": 99.9709,
-        "half": 99.9709,
+        "close": 99.9618,
+        "half": 99.9631,
         "max": 153,
-        "mean": 0.0402,
-        "near": 99.9709,
-        "same": 99.9709,
-        "shape": 99.9844
+        "mean": 0.0504,
+        "near": 99.9622,
+        "same": 99.9618,
+        "shape": 99.9813
       },
       "frame": 1,
       "group": "Topics/Motion",
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "eccd0da882e86742e7e968497063ef169b8da3ba39ee4402e83c10042d9ab526",
-        "source": "9ac68aeed0a3dd4fc1b27a1ea85fba372c7a1bfcf79e737f2cc08188c943c178",
-        "url": "https://i.gyazo.com/e8b505b5b5b42efc267672b8a471b7f5.webp"
+        "sha256": "ce28b21c5c5e20835c00202f9932d3c2e2ff59bbec8a264c82a5db28af0627c6",
+        "source": "c6bf54209a2814aab4045cefdfe85f2b902d3f1b3766b67b6a1a978c4bc2213b",
+        "url": "https://i.gyazo.com/ada18987d57a24132fb1044053eb8838.webp"
       },
       "origin": "live",
-      "sha256": "60584e1879d6fb667224ddf135c0baafccc0a5d0b2e04a36a7d1b1aab47cad60",
+      "sha256": "7e006bfb180d8d220d95fe1bfa463c92412ba568fa51568ee6fb7c4c35f4fb33",
       "slug": "circlecollision",
-      "source": "d3ae526b85c748ce0f454fcb96c023ce59c0cc134ea3daa259d8eb6ae76640f5",
-      "url": "https://i.gyazo.com/2fa1646eaa9ab20cbddee4f4a1c8a936.png",
+      "source": "d2f69dcccb67186989c8174d3145641d4b4a765a740a47c3e93f8622fad30cd3",
+      "url": "https://i.gyazo.com/404ea17729a8d762b2fd25b804bf8d99.png",
       "width": 640
     },
     "Topics/Motion/Linear": {
@@ -3467,14 +3492,14 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "bfce5e806dc53da589db49354b9271815c936c80368ad1f1beef1e4707f0a7b3",
-        "source": "2c14fe6adf8949f294a4385382fc27f55dd0ab18c00a1894681c98596f357d6c",
-        "url": "https://i.gyazo.com/548141d75166a2f32515ba447374c8b0.webp"
+        "sha256": "d4d61acd718dfe829801d17b4f310e802b2f0f68bec9db653a679eb05fa19f93",
+        "source": "b10bd132e6fc5344988cf5ba6deb8e9e54f419b7f17fb8b347aa60967c0e6384",
+        "url": "https://i.gyazo.com/843df4e968ef659d7a87a74efad19b11.webp"
       },
       "origin": "live",
       "sha256": "29ca6b6c06efb352aba50828f185d36c675c5ac4a6a3bfd001045d39c1becab7",
       "slug": "linear",
-      "source": "684acee610e807b655120fa75af3d294196091b4f4b39016f0656fdaeb3214a6",
+      "source": "b8c2309b13d408a61e4943863d9aa762465cb5ced56046ba8679b2f47d53573a",
       "url": "https://i.gyazo.com/4dc7af28ac9e912128fab20a1f0e80dc.png",
       "width": 640
     },
@@ -3494,42 +3519,42 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "d0b0115a4500fc3cff120c5886c1de9217f28b575b5d7a8789848f64fb21c1ea",
-        "source": "573b325c8a47e78c7971a6c22be47787dcac5bc4b7a11e3ce11133b8e1a6fd16",
-        "url": "https://i.gyazo.com/c8c2d8273e304de271fde6aa74f9db0d.webp"
+        "sha256": "23eece780f3b833144aa88b59d1017af61fd6b9be8f40a04b9117712103b3ed1",
+        "source": "d61d628375da0258ddc8ee0d8ad8052a7917ceac747633ef6fddc490420fc916",
+        "url": "https://i.gyazo.com/03dfea02b881128b19c75a7aa27fbd56.webp"
       },
       "origin": "live",
       "sha256": "6c7069839b530e51d071928f4fe2d3f74b6d69f74784127e6234c3f40e053f4e",
       "slug": "morph",
-      "source": "319aaf9e7c13e815272e1d3dcf1d84e520705ca593a4d7682f4d5883e6be6107",
+      "source": "6398ba50c9101ea0ac8e3e6426372e261a2dc8e8fcbcf3cb11a7a2f76ab68f22",
       "url": "https://i.gyazo.com/ed945b6ab28870bbe98767f84e158183.png",
       "width": 640
     },
     "Topics/Motion/MovingOnCurves": {
-      "class": "bend",
+      "class": "clean",
       "diff": {
-        "close": 99.9831,
-        "half": 99.9987,
+        "close": 99.9826,
+        "half": 99.9913,
         "max": 255,
-        "mean": 0.0397,
-        "near": 99.9844,
-        "same": 99.977,
-        "shape": 99.9978
+        "mean": 0.0332,
+        "near": 99.9865,
+        "same": 99.9722,
+        "shape": 99.9996
       },
       "frame": 1,
       "group": "Topics/Motion",
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "e201a8f1cc5eb1caba0ea9b8cc3a594551c5fea32d4b4c6ffa2da068127acbef",
-        "source": "19aec944fa0b451bed67b535acb6981d7b3c07782223b51f12eb97da9cde9f6c",
-        "url": "https://i.gyazo.com/60ae100df67e6c0d61c13e23b1c55c94.webp"
+        "sha256": "1f36bed247a74b7b38b77cf3f33407d5e8e2bb980e9cca613c12f991572eae79",
+        "source": "2d438d7be6bb33c0d39e70034b5b8363ec5f079d175446f122e14e1e78132baf",
+        "url": "https://i.gyazo.com/87f0fdbec721e9d5c0e300ba2e404968.webp"
       },
       "origin": "live",
-      "sha256": "35a33b2ee1b503130cad9626226618d886255d60cef5420e9baf93ae9d2af568",
+      "sha256": "14a0ca525fca49157ece94b6311ae857c62119f147ac4bf3bb3a42efe284cccc",
       "slug": "movingoncurves",
-      "source": "42580eb1474e3d709b4cde6ad56464bcd0a8c0a3e1f4782ede844cc63bcee051",
-      "url": "https://i.gyazo.com/4f04884d4ae65aa7b2d552ff6d4bd46f.png",
+      "source": "32927fe00fd8f87323a689ad161002c0662badc8e13cd4284d88a2e2bf11793c",
+      "url": "https://i.gyazo.com/b1b0d88f7adc817b1a65a24dd909e9ba.png",
       "width": 640
     },
     "Topics/Motion/Reflection1": {
@@ -3539,15 +3564,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "cd5a2e5841767b8e80f2827936c8d1a20d17baea0abf5c9e2017951db045c658",
-        "source": "73f8c29b59c63d290de5dd55ee9dbdba3798d3ea321f034cfae82bd6b1b77573",
-        "url": "https://i.gyazo.com/3ba2ab0cb9b80ed4777872ab48a019c1.webp"
+        "sha256": "787cf63a7666ec80095359aa08ffb958d241d639d8ba67b0d692ff9f235aa3c0",
+        "source": "53cf84eb48de8df33fe8486a31b8f88e197fb90a26c7987f5f58a4e14c6ed8b4",
+        "url": "https://i.gyazo.com/28c4be9b83d5dee78ff402e7a990d6d7.webp"
       },
       "origin": "live",
-      "sha256": "3d577aaade214bdc4376d07ea173aced3a12bb4187726296dc35a879eba88f0a",
+      "sha256": "85a7ade1d3bddd504cad4d0958289307070d4bc2cd898c56fc9454a72fe2e06e",
       "slug": "reflection1",
-      "source": "7cbf2c5f3d6d3c2f45eda4211340c1a4eafbdf6dcd6b1168eb647e3a1e395051",
-      "url": "https://i.gyazo.com/92425e42b3fe29b257b7d82d76ef9cdc.png",
+      "source": "a80677baf01c91890a5959f123d69cb451140f5a90e6aecf0b1b6d959c3814ae",
+      "url": "https://i.gyazo.com/6111121e81acd8f897391d84c3624e2a.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -3558,15 +3583,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "02e42f39a8e6fd01e6b7cdbbeb67fb967c4267a34e2f993a10f984331e92afe3",
-        "source": "7d0b4d5b8b5b7d2a9c2869ef4438775ecd9ca60a3839ac8d7571fc2927c4f176",
-        "url": "https://i.gyazo.com/961b9bd026589f3ed148bbc67064997b.webp"
+        "sha256": "d93f21097e38c3f4eccc1b43e45685b41d606695069d60c70f95941ac0693a92",
+        "source": "e053980a4c7d7b5f9176e8c62ec26b489949508b44bc1a80692eb5db2bff822e",
+        "url": "https://i.gyazo.com/a0127d88fa63e05545d811e166257c5e.webp"
       },
       "origin": "live",
-      "sha256": "2671e843be3d561669107b4b097f25a79748556e0bc1206fb0414c6dff8a9674",
+      "sha256": "40db09292ae4511f2b2877c2e7769420566676299a131ec1e45f238331e3a78f",
       "slug": "reflection2",
-      "source": "c69ef9f772505d1fe1a1f065e8e8af6e67713929cefa52b7a4493cd2f5600860",
-      "url": "https://i.gyazo.com/5b8679b6b491ccb1e1de82c189a29007.png",
+      "source": "366e1afb56a6ea6cae929702f4d1cc95816e702b7bbdeaf47cd44ba06a132e76",
+      "url": "https://i.gyazo.com/01cc533c7a2f5f9059a9d13a7ac03c68.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -3577,15 +3602,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "2c4856bf274d3e8b00bbc04f660f812ac32ae935d9116de656755dac2c95ad22",
-        "source": "cf3f85b1a2e859373045ad285e27050fb548c25b89005091090d3cf966569714",
-        "url": "https://i.gyazo.com/3dbffc047f04f8c0dbc5fe6b224bd24c.webp"
+        "sha256": "e86726c38577d86536b2fbdbc50a18e65915fd12c5d2d49e1a78ae9cdd22ea6b",
+        "source": "5c0dc50a8d61252ba024c924e2feba356545c172a5b91ee0cf2ccd126e10f0ff",
+        "url": "https://i.gyazo.com/08a3519abf4a5e4261a92ce8a7dee1d8.webp"
       },
       "origin": "live",
-      "sha256": "0f5ad6cd8dcb04fb7cc85716c76e79695aefbdc8f38ea9cc5788e8e118dfa280",
+      "sha256": "7b513f2df80f2b31dae0a206b930bcc53856cf81ba6cdb305b9f689c44c0c646",
       "slug": "flocking",
-      "source": "f513c3558e9c235c2549f4683b2814ab0d3e3e418ba4da553d2692983763142e",
-      "url": "https://i.gyazo.com/19587a41b47c708d1247828ec6810300.png",
+      "source": "8b65d5a317213dbd7d9a9b885181f25bc715887fcc4ba4706127cc64984a6cbb",
+      "url": "https://i.gyazo.com/851dabdf70f29de78aa543c3b842ef11.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -3596,15 +3621,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "d25c0526d29f160e705ee53d6b780d4c4babae792e9cceed2278b453479b6e3c",
-        "source": "db5874047356ceab01a8f72fd6ff5c77937f946c3a6cb63faa12f7f3a5187b9d",
-        "url": "https://i.gyazo.com/08df833f37f9442b44499369da2d9ce0.webp"
+        "sha256": "0548108d9980f8b6faf794a91d212f1b1279940e7e08c15b66dea5b7281908f3",
+        "source": "ccd525cf06816008c00dd19a299ddc3e9d7217f67bea58c4198b52835d2120b7",
+        "url": "https://i.gyazo.com/03bf64eb54391652bbc9fb79976e2649.webp"
       },
       "origin": "live",
-      "sha256": "f9ebcf64e721eae75afb4a1a4ed0906844f5e5ecdbee4bdefa707bd97355338b",
+      "sha256": "15b7cd04e34f832948908ac26e904174d0148421745d0aa9813d08939c2c72bf",
       "slug": "forceswithvectors",
-      "source": "1241ca7abe87f39e94b0f9cf2094d07b1d9f0d51103848291eb98de132fa633a",
-      "url": "https://i.gyazo.com/719e659b7ac6770de242b6ae8b96a4fb.png",
+      "source": "f46d5224f612b9f681cd2eac46e4909064b9c80f0fbcf53553bc316d49a5e4cb",
+      "url": "https://i.gyazo.com/5072dbc6abeab333acc695bb1a70af39.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -3614,10 +3639,15 @@
       "group": "Topics/Simulate",
       "height": 360,
       "measure": "none",
+      "motion": {
+        "sha256": "b951df72a8002b6b576bcd41f93d0732b476af24912216a4b78c5cf66f45760f",
+        "source": "4e6ad55bcabfcd4c8651ff1dba049ca1e7ce34923760305b783603eff856cdd4",
+        "url": "https://i.gyazo.com/a5c326ceedc07131b9c49b1a9ec7e37e.webp"
+      },
       "origin": "live",
       "sha256": "9724d6f8de68221144f21f48d581f62b19baa90dcc99553391102aaf878faa0b",
       "slug": "multipleparticlesystems",
-      "source": "beb1af1644d6d1bd2d96d4676d7b378fc7e4d8ca44e01211ab1a56f50d917375",
+      "source": "0764dc968cff17cca80ecbc6c39448c4905e8a44821fb309c603a68d2e72f773",
       "url": "https://i.gyazo.com/31957217dff78e7f38a67dc8747c1b7a.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
@@ -3629,15 +3659,15 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "585c0ca4d4d9ef33402067998b42244bbe1f4309a3fa4b1f070cfcef11790e78",
-        "source": "1fedda0daaeb96e26208243b6791e75a662c70c9c2be2817a93dd97a95dbadc2",
-        "url": "https://i.gyazo.com/b6bf5a6c0c9f07c688e890cdbce4099f.webp"
+        "sha256": "223680d1934241f2f5a7dfa4a037f3ff17d076cb3ca0c613f1fb8a761dc4cbbe",
+        "source": "f662e7e7202e07e7b4fad7c2ca18c277048ae51bcf6f9de275c125d5aa9b1b07",
+        "url": "https://i.gyazo.com/e6a3ad34e3ae788d40d41fe1b14bc08d.webp"
       },
       "origin": "live",
-      "sha256": "8fc86da706d46e1755a51bc2f14c984bcfd00d2ba45fe27cc0d7f288759ad018",
+      "sha256": "9a434a65184255aaeb257bf1a91d4651e9c6bbaf2f4c3bfb765b817c3c8b614e",
       "slug": "simpleparticlesystem",
-      "source": "4d7b4bf1723298e1892bf4c28c10ae2a35859dcd2a5b7c88b0e25532728c61e1",
-      "url": "https://i.gyazo.com/45b74108377e3b99a3ab98eaa0affa6f.png",
+      "source": "d7dd4ebec0b2670af8d558ea9f854ef45dff41a3c2c6f42d7088430522c89884",
+      "url": "https://i.gyazo.com/d8510f7694144634d3827b5041ab97df.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
@@ -3648,27 +3678,27 @@
       "height": 360,
       "measure": "none",
       "motion": {
-        "sha256": "94a72c7268e52016b7d7e1e919b37f9bdd0d0d0365cbb0a636873c7e7565a362",
-        "source": "9ce3722cac862146f9177bb3f77e3daa81861c8a48c50b57df5a6e4cae6e83d5",
-        "url": "https://i.gyazo.com/8935bd0fb6e13bb88de7d747e71efb63.webp"
+        "sha256": "116819ef3471c1c962ddc9eac8541ffe9a791b04db07f220ff0d0d5d96f6887c",
+        "source": "5dc17693feabbbf7aa56d3a63a5fdd4820cd6311a44e22a00a069fde3b6fc6d8",
+        "url": "https://i.gyazo.com/cf825a75a6f91a877e7fb72d98bc1bdd.webp"
       },
       "origin": "live",
-      "sha256": "4f1a3eab4125485a4cdfc723514ff40ddd7ab195cf1e52752fcd5974bfa9348a",
+      "sha256": "14d3be49339b9680599bd3a16ef7b33ee3754b4d345d0c6f2bb197fd2bece586",
       "slug": "smokeparticlesystem",
-      "source": "3e2472ca9be76f12369480386a6c235bfa88584c1dc505353bca03b2e718d733",
-      "url": "https://i.gyazo.com/d269ef55c922f27fa19c5773808354a1.png",
+      "source": "bf21e7a359799cf68a0523e1be028a17e389260e5301a55dd3b3c60c1cf80457",
+      "url": "https://i.gyazo.com/bde877f65cc0f6d90d45db16dec5e7fd.png",
       "why": "乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い",
       "width": 640
     },
     "Topics/Vectors/AccelerationWithVectors": {
       "class": "bend",
       "diff": {
-        "close": 99.8859,
-        "half": 99.9336,
-        "max": 255,
-        "mean": 0.1258,
-        "near": 99.8859,
-        "same": 99.8859,
+        "close": 99.829,
+        "half": 99.8646,
+        "max": 250,
+        "mean": 0.123,
+        "near": 99.8385,
+        "same": 99.8264,
         "shape": 100
       },
       "frame": 1,
@@ -3676,26 +3706,26 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "a748fa4728469e559aede7ae009e745386aa430ec202b8677f8736d0f5f99095",
-        "source": "7fea7c1ce1c7bbc4bca035c5001d7b3b2d01751dca6197dfe1582a0c79f489d0",
-        "url": "https://i.gyazo.com/388d65ae5cf3eec4e314f6f8e961e45e.webp"
+        "sha256": "998e2c650c9fdb0d9d743d2f52aa68b23265791a7db65088d9a5d9785a7a5151",
+        "source": "b5480146a9603eb6dbeca865670ad9dc8e3bd790de3d5cbee48d0a14efb17f56",
+        "url": "https://i.gyazo.com/a210cfcf001ecf8a14219b5fe47c4022.webp"
       },
       "origin": "live",
-      "sha256": "7789bed432dcbdae70e547b77a44c09637003bb8562a1e4a93b0effd78c1a663",
+      "sha256": "6b35d2c6b04b5dd6b9796639524a1ef3327a27b82a8fb34dcfea7ae031457ecf",
       "slug": "accelerationwithvectors",
-      "source": "cafcd75f89d3a34650c70e1eb493ed2f9d438715cfae075135639fc86306e75b",
-      "url": "https://i.gyazo.com/c4485f62ca3f6230bff15854cc7b3130.png",
+      "source": "c337ec98ef9c51532aec31fb959bd446dd6f28efa31a7ba1d77ee4cc4b7f6583",
+      "url": "https://i.gyazo.com/5c51cdfd686dc946bcde4e9a4060635f.png",
       "width": 640
     },
     "Topics/Vectors/BouncingBall": {
       "class": "bend",
       "diff": {
-        "close": 99.8889,
-        "half": 99.9384,
-        "max": 255,
-        "mean": 0.12,
-        "near": 99.8889,
-        "same": 99.8889,
+        "close": 99.8346,
+        "half": 99.8668,
+        "max": 247,
+        "mean": 0.1201,
+        "near": 99.842,
+        "same": 99.8316,
         "shape": 100
       },
       "frame": 1,
@@ -3703,26 +3733,26 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "c3c1bbd8b91e1664aeb3cccfa818347e5e9990e1a997422c2e0811384ca49454",
-        "source": "0b1d482beeabed1bc93849489bff1a7589f40d1174e2331b12125791df6d42e3",
-        "url": "https://i.gyazo.com/96674b6a538672ea5a0fe6094a507b11.webp"
+        "sha256": "017f74e0fd2bc305c82827b3354c586d7912e6669de5d6f592724ef3f7efe6a5",
+        "source": "69551f80f0413ed06b33ba86b39d1ed135599f96a6abc1f2a0cc452481e5d8a2",
+        "url": "https://i.gyazo.com/9b29fa97ac753120aa5e5af6a193e856.webp"
       },
       "origin": "live",
-      "sha256": "e193a3403d83a34240936434d0b9439ae0134d3ab620be949c5d6bf5d05bfe5b",
+      "sha256": "b2a0f59c6b62e8f7fa95db9d8ccc5db2411fc7f8362f38f81c48947557d5857d",
       "slug": "bouncingball",
-      "source": "ec2f1eae9ed13c298968fc7701fa205db769f49ef4cebb4ca2bb263f657739d7",
-      "url": "https://i.gyazo.com/633b74aafc6759a16b4d7a6fdd11de6a.png",
+      "source": "242c5614c0c92ecddc3cf3e430e4f1c00f4e930e3b52c7a71fecf440d364b32b",
+      "url": "https://i.gyazo.com/258602205f8bf8e0bed29d91fb4c79e6.png",
       "width": 640
     },
     "Topics/Vectors/VectorMath": {
       "class": "bend",
       "diff": {
-        "close": 99.8668,
-        "half": 99.8958,
-        "max": 255,
-        "mean": 0.1004,
-        "near": 99.8746,
-        "same": 99.8668,
+        "close": 99.8472,
+        "half": 99.8867,
+        "max": 188,
+        "mean": 0.0828,
+        "near": 99.8611,
+        "same": 99.8398,
         "shape": 100
       },
       "frame": 1,
@@ -3730,20 +3760,20 @@
       "height": 360,
       "measure": "pixel",
       "motion": {
-        "sha256": "d5aea42dc9840dc6c7e4c926c82e1653a65d2026cbc288a5a346c81bf3c85d8c",
-        "source": "fed8478f3ecf90c8fb8499eaad84bf54cf110768a674cf34070292c8b94cdf75",
-        "url": "https://i.gyazo.com/3b61ac0ef12868d1727cd88e7c09948e.webp"
+        "sha256": "f7ac6ba27d0a2056ba7a4a2c6298bf359cc44d26ac6d354cd4789b4bc63f2eb1",
+        "source": "31cba65bac223fdcaa06f0b90ef1d1d2f2b7b1b142069f173e9891728fa74c14",
+        "url": "https://i.gyazo.com/dab7ed12890e12f6f345ae443cb4766d.webp"
       },
       "origin": "live",
-      "sha256": "3537d77765498a1686123114d85145cc1a6c23077c617736f83defa7fc07c573",
+      "sha256": "1c6365b4fe3b1917ff7063b75aa218a5e271edb319e2d598922f79253c9b4c57",
       "slug": "vectormath",
-      "source": "8a1e0462ff73fbb90c8840f720faeb959a2dd8cbf31215786a94dce865366fb8",
-      "url": "https://i.gyazo.com/32f0ecf364ba3084d861b5acea73746e.png",
+      "source": "f1ed55c151103605ec38e5bba27c8581c4f048d70b8882693bcb6a29f415db03",
+      "url": "https://i.gyazo.com/ddf35d02947f15ae9c6d277463a9b8f5.png",
       "width": 640
     }
   },
   "tool": {
-    "mokume": "0.5.0",
+    "mokume": "0.6.0",
     "p5": "1.9.4",
     "reference": "1fce63d07182becca614b95ab76b3b1416424d8d"
   }
