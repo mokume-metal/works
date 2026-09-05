@@ -8,7 +8,7 @@
 
 折れたことは失敗ではなく、この作品の成果物である。ADR-0022 決定 4 が言うとおり「作ろうとして止まる」が最も純度の高い実需で、止まった瞬間のほうが何が無かったかを正確に指せる。
 
-**止まった原因は mokume 側で直った** ([mokume#914](https://github.com/mokume-metal/mokume/issues/914) は閉じ、main の `81efdf2` に入っている)。**まだ配られていない**ので、この作品が固定している `v0.5.0` では下の 3 枚目のままである。段 3 以降へ進むには、引く版を上げるのが先になる。
+**止まった原因は mokume 側で直り、`v0.6.0` で配られた** ([mokume#914](https://github.com/mokume-metal/mokume/issues/914) → [mokume#917](https://github.com/mokume-metal/mokume/pull/917))。この作品は `v0.6.0` を引くように上げてあるので、いまは絵が貼れる。**段 3 以降 (PBR マップ・HDR 環境・ACES) はまだ測っていない。**
 
 ## 何を測るか
 
@@ -41,6 +41,27 @@ python3 scripts/fetch.py
 | [royal_esplanade](https://polyhaven.com/a/royal_esplanade) | CC0 1.0 (Greg Zaal / Poly Haven) |
 
 NormalTangentTest と HDRI は段 3 以降で使うもので、**まだ 1 度も読んでいない**。
+
+## 検証する
+
+**同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。下のハッシュが食い違ったら、変えたつもりのないところが変わっている。
+
+このスケッチは乱数も揺らぎも使わないので、姿勢はフレーム番号だけで決まる。
+
+| | |
+| --- | --- |
+| works | このフォルダのコミット (`Package.resolved` が同じツリーにある) |
+| mokume | `v0.6.0` / `d153f982435b` |
+
+**先に資産を取る** (`python3 scripts/fetch.py`)。取っていないと形が出ず、ハッシュも合わない。
+
+```bash
+swift run -c release Helmet --render out 1 && shasum -a 256 out/helmet-1.png
+# 37a2a10c61ea42af185704d756b3334de67a31e1016ac13260a24be71436a7ba
+
+swift run -c release Helmet --render out 200 && shasum -a 256 out/helmet-200.png
+# 0308b3ca9e167dce37521f7723558a33bd1b032867a57160c24885d3875f91a2
+```
 
 ## 走らせる
 
@@ -105,31 +126,41 @@ swift run -c release Helmet --measure whole                # 全部 1 度に渡�
 
 **添字を渡す口が無いので、頂点が 3.2 倍になる。** glTF は 14,556 頂点を 46,356 の添字で参照するが、mokume の頂点の口は `vertex()` だけなので CPU で展開することになる。`SolidVertex` は 96 バイトなので 4.45 MB を積む。
 
-### 段 2 — 絵を貼ると消える
+### 段 2 — 絵を貼ると消えていた (`v0.6.0` で直った)
 
-**ここで折れた。**
+**ここで折れた。** 塗られた画素で測ると、版でこう変わる:
 
-| 組み方 | 塗られた画素 | 絵 |
-| --- | ---: | --- |
-| 絵を貼らない | 63,772 | <img src="https://i.gyazo.com/74b2111cc233ffa5176952f501d39786.png" width="420"> |
-| 絵を貼って `draw()` で組み直す | 63,413 | <img src="https://i.gyazo.com/9d3f8cff737613fcd913b77e053cedf1.png" width="420"> |
-| 絵を貼って `setup()` で組む | **0** | <img src="https://i.gyazo.com/a454b151e3be7de058645f6cb40906c3.png" width="420"> |
+| 組み方 | `v0.5.0` | `v0.6.0` |
+| --- | ---: | ---: |
+| 絵を貼らない | 63,772 | 63,772 |
+| 絵を貼って `draw()` で組み直す | 63,413 | 63,413 |
+| 絵を貼って `setup()` で組む | **0** | **63,413** |
 
-> 撮影範囲: `--render out 200` が書き出した**スケッチの面だけ** (画面は撮っていない)。frame 200・960x540。3 枚とも同じフレーム番号・同じ視点で、違うのは組み方だけである。
+| 症状 (`v0.5.0`) | 直った姿 (`v0.6.0`) |
+| --- | --- |
+| <img src="https://i.gyazo.com/a454b151e3be7de058645f6cb40906c3.png" width="440"> | <img src="https://i.gyazo.com/9d3f8cff737613fcd913b77e053cedf1.png" width="440"> |
 
-3 枚目が症状で、`setup()` で組んだ絵つきの形を `draw()` で置くと **1 画素も描かれない**。46,356 頂点・描画 1 回で組めていることは数で確認できるのに、絵にならない。警告も出ない。
+> 撮影範囲: `--render out 200` が書き出した**スケッチの面だけ** (画面は撮っていない)。frame 200・960x540。同じフレーム番号・同じ視点で、**コードは 1 文字も違わない** — 違うのは引いている mokume の版だけである。
 
-→ [mokume#914](https://github.com/mokume-metal/mokume/issues/914) — **直った** ([mokume#917](https://github.com/mokume-metal/mokume/pull/917))。`place` が記録した面へ切り替えたあと、`beginSolids()` の `useFillTexture()` が**置く側の**状態で面を選び直して焼き場へ倒していた。「直後に置くと描かれる」の非対称も、`createShape` が `openSource` を `.solid` のまま抜けることから来ていた
+`v0.5.0` では `setup()` で組んだ絵つきの形を `draw()` で置くと **1 画素も描かれなかった**。46,356 頂点・描画 1 回で組めていることは数で確認できるのに、絵にならず、警告も出ない。
 
-**直ったことは、この作品で確かめてある。** `Package.swift` を mokume の直しのブランチへ一時的に向けて走らせたら、`setup()` で組んだ絵つきの形が `draw()` で描かれた — 塗られた画素が **0 → 63,413**、明るさの種類が **1 → 256**。その絵は上の 2 枚目 (`draw()` で組み直したもの) と**バイト単位で同一**だった。
+**`v0.6.0` の絵は、`v0.5.0` で `draw()` の中で組み直したときの絵とバイト単位で同一である** (同じ画像を Gyazo へ上げたら既存の URL が返った)。つまり直しは「消えていたものが出るようになった」だけで、絵を変えていない。
 
-**2 枚目が暗いのも所見である** (画素値の最頻値が 2〜6)。段 3 で追う予定だが、いま追えない。
+参考用に、絵を貼らない姿も残す (形が出ていることの確認に使う):
+
+<img src="https://i.gyazo.com/74b2111cc233ffa5176952f501d39786.png" width="440">
+
+→ [mokume#914](https://github.com/mokume-metal/mokume/issues/914) → [mokume#917](https://github.com/mokume-metal/mokume/pull/917)。`place` が記録した面へ切り替えたあと、`beginSolids()` の `useFillTexture()` が**置く側の**状態で面を選び直して焼き場へ倒していた。「直後に置くと描かれる」の非対称も、`createShape` が `openSource` を `.solid` のまま抜けることから来ていた。
+
+**残っていた 1 画素の正体も分かった** — 焼き場 (字形の置き場) の空き区画が白いためである。だから mokume 側の検査は白ではなく縞の絵を貼っている。
+
+**絵が暗いのは別の所見である** (画素値の最頻値が 2〜6)。albedo が暗いのか、色の扱いに何かあるのか、まだ切り分けていない — 段 3 で追う。
 
 ### 段 3 以降はまだ測っていない
 
-法線マップ・metallicRoughness・AO・emissive・HDR 環境・ACES は、**絵が 1 枚も安定して貼れないと測れない**。[mokume#914](https://github.com/mokume-metal/mokume/issues/914) は直ったので進めるが、**引く版を上げるのが先**である (直しは main にしか無く、この作品は `v0.5.0` に固定している)。
+法線マップ・metallicRoughness・AO・emissive・HDR 環境・ACES は**これから**である。絵が 1 枚貼れるようになったので、進める条件は揃った。
 
-NormalTangentTest と HDRI は取得スクリプトが取ってくるが、まだ 1 度も読んでいない。
+NormalTangentTest と HDRI は取得スクリプトが取ってくるが、まだ 1 度も読んでいない。**絵が暗い**ことも段 3 で追う。
 
 ## three.js / glTF との対応
 
@@ -140,7 +171,7 @@ NormalTangentTest と HDRI は取得スクリプトが取ってくるが、ま�
 | `indices` | **無い** | CPU で展開して 3.2 倍に |
 | `node.rotation` (四元数) | **無い** (`applyMatrix()` が無く、`Placement` は一様な倍率とオイラー角だけ) | CPU で畳んだ。DamagedHelmet は X 軸 −90° の 1 つなので `rotateX` でも書けるが、一般の glTF は書けない |
 | `TANGENT` | **無い** (頂点の口は位置・法線・読み取り位置の 3 つ) | DamagedHelmet 自身も持たないので、実行時に作る必要がある。段 3 |
-| `baseColorTexture` | `texture(_:)` | 貼れる。**保持した形では次のフレームで消えていた**が直った ([#914](https://github.com/mokume-metal/mokume/issues/914))。引く版を上げれば効く |
+| `baseColorTexture` | `texture(_:)` | 貼れる。`v0.5.0` では**保持した形で次のフレームに消えていた**が、`v0.6.0` で直った ([#914](https://github.com/mokume-metal/mokume/issues/914)) |
 | `normalTexture` / `metallicRoughnessTexture` / `occlusionTexture` / `emissiveTexture` | **無い** | 材質は `shininess` / `metalness` / `ambient` / `emissive` の 4 つで、どれも面ぜんたいに 1 つ。段 3 |
 | UV の `REPEAT` ラップ | **無い** (`clamp_to_edge` 固定) | DamagedHelmet の v は **1.26 まで行く**。glTF では普通のことで、繰り返しを前提に展開されている |
 | `scene.environment` (HDR) | `Surroundings` は 3 色帯 | 段 6 |
@@ -150,7 +181,8 @@ NormalTangentTest と HDRI は取得スクリプトが取ってくるが、ま�
 
 ## 詰まらなかったが、違うところ
 
-- **`v0.5.0` には数を 3 つ並べる色の口が無い。** `fill(255, 255, 255)` も `background(18, 18, 22)` も通らず、`.opaque(red:green:blue:)` (線形) か `.display(red:green:blue:)` (表示値) を書く。`Solids` が「数値 1 つの灰色が書けない」と記録したのと同じ形で、こちらは 3 つでも書けなかった。**`.linear(...)` も無い** — 最新の面を見て書くと通らないので、作品が固定している版の面を見る必要がある
+- **数を 3 つ並べる色の口が、`v0.5.0` には無かった。** `fill(255, 255, 255)` も `background(18, 18, 22)` も通らず、`.linear(red:green:blue:)` (線形の 0–1) か `.display(red:green:blue:)` (表示値の 0–1) を書いた。`Solids` が「数値 1 つの灰色が書けない」と記録したのと同じ形で、こちらは 3 つでも書けなかった。**`v0.6.0` で `color(_:_:_:)` (0–255) が入った**ので、いまは 3 つ並べて書ける — **この作品はまだ乗り換えていない** (絵が動くので、版を上げる変更に混ぜない)
+- **`v0.5.0` の `.opaque(red:green:blue:)` は、`v0.6.0` で `.linear(red:green:blue:)` に改名された。** 版を上げるときに書き換えたのはこの 5 箇所だけである。**最新の面を見て書くと、作品が固定している版では通らない** — 面は版ごとに見る必要がある (この作品を書き始めたときに 1 度踏んだ)
 - **UV は画像の画素で書く** (0…1 ではない)。glTF の値に `image.width` を掛ける
 - **`texture()` は `beginShape` より前に呼ぶ。** 後だと `vertex(x,y,z,u,v)` の読み取り位置が黙って捨てられ、焼き場の白い区画を読む
 - **`fill()` を置かないと 1 枚も置かれない。** 塗りは原始形ごとに 1 度見られる
@@ -183,7 +215,7 @@ NormalTangentTest と HDRI は取得スクリプトが取ってくるが、ま�
 
 | 踏んだもの | | 状態 |
 | --- | --- | --- |
-| 絵を貼った保持した形を、次のフレームで置くと消える | [mokume#914](https://github.com/mokume-metal/mokume/issues/914) | **閉じた** ([mokume#917](https://github.com/mokume-metal/mokume/pull/917) / main の `81efdf2`)。まだ配られていないので、この作品が引く `v0.5.0` では再現する |
-| 頂点を並べて作る形が、1 度に渡す三角形の数に比例して遅くなる | [mokume#915](https://github.com/mokume-metal/mokume/issues/915) | open |
+| 絵を貼った保持した形を、次のフレームで置くと消える | [mokume#914](https://github.com/mokume-metal/mokume/issues/914) | **閉じた** ([mokume#917](https://github.com/mokume-metal/mokume/pull/917))。`v0.6.0` から効く — この作品はその版を引いている |
+| 頂点を並べて作る形が、1 度に渡す三角形の数に比例して遅くなる | [mokume#915](https://github.com/mokume-metal/mokume/issues/915) | open。塊に切る回避を書いたまま |
 
-段 3 以降で踏むものは、引く版を上げてから戻す。
+段 3 以降で踏むものは、踏んだそのときに戻す。

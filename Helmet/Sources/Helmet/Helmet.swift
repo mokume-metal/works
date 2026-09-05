@@ -118,8 +118,8 @@ final class Helmet: Sketch {
         orbitControl()
 
         // 光は控えめに 2 つだけ。**質感を測るのが目的**なので、光で誤魔化さない
-        ambientLight(.opaque(red: 0.18, green: 0.18, blue: 0.22))
-        directionalLight(.opaque(red: 0.9, green: 0.88, blue: 0.82), -0.4, 0.8, -0.35)
+        ambientLight(.linear(red: 0.18, green: 0.18, blue: 0.22))
+        directionalLight(.linear(red: 0.9, green: 0.88, blue: 0.82), -0.4, 0.8, -0.35)
 
         guard let body else {
             fill(.display(red: 0.94, green: 0.94, blue: 0.96))
@@ -136,7 +136,7 @@ final class Helmet: Sketch {
         switch ProcessInfo.processInfo.environment["HELMET_PROBE"] {
         case "box":
             // 組み込みの立体。カメラが合っているか
-            fill(.opaque(red: 1, green: 0.3, blue: 0.2))
+            fill(.linear(red: 1, green: 0.3, blue: 0.2))
             push()
             translate(width / 2, height / 2, 0)
             box(150)
@@ -144,7 +144,7 @@ final class Helmet: Sketch {
             return
         case "triangle":
             // 頂点を並べた三角形 1 枚を**その場で**描く。beginShape の経路が通るか
-            fill(.opaque(red: 0.2, green: 1, blue: 0.3))
+            fill(.linear(red: 0.2, green: 1, blue: 0.3))
             push()
             translate(width / 2, height / 2, 0)
             beginShape(.triangles)
@@ -174,7 +174,7 @@ final class Helmet: Sketch {
                 == "textured-inline"
             if inline {
                 // 比較用: **その場で**描く (参照スケッチ TexturedSurfaces と同じ形)
-                fill(.opaque(red: 1, green: 1, blue: 1))
+                fill(.linear(red: 1, green: 1, blue: 1))
                 if let picture { texture(picture) }
                 push()
                 translate(width / 2, height / 2, 0)
@@ -191,7 +191,7 @@ final class Helmet: Sketch {
             } else {
                 let one = createShape {
                     noStroke()
-                    fill(.opaque(red: 1, green: 1, blue: 1))
+                    fill(.linear(red: 1, green: 1, blue: 1))
                     if let picture { texture(picture) }
                     beginShape(.triangles)
                     normal(0, 0, 1)
@@ -213,7 +213,7 @@ final class Helmet: Sketch {
             // 同じ三角形を**保持した形として**置く。createShape → shape の経路が通るか
             let one = createShape {
                 noStroke()
-                fill(.opaque(red: 0.3, green: 0.5, blue: 1))
+                fill(.linear(red: 0.3, green: 0.5, blue: 1))
                 beginShape(.triangles)
                 normal(0, 0, 1)
                 vertex(-100, -100, 0)
@@ -233,7 +233,7 @@ final class Helmet: Sketch {
             break
         }
 
-        fill(.opaque(red: 1, green: 1, blue: 1))
+        fill(.linear(red: 1, green: 1, blue: 1))
         push()
         translate(width / 2, height / 2, 0)
         rotateY(time * 0.4)
@@ -265,7 +265,7 @@ final class Helmet: Sketch {
             noStroke()
             // **塗りを明示する。** `hasFill` は原始形ごとに 1 度見られるので、
             // 塗りが無い状態で並べると 1 枚も置かれない。貼る絵は塗りに掛かるので白
-            fill(.opaque(red: 1, green: 1, blue: 1))
+            fill(.linear(red: 1, green: 1, blue: 1))
             for piece in model.pieces {
                 emit(piece, placing: placing, bare: bare)
             }
