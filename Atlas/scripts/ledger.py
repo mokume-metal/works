@@ -26,6 +26,15 @@ vocabulary.jsonl は**移した作品が書き足す台帳**として持ち、�
 
 行が無いものは**未判定**。番人の値を置かないのは、集計側が数え忘れて静かに嘘の
 数字を出すのを防ぐため — 未判定を含む例は届く / 届かないのどちらにも数えない。
+
+**`none` はさらに 2 つに割れる** (vocabulary.jsonl の blocks)。並べて比べられるか
+どうかは、この区別で決まる:
+
+    picture    絵そのものが出ない (loadShape — 形が来ないので面が空になる)
+    structure  絵は出るが構造が壊れる (noLoop — 1 度で止まらないだけで、絵は同じ)
+
+`class` が blocked の例も、止めているのが structure だけなら**歪めれば絵は出る**。
+例ごとの picture 欄がそれを持つ (draws / bent / none)。
 """
 
 import collections
@@ -148,6 +157,8 @@ def main() -> int:
     mokume = load_mokume_api()
     vocabulary = load_vocabulary()
     manifest = json.loads((UPSTREAM / "manifest.json").read_text())
+    # 公式ページに載る 162 本と、その原典 (p5 が配られるか / 静止画だけか)
+    site = json.loads((UPSTREAM / "site-examples.json").read_text())
 
     rows = []
     demand: dict[str, list[str]] = collections.defaultdict(list)
@@ -173,10 +184,13 @@ def main() -> int:
 
         verdicts = collections.Counter()
         unknown = []
+        blocks = collections.Counter()
         for word in vocab + sorted(used_constants):
             known = vocabulary.get(word)
             if known:
                 verdicts[known["verdict"]] += 1
+                if known["verdict"] == "none":
+                    blocks[known.get("blocks", "picture")] += 1
             elif word in mokume:
                 verdicts["same"] += 1
             else:
@@ -196,11 +210,28 @@ def main() -> int:
         else:
             klass = "clean"
 
+        # **並べて比べられるか。** class とは別の軸である — blocked でも、止めているのが
+        # 構造だけなら絵は出るので原典と並べられる (noLoop の例がまさにそれ)。
+        # 未判定を含む例は picture も決めない (数え忘れて嘘を出さないため)
+        if unknown:
+            picture = None
+        elif blocks["picture"]:
+            picture = "none"
+        elif blocks["structure"]:
+            picture = "bent"
+        else:
+            picture = "draws"
+
         head = "\n".join(f.read_text(encoding="utf-8", errors="replace")[:1200] for f in files)
         credit = credit_of(head)
         rows.append({
             "example": name,
             "group": group,
+            # 公式ページ (processing.org/examples/) に載るか。載るものだけが比較の対象
+            "site": name in site,
+            # 原典として何が配られているか。live = p5、png = 静止画のみ、null = ページに無い
+            "origin": site.get(name, {}).get("origin"),
+            "picture": picture,
             "files": len(files),
             "lines": sum(1 for line in raw.splitlines() if line.strip()),
             "assets": entry.get("assets", 0),
@@ -250,6 +281,29 @@ def main() -> int:
         if classes[k]:
             lines.append(f"| `{k}` | {classes[k]} | {label[k]} |")
     lines.append(f"| **合計** | **{len(rows)}** | |")
+    lines.append("")
+
+    # **公式ページの 162 本だけを取り出した内訳。** 台帳は 254 本を平等に扱うが、
+    # 人が「Processing の Examples」と呼ぶのはページに並ぶこちらである
+    on_site = [r for r in rows if r["site"]]
+    pictures = collections.Counter(r["picture"] for r in on_site)
+    origins = collections.Counter(r["origin"] for r in on_site)
+    picture_label = {
+        "draws": "そのまま絵が出る", "bent": "歪めれば絵は出る",
+        "none": "絵が出せない", None: "未判定を含む",
+    }
+    lines.append(f"公式ページに載る {len(on_site)} 本を、**原典と並べられるか**で分けたもの。")
+    lines.append("")
+    lines.append("| 並べられるか | 例数 | |")
+    lines.append("| --- | ---: | --- |")
+    for k in ["draws", "bent", "none", None]:
+        if pictures[k]:
+            lines.append(f"| `{k or 'unknown'}` | {pictures[k]} | {picture_label[k]} |")
+    lines.append(f"| **合計** | **{len(on_site)}** | |")
+    lines.append("")
+    lines.append(
+        f"原典は {origins['live']} 本が p5 (`liveSketch.js`)、{origins['png']} 本は"
+        " site が置く静止画だけ。")
     lines.append("")
     lines.append("| 何本の例を止めるか | 語彙 | 判定 | mokume では |")
     lines.append("| ---: | --- | --- | --- |")
