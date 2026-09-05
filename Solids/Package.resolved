@@ -1,13 +1,13 @@
 {
-  "originHash" : "b0fc5854201500a90a8a6485d381b70335d572eebeb463a8eb978df6d3bbce3a",
+  "originHash" : "93467e36be607257ac2174f0f712bc13ef2e636019671be5f193adda0b04b672",
   "pins" : [
     {
       "identity" : "mokume",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mokume-metal/mokume.git",
       "state" : {
-        "revision" : "f0d136d1d70b172b49b3419f795feba018fe4101",
-        "version" : "0.5.0"
+        "revision" : "d153f982435b775101772d904153c8d2b6711fd6",
+        "version" : "0.6.0"
       }
     },
     {

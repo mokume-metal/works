@@ -1,6 +1,6 @@
 # Garden — p5.js の Data Structure Garden を mokume へ
 
-![咲きそろった庭 (frame 1)](https://i.gyazo.com/556227dfafeaca33b5412aa3fe00a951.png)
+![咲きそろった庭 (frame 1)](https://i.gyazo.com/6a87b51fd3410c3ce87b87ffcbc8c56e.png)
 
 制作トラック ([mokume ADR-0022](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0022-production-track.md)) の 3 本目。これは作品であると同時に**物差し**である。
 
@@ -37,16 +37,29 @@ swift run Garden --frames <置き場> <数>     # 連番で書き出す
 
 | | |
 | --- | --- |
-| works | [#3](https://github.com/mokume-metal/works/pull/3) の merge コミット (`Package.resolved` が同じツリーにある) |
-| mokume | `v0.5.0` / `f0d136d1d70b172b49b3419f795feba018fe4101` (`Package.resolved` が固定している) |
+| works | [#22](https://github.com/mokume-metal/works/pull/22) の merge コミット (`Package.resolved` が同じツリーにある) |
+| mokume | `v0.6.0` / `d153f982435b775101772d904153c8d2b6711fd6` (`Package.resolved` が固定している) |
 
 ```bash
 swift run Garden --render out 1 && shasum -a 256 out/garden-1.png
-# c965cf5bf5495973162b59bffb28d339bbdb98320dafef331c78c906883dcaaf
+# 214a852fd10b92ca3673358d8b55118102ec49e44621388c1afaf8bbae5ce5b0
 
 swift run Garden --render out 200 && shasum -a 256 out/garden-200.png
-# 5768c7368ab3fe175f1ce0ccbc84ab3e221a0f476ae9d5e79da15cab5f3d3b2f
+# 1e95966084e8bb86a33e1cd059f515da1213f45bcab1aeaab025d0ad7f507e0e
 ```
+
+### v0.6.0 で動いたもの
+
+**`v0.5.0` → `v0.6.0` で、円の縁だけが動いた。** frame 1 は 160000 画素のうち 4232 (2.6%)、frame 200 は 574 (0.4%)。**差の出た 4232 画素のうち 4231 は旧版で縁だったところ**で、花の内側も背景も 1 ビットも動いていない。
+
+| x (y=8) | 旧 | 新 |
+| --- | --- | --- |
+| 160 | (173,216,230) — 背景そのもの | (170,212,229) |
+| 161 | (83,44,197) — 花そのもの | (85,50,197) |
+
+**旧版は縁を画素の境界へ吸わせ、新版は被覆どおりに均している。** 3 行のスケッチで切り分けられる — `rect(4, 4, 16, 8)` (整数の境界に載る) は両版で 1 ビットも変わらず、`rect(4, 20.5, 16, 8)` (半端な境界に載る) だけが変わる。旧版は半分掛かった行を落とし (0)、新版は被覆どおりに置く (188)。**円は縁が常に半端な位置に載る**ので、全周がこれに当たる。
+
+改善の方向なので mokume へは戻していない。**上の絵は貼り替えた** — 縁の均しは目で見て分かる。
 
 ## p5.js との対応
 
