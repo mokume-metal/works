@@ -3,14 +3,15 @@ import mokume
 
 /// Processing の [Scrollbar](https://processing.org/examples/scrollbar/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `bend` と言った。当たっている。** `Handles` と同じで、押した瞬間の印を
-/// 自分で作る必要がある ([#723](https://github.com/mokume-metal/mokume/issues/723))。
+/// **台帳は `bend` と言い、`v0.5.0` では歪んでいた。`v0.6.0` で原典の形に戻った。**
+/// `Handles` と同じで、出来事の口が無かった頃は押した瞬間の印を自分で作っていた
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)。
+/// いまは原典と同じ `mousePressed()` がそのまま書ける。
 /// `constrain()` は原典が自前で持っているので、そのまま写している。
 final class Scrollbar: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Scrollbar")
 
     private var firstMousePress = false
-    private var wasPressed = false
     private var hs1: HScrollbar?
     private var hs2: HScrollbar?
     private var img1: Image?
@@ -82,10 +83,6 @@ final class Scrollbar: Sketch {
     }
 
     func draw() {
-        // 原典は `mousePressed()` で立てる印。**出来事の口が無い**ので自分で作る
-        firstMousePress = isMousePressed && !wasPressed
-        wasPressed = isMousePressed
-
         background(255)
         guard let hs1, let hs2 else { return }
         let img1Pos = hs1.getPos() - width / 2
@@ -100,5 +97,17 @@ final class Scrollbar: Sketch {
         hs2.display(on: self)
         stroke(0)
         line(0, height / 2, width, height / 2)
+
+        // 使い終えたら倒す。原典と同じ 1 行
+        if firstMousePress {
+            firstMousePress = false
+        }
+    }
+
+    /// 原典の `void mousePressed()`。
+    func mousePressed() {
+        if !firstMousePress {
+            firstMousePress = true
+        }
     }
 }

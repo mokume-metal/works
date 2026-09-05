@@ -2,16 +2,16 @@ import mokume
 
 /// Processing の [Orthographic](https://processing.org/examples/orthographic/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `bend` と言った。当たっている** — 押して切り替える口が無い
-/// ([#723](https://github.com/mokume-metal/mokume/issues/723))。`ortho()` も
-/// `perspective()` も名前どおり届く。
+/// **台帳は `bend` と言い、`v0.5.0` では切り替えが消えていた。`v0.6.0` で動く。**
+/// 押して切り替える口が入った ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)。
+/// `ortho()` も `perspective()` も名前どおり届く。
 ///
 /// **面の大きさが原典と site で違う** — 原典の `.pde` は `size(600, 360)` だが、
 /// site の p5 は 640x360 に書き直している。移植は `.pde` に従う。
 final class Orthographic: Sketch {
     var settings = SketchSettings(width: 600, height: 360, title: "Orthographic")
 
-    private let showPerspective = false
+    private var showPerspective = false
 
     func setup() {
         noFill()
@@ -34,6 +34,8 @@ final class Orthographic: Sketch {
         box(180)
     }
 
-    // 原典は `void mousePressed() { showPerspective = !showPerspective; }` を持つ。
-    // **押した瞬間を受ける口が無い**ので、切り替えが消える
+    /// 原典の `void mousePressed()` — 押すたびに投影を切り替える。
+    func mousePressed() {
+        showPerspective = !showPerspective
+    }
 }

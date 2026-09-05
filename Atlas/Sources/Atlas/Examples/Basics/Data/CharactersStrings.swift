@@ -2,11 +2,13 @@ import mokume
 
 /// Processing の [Characters Strings](https://processing.org/examples/charactersstrings/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `blocked` と言った。当たっている。ここで半分止まっている。**
-/// `createFont` の口が無いのでシステムの書体へ置き換えるところまでは書けるが、
-/// **原典の主題である「打った文字が文字列に足されていく」ところが移せない** —
-/// `keyTyped()` に当たる出来事の口が無い ([#723](https://github.com/mokume-metal/mokume/issues/723))。
-/// 面には最初の "Begin..." が出たまま動かない。
+/// **台帳は `blocked` と言い、`v0.5.0` では半分止まっていた。`v0.6.0` で主題が動く。**
+/// `keyTyped()` に当たる出来事の口が入った
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)。
+/// 残る歪みは `createFont` の口が無いことだけで、システムの書体へ置き換えている。
+///
+/// **`keyTyped()` は文字を生むキーでだけ呼ばれる** (矢印・F キー・Escape・Delete・Tab
+/// では呼ばれない)。原典と同じ規則である。
 ///
 /// **字形は環境で変わる**ので、原典と画素では比べられない。
 final class CharactersStrings: Sketch {
@@ -31,6 +33,16 @@ final class CharactersStrings: Sketch {
         text(words, 50, 120, 540, 300)
     }
 
-    // 原典はここに `void keyTyped()` を持ち、打たれた文字を words へ足す。
-    // **受ける口が無い**ので、この例が見せたい動きが移せない
+    /// 原典の `void keyTyped()` — 打たれた文字を words へ足す。
+    ///
+    /// **`key` は文字 1 つではなく `String`** なので、先頭のスカラを取ってから比べる。
+    func keyTyped() {
+        guard let scalar = key.unicodeScalars.first else { return }
+        if ("A"..."z").contains(scalar) || scalar == " " {
+            letter = key
+            words = words + key
+            // 原典はここで `println(key)` を呼ぶ
+            print(key)
+        }
+    }
 }

@@ -2,8 +2,9 @@ import mokume
 
 /// Processing の [Wolfram](https://processing.org/examples/wolfram/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `bend` と言った。当たっている** — `mousePressed()` の出来事を受ける口が
-/// 無い ([#723](https://github.com/mokume-metal/mokume/issues/723))。押して規則を
+/// **台帳は `bend` と言い、`v0.5.0` では押しても何も起きなかった。`v0.6.0` で動く** —
+/// `mousePressed()` の出来事を受ける口が入った
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)。押して規則を
 /// 選び直すところが落ちる (面の下まで届いたときの作り直しは残る)。
 ///
 /// 乱数で規則を選び直すので **画素では比べられない。**
@@ -97,5 +98,11 @@ final class Wolfram: Sketch {
         }
     }
 
-    // 原典はここに `void mousePressed()` を持ち、押すたびに規則を選び直す。**書けない**
+    /// 原典の `void mousePressed()` — 押すたびに規則を選び直す。
+    func mousePressed() {
+        guard let ca else { return }
+        background(0)
+        ca.randomize { self.random($0) }
+        ca.restart()
+    }
 }
