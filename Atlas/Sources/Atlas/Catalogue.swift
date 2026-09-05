@@ -1,0 +1,55 @@
+import mokume
+
+/// 移した例。**scripts/catalogue.py が置き場から組み直す** ので手で並べない。
+///
+/// 並びは台帳 (`ledger/examples.jsonl`) の例名の順。`Sketch.main()` は
+/// `@MainActor static func main()` なので `any Sketch` からは呼べず、例が増えると
+/// 起動の分岐も増える。`SketchApplication(sketch:gpu:)` は `any Sketch` を取るので、
+/// ここの戻り値をそのまま渡せる (`Sketch.main()` の中身と同じ経路)。
+let catalogue: [(name: String, make: () -> any Sketch)] = [
+    ("Basics/Arrays/Array", { ArrayCosine() }),
+    ("Basics/Arrays/Array2D", { Array2D() }),
+    ("Basics/Arrays/ArrayObjects", { ArrayObjects() }),
+    ("Basics/Control/Conditionals1", { Conditionals1() }),
+    ("Basics/Control/Conditionals2", { Conditionals2() }),
+    ("Basics/Control/EmbeddedIteration", { EmbeddedIteration() }),
+    ("Basics/Control/Iteration", { Iteration() }),
+    ("Basics/Control/LogicalOperators", { LogicalOperators() }),
+    ("Basics/Data/IntegersFloats", { IntegersFloats() }),
+    ("Basics/Data/TrueFalse", { TrueFalse() }),
+    ("Basics/Data/VariableScope", { VariableScope() }),
+    ("Basics/Data/Variables", { Variables() }),
+    ("Basics/Form/Bezier", { Bezier() }),
+    ("Basics/Input/Mouse2D", { Mouse2D() }),
+    ("Basics/Math/AdditiveWave", { AdditiveWave() }),
+    ("Basics/Math/Arctangent", { Arctangent() }),
+    ("Basics/Math/Distance1D", { Distance1D() }),
+    ("Basics/Math/Distance2D", { Distance2D() }),
+    ("Basics/Math/DoubleRandom", { DoubleRandom() }),
+    ("Basics/Math/Graphing2DEquation", { Graphing2DEquation() }),
+    ("Basics/Math/IncrementDecrement", { IncrementDecrement() }),
+    ("Basics/Math/Interpolate", { Interpolate() }),
+    ("Basics/Math/Map", { Map() }),
+    ("Basics/Math/Noise1D", { Noise1D() }),
+    ("Basics/Math/Noise2D", { Noise2D() }),
+    ("Basics/Math/Noise3D", { Noise3D() }),
+    ("Basics/Math/NoiseWave", { NoiseWave() }),
+    ("Basics/Math/OperatorPrecedence", { OperatorPrecedence() }),
+    ("Basics/Math/PolarToCartesian", { PolarToCartesian() }),
+    ("Basics/Math/Random", { Random() }),
+    ("Basics/Math/RandomGaussian", { RandomGaussian() }),
+    ("Basics/Math/Sine", { Sine() }),
+    ("Basics/Math/SineCosine", { SineCosine() }),
+    ("Basics/Math/SineWave", { SineWave() }),
+    ("Basics/Structure/Coordinates", { Coordinates() }),
+    ("Basics/Structure/CreateGraphics", { CreateGraphics() }),
+    ("Basics/Structure/Functions", { Functions() }),
+    ("Basics/Structure/Loop", { Loop() }),
+    ("Basics/Structure/NoLoop", { NoLoop() }),
+    ("Basics/Structure/Recursion", { Recursion() }),
+    ("Basics/Structure/Redraw", { Redraw() }),
+    ("Basics/Structure/SetupDraw", { SetupDraw() }),
+    ("Basics/Structure/StatementsComments", { StatementsComments() }),
+    ("Basics/Structure/WidthHeight", { WidthHeight() }),
+    ("Topics/Drawing/ContinuousLines", { ContinuousLines() }),
+]

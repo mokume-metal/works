@@ -59,7 +59,10 @@ async function runOriginal(item) {
     // 積み上がるうえ、面が背面へ回ると setTimeout が 1 秒へ丸められて数分になる。
     // setup の末尾で合図を返し、資材を読む例だけが実際に待つ形にする。
     s.setup = () => { s.pixelDensity(1); userSetup(); started(); };
-    s.draw = () => { if (s.frameCount <= item.frame) userDraw(); };
+    // **draw() を持たない原典がある。** Processing の静止形 (setup も draw も書かず、
+    // 上から下へ 1 度だけ走る形) を写した liveSketch は setup しか持たない。
+    // 包む前に有無を見ないと、その例だけが `userDraw is not a function` で落ちる
+    s.draw = () => { if (userDraw && s.frameCount <= item.frame) userDraw(); };
   };
   const holder = document.createElement('div');
   document.getElementById('stage').appendChild(holder);

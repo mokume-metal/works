@@ -14,22 +14,13 @@ import mokume
 // 既存 4 作品は 1 本ずつ手で確かめており、版上げのたびに同じ手順を作品の数だけ踏む。
 // Atlas は移した例が増え続けるので、その手順が本数に比例しては回らない。
 //
+// **移した例の一覧 (`catalogue`) は Catalogue.swift にあり、置き場から組み直される**
+// (`python3 scripts/catalogue.py`)。150 本を手で並べると、足したのに書き忘れた 1 本が
+// 「まだ移していない例」と見分けが付かなくなる。
+//
 // **`mokume run` / `watch` / `mcp` は引数を通さない**ので、窓の経路は既定の 1 本に
 // 固定される。いま見たい例を先頭へ動かすか、`swift run Atlas <例名>` を使う。
 
-/// 移した例。**並びは台帳の例名の順**で、足したらここに 1 行足す。
-///
-/// `Sketch.main()` は `@MainActor static func main()` なので `any Sketch` から呼べず、
-/// Grain は `if arguments.first == "slab"` と分岐していた。例が増えると分岐も増えるので、
-/// ここでは `SketchApplication(sketch:gpu:)` を使う — **あちらは `any Sketch` を取る**ので、
-/// カタログの戻り値をそのまま渡せる (`Sketch.main()` の中身と同じ経路)。
-let catalogue: [(name: String, make: () -> any Sketch)] = [
-    ("Basics/Form/Bezier", { Bezier() }),
-    ("Basics/Input/Mouse2D", { Mouse2D() }),
-    ("Basics/Math/Map", { Map() }),
-    ("Basics/Structure/NoLoop", { NoLoop() }),
-    ("Topics/Drawing/ContinuousLines", { ContinuousLines() }),
-]
 
 /// 例名から作る。完全名 (`Basics/Input/Mouse2D`) でも末尾だけ (`Mouse2D`) でも引ける。
 func makeSketch(_ name: String?) -> (name: String, sketch: any Sketch)? {
