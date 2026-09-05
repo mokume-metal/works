@@ -77,26 +77,24 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 **測れない例には数を出さない。** 乱数・時計・書体を使う例は原典と mokume で列が違うので、一致率は「入っている乱数と書体」を測っているだけになる。並べた 1 枚は作るが、数字の代わりに理由を絵に刷る。
 
 <!-- compare:begin -->
-| 測り方 | 本数 | |
-| --- | ---: | --- |
-| `pixel` | 5 | 1 画素ずつ突き合わせた |
-| `resampled` | 0 | 原典が 1280x720 の静止画しかない。縮めているので参考値 |
-| `none` | 0 | 乱数・時計・書体。原典と列が違うので一致率に意味が無い |
-
-| 画素の一致 | 本数 |
+| その場で一致 | 本数 |
 | --- | ---: |
-| 100.0% (1 画素も違わない) | 1 |
-| 99% 以上 | 2 |
-| 95% 以上 | 1 |
-| それ未満 | 1 |
+| 100% | 4 |
+| 99% 以上 | 13 |
+| 95% 以上 | 6 |
+| 90% 以上 | 4 |
+| 90% 未満 | 8 |
+| 測らない (乱数・時計・書体) | 10 |
+
+移した 45 本ぶん。うち 0 本は原典が静止画しかなく、縮めて比べているので参考値。**どれが「同じ絵」かは決めていない** — 数と並べた 1 枚を出すところまでが機械の仕事で、見て決めるのは人である。
 
 全数は [`ledger/comparison.md`](ledger/comparison.md)。
 
-![Basics/Form/Bezier — 原典と mokume](https://i.gyazo.com/0427e8bc7a34a5f71f851cadec0511c7.png)
+![Basics/Form/Bezier — 原典と mokume](https://i.gyazo.com/6ff2bfe81e2ad2ff547000e2a668fe74.png)
 
-![Basics/Math/Map — 原典と mokume](https://i.gyazo.com/c113efc229aac3b6bfc57564bc387e54.png)
+![Basics/Math/Map — 原典と mokume](https://i.gyazo.com/1d8fd4d45af7acad364580d7cd14ec2a.png)
 
-![Topics/Drawing/ContinuousLines — 原典と mokume](https://i.gyazo.com/b7df21fb981181f80893522962ab6756.png)
+![Topics/Drawing/ContinuousLines — 原典と mokume](https://i.gyazo.com/bf6e690209c3979939765b4c8b422662.png)
 <!-- compare:end -->
 
 **形と位置は合っている。** 差が出たのは輪郭の均しと、色の作り方の 2 か所だけである。
@@ -104,7 +102,7 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 #### 1. 半透明を重ねると色が変わる (`Mouse2D`)
 
 <!-- compare:image Basics/Input/Mouse2D -->
-![Basics/Input/Mouse2D — 原典と mokume](https://i.gyazo.com/2e896bfdb06b5ff5d3c6c47c9112c322.png)
+![Basics/Input/Mouse2D — 原典と mokume](https://i.gyazo.com/b0043f7a48c18cfe0199553b20dd3a8f.png)
 
 原典の `fill(255, 204)` — 白を 80% の濃さで、51 の背景へ重ねる 1 行。**出てくる色が違う。**
 
@@ -118,7 +116,7 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 #### 2. 1px の線をピクセルに載せるか、またがせるか (`NoLoop`)
 
 <!-- compare:image Basics/Structure/NoLoop -->
-![Basics/Structure/NoLoop — 原典と mokume](https://i.gyazo.com/c870511ab9f5ef344873076f4052cef4.png)
+![Basics/Structure/NoLoop — 原典と mokume](https://i.gyazo.com/a57a486bad51f567042a317a4f0adcdf.png)
 
 `line(0, 180, width, 180)` の 1 本が、**p5 では 2 行に 128 ずつ・mokume では 1 行に 255** で出る。p5 は線をピクセルの境界にまたがらせて均し、mokume はピクセルに載せる。線 1 本ぶん (640 画素 = 面の 0.28%) の差なので一致率は 99.2% に留まる。
 

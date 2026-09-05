@@ -107,21 +107,117 @@ async function runStill(item) {
   return { canvas: frozen, width: w, height: h };
 }
 
-// 原典と mokume の絵が、画素としてどれだけ一致しているか。
-// **色が合っているかどうかは目より数で見たほうが速い。**
-function difference(left, right, w, h) {
+// 原典と mokume の絵が、どれだけ同じ絵になっているか。
+//
+// **画素どうしの完全一致では測れない。** 実測すると、目には同じ絵なのに数字だけが
+// 落ちる原因が 3 つあった。どれも「絵が違う」ではなく「画素の作り方が違う」である:
+//
+//   1. **線が半画素ずれる** — 1px の線を、p5 は画素の境界にまたがらせ (2 列に 77+77)、
+//      mokume は画素に載せる (1 列に 153)。**濃さそのものが変わる**ので、ぼかしても
+//      1 画素ずらしても合わない。線でできた例は完全一致がほぼ 0 になる
+//   2. **量子化** — mokume は線形の空間で色を持ち、書き出すときに表示値へ戻すので、
+//      広い一様な面が 1〜5 だけずれる (Functions の灰色が 191 対 189)
+//   3. **色そのものがずれる** — mokume の書き出しは Display P3 で刻まれるので、
+//      同じ数から違う色が出る (204,153,0 が 213,150,0 になる)
+//
+// **1 と 2 は同じ絵、3 は違う絵。** その 2 つを分けるために、原因を名指しできる形で測る:
+//
+//   その場で一致    そのままの位置で色が差 8 以内 (目で見て同じ色) の割合
+//   半画素で一致    mokume を半画素ずらしてもよいとしたときの割合。**ずらすと合う**なら、
+//                  違いの正体は線の載せ方だと言い切れる (ぼかしでは言い切れない)
+//   形が一致        明るさの縁 (エッジ) だけを取り出して、1 画素の幅を許して比べた割合。
+//                  色が違っても縁は同じ場所に立つので、**形と位置だけ**を見られる
+//
+// **どれが「同じ絵」かは決めない。** 3 つの数と並べた 1 枚を出すところまでが機械の仕事で、
+// 見て決めるのは人である。数だけで線を引くと、引いた場所そのものが主張になってしまう。
+
+/** 明るさ (BT.709)。色の違いと形の違いを分けるために、まず明るさだけにする。 */
+function luminance(data, w, h) {
+  const out = new Float32Array(w * h);
+  for (let i = 0, p = 0; i < data.length; i += 4, p++) {
+    out[p] = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+  }
+  return out;
+}
+
+/** 明るさの縁。**色が違っても縁は同じ場所に立つ**ので、形だけを取り出せる。 */
+function edges(luma, w, h, threshold) {
+  const out = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      const gx = x + 1 < w ? Math.abs(luma[i + 1] - luma[i]) : 0;
+      const gy = y + 1 < h ? Math.abs(luma[i + w] - luma[i]) : 0;
+      out[i] = (gx + gy) >= threshold ? 1 : 0;
+    }
+  }
+  return out;
+}
+
+/** 2 つの縁の図が、1 画素の幅を許して重なっている割合。**片側だけ見ると見逃す**ので両側から。 */
+function overlap(a, b, w, h) {
+  const near = (map, x, y) => {
+    for (let dy = -1; dy <= 1; dy++) {
+      const yy = y + dy;
+      if (yy < 0 || yy >= h) continue;
+      for (let dx = -1; dx <= 1; dx++) {
+        const xx = x + dx;
+        if (xx >= 0 && xx < w && map[yy * w + xx]) return true;
+      }
+    }
+    return false;
+  };
+  let hit = 0;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      if (a[i] && !near(b, x, y)) continue;
+      if (b[i] && !near(a, x, y)) continue;
+      hit++;
+    }
+  }
+  return (hit / (w * h)) * 100;
+}
+
+/** 画素どうしの、いちばん大きいずれ (R/G/B のうち)。 */
+function gap(a, b, i) {
+  return Math.max(Math.abs(a[i] - b[i]), Math.abs(a[i + 1] - b[i + 1]), Math.abs(a[i + 2] - b[i + 2]));
+}
+
+function difference(originCanvas, ourCanvas, w, h) {
   const read = (canvas) => canvas.getContext('2d').getImageData(0, 0, w, h).data;
-  const a = read(left), b = read(right);
-  let same = 0, sum = 0, max = 0, count = 0;
-  for (let i = 0; i < a.length; i += 4) {
-    const d = Math.max(
-      Math.abs(a[i] - b[i]), Math.abs(a[i + 1] - b[i + 1]), Math.abs(a[i + 2] - b[i + 2]));
+  const a = read(originCanvas), b = read(ourCanvas);
+
+  // **半画素ずらした mokume。** 線を画素に載せる (255 が 1 列) のか、境界にまたがらせる
+  // (128 が 2 列) のかの違いは、半画素動かすとちょうど入れ替わる。ずらして合えば、
+  // 違いの正体は線の載せ方だと**言い切れる**
+  const shifted = document.createElement('canvas');
+  shifted.width = w; shifted.height = h;
+  const sg = shifted.getContext('2d');
+  sg.drawImage(ourCanvas, -0.5, -0.5, w, h);
+  const c = read(shifted);
+
+  let same = 0, close = 0, near = 0, half = 0, sum = 0, max = 0;
+  const count = w * h;
+  for (let p = 0; p < count; p++) {
+    const i = p * 4;
+    const d = gap(a, b, i);
     if (d === 0) same++;
+    if (d <= 2) close++;
+    if (d <= 8) near++;
+    // その場で合うか、半画素ずらして合うか。**どちらかで合えば同じ絵**
+    if (d <= 8 || gap(a, c, i) <= 8) half++;
     sum += d;
     if (d > max) max = d;
-    count++;
   }
-  return { same: (same / count) * 100, mean: sum / count, max };
+
+  const la = luminance(a, w, h), lb = luminance(b, w, h);
+  const shape = overlap(edges(la, w, h, 16), edges(lb, w, h, 16), w, h);
+
+  return {
+    same: (same / count) * 100, close: (close / count) * 100, near: (near / count) * 100,
+    half: (half / count) * 100, shape, mean: sum / count, max,
+  };
 }
 
 function compose(left, right, item, diff) {
@@ -158,8 +254,8 @@ function compose(left, right, item, diff) {
   if (diff) {
     g.fillStyle = '#444444';
     const suffix = item.measure === 'resampled' ? '  ・  原典を縮めているので参考値' : '';
-    g.fillText(`画素が完全に一致 ${diff.same.toFixed(1)}%  ・  平均差 ${diff.mean.toFixed(2)} / 255`
-      + `  ・  最大差 ${diff.max} / 255${suffix}`, 2, BAR + H + 17);
+    g.fillText(`その場で一致 ${diff.near.toFixed(1)}%  ・  半画素ずらして一致 ${diff.half.toFixed(1)}%`
+      + `  ・  形が一致 ${diff.shape.toFixed(1)}%  ・  完全一致 ${diff.same.toFixed(1)}%${suffix}`, 2, BAR + H + 17);
   } else {
     g.fillStyle = '#8a5a00';
     g.fillText(`画素では測れない — ${item.why || '原典と条件が揃わない'}`, 2, BAR + H + 17);
@@ -198,7 +294,7 @@ async function one(item) {
     try {
       const diff = await one(item);
       done++;
-      const score = diff ? `一致 ${diff.same.toFixed(1)}% / 平均差 ${diff.mean.toFixed(2)} / 最大差 ${diff.max}` : `測らない (${item.why})`;
+      const score = diff ? `その場 ${diff.near.toFixed(1)}% / 半画素 ${diff.half.toFixed(1)}% / 形 ${diff.shape.toFixed(1)}% / 完全 ${diff.same.toFixed(1)}%` : `測らない (${item.why})`;
       log(`${String(done).padStart(3)}/${todo.length} ${item.example}  ${score}`);
     } catch (e) {
       blame(e);

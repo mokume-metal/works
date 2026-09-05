@@ -32,6 +32,9 @@ SHOTS = ROOT / "ledger" / "shots.json"
 GALLERY = ROOT / "ledger" / "comparison.md"
 BEGIN, END = "<!-- compare:begin -->", "<!-- compare:end -->"
 TOKEN_REF = "op://Automation/Gyazo API/credential"
+# 並べた 1 枚の刷り方の版。**変えたら全部撮り直す** — 指紋に混ぜてあるので
+# --check が古い絵を捕まえ、publish が上げ直す
+SHEET = "4"
 
 
 def port_path(example: str) -> pathlib.Path | None:
@@ -50,7 +53,7 @@ def fingerprint(example: str, entry: dict) -> str:
     digest = hashlib.sha256()
     port = port_path(example)
     digest.update(port.read_bytes() if port else b"")
-    digest.update(f"{entry['frame']}|{entry['measure']}|{entry['width']}x{entry['height']}".encode())
+    digest.update(f"{entry['frame']}|{entry['measure']}|{entry['width']}x{entry['height']}|{SHEET}".encode())
     return digest.hexdigest()
 
 
@@ -147,11 +150,28 @@ def rows(book: dict) -> list[tuple[str, dict]]:
     return sorted(book["shots"].items())
 
 
+# **どれが「同じ絵」かは機械が決めない。** 数と並べた 1 枚を出すところまでが仕事で、
+# 見て決めるのは人である。測り方そのものは scripts/compare/index.html のコメントが正本。
+
+
 def bucket(book: dict) -> dict[str, int]:
     counts = {"pixel": 0, "resampled": 0, "none": 0}
     for _, entry in rows(book):
         counts[entry["measure"]] += 1
     return counts
+
+
+def bands(book: dict) -> list[tuple[str, int]]:
+    """その場で一致した割合の分布。**線を引かず、並べるだけ。**"""
+    scores = [e["diff"]["near"] for _, e in rows(book) if e.get("diff")]
+    edges = [(100.0, "100%"), (99.0, "99% 以上"), (95.0, "95% 以上"), (90.0, "90% 以上"), (0.0, "90% 未満")]
+    out, rest = [], sorted(scores, reverse=True)
+    seen = 0
+    for i, (low, label) in enumerate(edges):
+        high = 101.0 if i == 0 else edges[i - 1][0]
+        n = sum(1 for s in rest if (s >= low if i == 0 else low <= s < high))
+        out.append((label, n)); seen += n
+    return out
 
 
 def write_gallery(book: dict) -> None:
@@ -177,11 +197,11 @@ def write_gallery(book: dict) -> None:
         "",
         f"道具は mokume v{book['tool']['mokume']} / p5.js {book['tool']['p5']}。",
         "",
-        "| 群 | 本数 | 画素で測れた | 一致率の中央値 |",
+        "| 群 | 本数 | 測った | その場で一致の中央値 |",
         "| --- | ---: | ---: | ---: |",
     ]
     for group, items in sorted(groups.items()):
-        measured = [e["diff"]["same"] for _, e in items if e.get("diff")]
+        measured = [e["diff"]["near"] for _, e in items if e.get("diff")]
         median = f"{sorted(measured)[len(measured) // 2]:.1f}%" if measured else "—"
         anchor = group.lower().replace("/", "").replace(" ", "-")
         out.append(f"| [{group}](#{anchor}) | {len(items)} | {len(measured)} | {median} |")
@@ -189,18 +209,19 @@ def write_gallery(book: dict) -> None:
 
     for group, items in sorted(groups.items()):
         out += [f"## {group}", "",
-                "| 例 | 台帳 | 一致 | 平均差 | 最大差 | 見た目 | 並べた 1 枚 |",
-                "| --- | --- | ---: | ---: | ---: | --- | --- |"]
+                "| 例 | 台帳 | その場で一致 | 半画素ずらして | 形が一致 | 完全一致 | 差はどこから | 並べた 1 枚 |",
+                "| --- | --- | ---: | ---: | ---: | ---: | --- | --- |"]
         for example, entry in items:
             leaf = example.split("/")[-1]
             diff = entry.get("diff")
             if diff:
-                same, mean, top = f"{diff['same']:.1f}%", f"{diff['mean']:.2f}", str(int(diff["max"]))
+                near, half = f"{diff.get('near', 0):.1f}%", f"{diff.get('half', 0):.1f}%"
+                shape, same = f"{diff.get('shape', 0):.1f}%", f"{diff['same']:.1f}%"
             else:
-                same = mean = top = "—"
+                near = half = shape = same = "—"
             why = entry.get("note") or entry.get("why") or ""
-            out.append(f"| `{leaf}` | `{entry['class']}` | {same} | {mean} | {top} | {why} |"
-                       f" [見る]({entry['url']}) |")
+            out.append(f"| `{leaf}` | `{entry['class']}` | {near} | {half} | {shape} | {same}"
+                       f" | {why} | [見る]({entry['url']}) |")
         out.append("")
     GALLERY.write_text("\n".join(out) + "\n")
 
@@ -213,28 +234,24 @@ def write_readme(book: dict) -> None:
         print("README に compare の印が無い。区間を作ってから", file=sys.stderr)
         return
     counts = bucket(book)
-    measured = sorted(e["diff"]["same"] for _, e in rows(book) if e.get("diff"))
+    total = len(book["shots"])
     body = [
         "",
-        f"| 測り方 | 本数 | |",
-        "| --- | ---: | --- |",
-        f"| `pixel` | {counts['pixel']} | 1 画素ずつ突き合わせた |",
-        f"| `resampled` | {counts['resampled']} | 原典が 1280x720 の静止画しかない。縮めているので参考値 |",
-        f"| `none` | {counts['none']} | 乱数・時計・書体。原典と列が違うので一致率に意味が無い |",
+        "| その場で一致 | 本数 |",
+        "| --- | ---: |",
+    ]
+    for label, n in bands(book):
+        body.append(f"| {label} | {n} |")
+    body += [
+        f"| 測らない (乱数・時計・書体) | {counts['none']} |",
+        "",
+        f"移した {total} 本ぶん。うち {counts['resampled']} 本は原典が静止画しかなく、"
+        "縮めて比べているので参考値。**どれが「同じ絵」かは決めていない** — 数と並べた"
+        " 1 枚を出すところまでが機械の仕事で、見て決めるのは人である。",
+        "",
+        "全数は [`ledger/comparison.md`](ledger/comparison.md)。",
         "",
     ]
-    if measured:
-        body += [
-            "| 画素の一致 | 本数 |",
-            "| --- | ---: |",
-            f"| 100.0% (1 画素も違わない) | {sum(1 for s in measured if s >= 99.995)} |",
-            f"| 99% 以上 | {sum(1 for s in measured if 99 <= s < 99.995)} |",
-            f"| 95% 以上 | {sum(1 for s in measured if 95 <= s < 99)} |",
-            f"| それ未満 | {sum(1 for s in measured if s < 95)} |",
-            "",
-            f"全数は [`ledger/comparison.md`](ledger/comparison.md)。",
-            "",
-        ]
     for example, entry in rows(book):
         if entry.get("featured"):
             body.append(f"![{example} — 原典と mokume]({entry['url']})")
