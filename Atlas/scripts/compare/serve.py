@@ -86,12 +86,14 @@ def build_menu() -> tuple[list[dict], list[dict]]:
     for row in ledger():
         if not row["site"]:
             continue
-        if row["picture"] == "none":
-            blocked = sorted({"loadShape", "getChild", "getVertex", "getChildCount"} & set(row["vocabulary"]))
-            skipped.append({"example": row["example"], "why": f"絵が出せない ({'/'.join(blocked) or '口が無い'})"})
-            continue
+        # **移植があること自体が証拠。** 台帳が「絵が出せない」と言っていても、実際に
+        # 移せて絵が出るなら、外れているのは台帳のほうである (LoadDisplayOBJ が実例 —
+        # loadShape に口は無いが、OBJ に限れば loadModel が受ける)。だから台帳の
+        # picture ではなく**移植の有無**で献立を組む
         if row["example"] not in have:
-            skipped.append({"example": row["example"], "why": "まだ移していない"})
+            blocked = sorted({"loadShape", "getChild", "getVertex", "getChildCount"} & set(row["vocabulary"]))
+            why = f"絵が出せない ({'/'.join(blocked)})" if row["picture"] == "none" and blocked else "まだ移していない"
+            skipped.append({"example": row["example"], "why": why})
             continue
         given = hand.get(row["example"], {})
         words = set(row["vocabulary"]) | set(row["constants"])

@@ -67,6 +67,11 @@ def check(found: list[tuple[str, str, pathlib.Path]]) -> int:
             problems.append(f"{name}: 移植はあるが、台帳に無い")
         elif not rows[name]["site"]:
             problems.append(f"{name}: 公式ページに載っていない例を移している")
+    # **台帳を覆した移植を数える。** 台帳が「絵が出せない」と言った例が実際に移せたら、
+    # 外れているのは台帳のほうである。数えて出すことが台帳を直す入口になる
+    overturned = sorted(n for n in have if rows.get(n, {}).get("picture") == "none")
+    if overturned:
+        print(f"  台帳が「絵が出せない」と言ったが移せた: {', '.join(overturned)}", file=sys.stderr)
     todo = sorted(n for n, r in rows.items() if r["site"] and r["picture"] != "none" and n not in have)
     for problem in problems:
         print(f"  {problem}", file=sys.stderr)
