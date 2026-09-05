@@ -12,13 +12,13 @@ import mokume
 ///
 /// 面 720x400・背景 0・内半径 100 / 外半径 150・頂点数は `map(mouseX, 0, width, 6, 60)` を
 /// 丸めたもの・角度の刻みは `180 / pointCount` 度、まで原典どおり。
-/// 対応表は README にある。原典と違うのは次の 4 つで、どれも mokume 側の事情から出たもの:
 ///
-/// 1. 帯 (`TRIANGLE_STRIP`) の並べ方が無いので、書く側で三角形へ畳む (``fold``)
-/// 2. 色相で色を作れないので、色相から表示値を作る式を自分で書く (``Hue``)
-/// 3. 角度はラジアン (`angleMode()` が無い)。度で持って渡すときに直す
-/// 4. 原典の `translate(-centerX, -centerY)` を**置かない**。あれは WEBGL の中央原点を
-///    左上へ戻す 1 行で、mokume の原点は初めから左上である (Solids では逆に 1 行増えた)
+/// **`v0.6.0` で、原典と違うところが 4 つから 1 つになった。** 帯 (`.triangleStrip`)・
+/// 色相で作る色 (`color(hue:saturation:brightness:)`)・`map` / `radians` がまとめて
+/// 面に入ったためで、書く側で埋めていた 3 つはこの版で畳んだ (詳細は README)。
+/// 残る 1 つは、原典の `translate(-centerX, -centerY)` を**置かない**こと — あれは
+/// WEBGL の中央原点を左上へ戻す 1 行で、mokume の原点は初めから左上である
+/// (Solids では逆に 1 行増えた)。
 final class Ring: Sketch {
     var settings = SketchSettings(width: 720, height: 400, title: "ring")
 
@@ -26,83 +26,52 @@ final class Ring: Sketch {
     private static let insideRadius: Float = 100
     private static let outsideRadius: Float = 150
 
-    /// 原典の `background(0)`。**数値 1 つの黒は書けない**ので 3 つ書き下す。
-    private static let ink = LinearRGBA.display(red: 0, green: 0, blue: 0)
-
-    /// 帯の上に置く頂点 1 つぶん。
-    ///
-    /// **原典は置くそばから `vertex()` を呼ぶが、こちらは一度溜める。** 帯を三角形へ
-    /// 畳むとき、同じ頂点が最大 3 つの三角形に現れるためで、そのたびに位置と色を
-    /// 作り直さないための控えである (``fold``)。
-    private struct Point {
-        var x: Float
-        var y: Float
-        var fill: LinearRGBA
-    }
-
     func draw() {
         // 原典の `background(0)`
-        background(Self.ink)
+        background(0)
 
         let centerX = width / 2
         let centerY = height / 2
 
         // 原典の `let pointCount = round(map(mouseX, 0, width, 6, 60))`。
-        // **`map()` が無い**ので割って掛ける。原典と同じく範囲は締めない
-        let pointCount = Int((6 + (mouseX / width) * (60 - 6)).rounded())
+        // 原典と同じく範囲は締めない (mokume の `map` も締めない)
+        let pointCount = Int(map(mouseX, 0, width, 6, 60).rounded())
 
         // 原典の `label.html(...)`。**DOM を持たないので観測へ差し出す** —
         // 撮った絵と同じ応答に載るので、絵とこの数字が食い違わない
         expose("pointCount", pointCount)
 
         // 原典の `beginShape(TRIANGLE_STRIP)` … `endShape()`。
-        // 帯の並べ方が無いので、頂点を溜めてから三角形へ畳む
-        var strip: [Point] = []
+        //
+        // **塗りは頂点ごとに残る。** `fill()` を `vertex()` の間で切り替えると、
+        // 置いた時点の色がその頂点に持たれる (`BuildingVertex.fill`)。原典の虹は
+        // これがそのまま当たった。
+        //
+        // 色は原典の `colorMode(HSB)` + `fill(angle, 255, 255)` に当たる。
+        // **彩度と明度は 255 ではなく 100 を渡す** — p5 は `colorMode(HSB)` の上限を
+        // 100 に採るので原典の `255` は丸められるが、**mokume は丸めず、上へ
+        // 突き抜けたぶんを色域の外の色として保つ**。同じ数を渡すと違う絵が出るので、
+        // 原典で実際に効いている値のほうを書く。
+        // **色相は巻き戻る**ので、角度が最後の数点で 360 度を越えても書き足すことは無い
+        beginShape(.triangleStrip)
         var angle: Float = 0
         let angleStep = 180 / Float(pointCount)
 
         for _ in 0...pointCount {
             // 外側の円の上に 1 点
-            strip.append(
-                Point(
-                    x: centerX + cos(Self.radians(angle)) * Self.outsideRadius,
-                    y: centerY + sin(Self.radians(angle)) * Self.outsideRadius,
-                    fill: Hue.color(angle)))
+            fill(color(hue: angle, saturation: 100, brightness: 100))
+            vertex(
+                centerX + cos(radians(angle)) * Self.outsideRadius,
+                centerY + sin(radians(angle)) * Self.outsideRadius)
             angle += angleStep
 
             // 内側の円の上に 1 点
-            strip.append(
-                Point(
-                    x: centerX + cos(Self.radians(angle)) * Self.insideRadius,
-                    y: centerY + sin(Self.radians(angle)) * Self.insideRadius,
-                    fill: Hue.color(angle)))
+            fill(color(hue: angle, saturation: 100, brightness: 100))
+            vertex(
+                centerX + cos(radians(angle)) * Self.insideRadius,
+                centerY + sin(radians(angle)) * Self.insideRadius)
             angle += angleStep
-        }
-
-        fold(strip)
-    }
-
-    /// 帯を三角形へ畳んで置く。
-    ///
-    /// 帯は「3 つ目からは 1 つ前の 2 点を使い回す」約束なので、`i` 番目の三角形は
-    /// `(i, i+1, i+2)` になる。mokume の ``VertexKind`` に帯が無い以上、この
-    /// 使い回しは書く側が行う — **頂点は 2n から 3(n-2) へ増える** (60 点なら 118 → 174)。
-    private func fold(_ strip: [Point]) {
-        guard strip.count >= 3 else { return }
-
-        // **塗りは頂点ごとに残る。** `fill()` を `vertex()` の間で切り替えると、
-        // 置いた時点の色がその頂点に持たれる (`BuildingVertex.fill`)。原典の虹は
-        // これがそのまま当たった
-        beginShape(.triangles)
-        for i in 0..<(strip.count - 2) {
-            for point in [strip[i], strip[i + 1], strip[i + 2]] {
-                fill(point.fill)
-                vertex(point.x, point.y)
-            }
         }
         endShape()
     }
-
-    /// 原典の `angleMode(DEGREES)` の代わり。**単位を直す口が無い**ので自分で書く。
-    private static func radians(_ degrees: Float) -> Float { degrees * .pi / 180 }
 }
