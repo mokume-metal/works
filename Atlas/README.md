@@ -70,6 +70,10 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 | [`Basics/Form/Bezier`](Sources/Atlas/Examples/Bezier.swift) | `bend` | 当たり。単独の `bezier()` が無く、`beginShape` + `vertex` + `bezierVertex` の 3 行になる |
 | [`Basics/Structure/NoLoop`](Sources/Atlas/Examples/NoLoop.swift) | `blocked` | 当たり。**ここで止まっている** — `noLoop()` が無いので原典の「1 度だけ描く」が消える |
 
+![Basics/Input/Mouse2D (frame 1)](https://i.gyazo.com/d3b81bec1238e067e754d128a908377f.png)
+
+> 撮影範囲: `swift run Atlas --render-all out 1` が書き出した**面だけ** (画面は撮っていない)。台帳が `clean` と言って外れた `Basics/Input/Mouse2D`。`mouseX` が 0 なので矩形は左端と右端にある。
+
 ### 台帳が外した 2 つ
 
 どちらも**名前は当たるのに形が違う**もので、名前しか見ない台帳の構造的な穴である。
@@ -80,6 +84,10 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 **この 2 つは移して初めて出た。** 移す前の台帳は 254 例のうち 64 例を `clean` と言っていたが、そのうち何本が同じ理由で外れているかは、移した本数だけしか分からない。
 
 ### 止まったところ
+
+![Basics/Structure/NoLoop (frame 1)](https://i.gyazo.com/3c6645bfc9265253068fd538d2269204.png)
+
+> 1 フレーム目。原典なら**この 1 枚のまま止まる**が、mokume では線が上へ流れ続ける。
 
 [`NoLoop`](Sources/Atlas/Examples/NoLoop.swift) は完成していない。原典は `setup()` で `noLoop()` を呼んで `draw()` を 1 度だけ走らせるが、mokume に進行を止める口が無いので線が流れ続ける。**動くように書き替えていない** — ADR-0022 決定 4 の言うとおり、作ろうとして止まったこと自体が実需なので、止まった形のまま残す。
 
