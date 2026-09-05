@@ -85,3 +85,28 @@ func norm(_ value: Float, _ start: Float, _ stop: Float) -> Float { (value - sta
 
 /// 原典の `sq(n)`。
 func sq(_ value: Float) -> Float { value * value }
+
+/// 原典の `colorMode(HSB, …)` のもとでの `fill(h, s, b)`。
+///
+/// **mokume に色空間を切り替える口が無い** ([#778](https://github.com/mokume-metal/mokume/issues/778))。
+/// `colorMode` は 12 本の例が使い、そのうち 4 本は**目盛りごと張り替える**
+/// (`colorMode(HSB, width, 100, height)` — 色相を 0〜640 で数える)。原典は 1 行だが、
+/// 移すと「変換を書く」と「目盛りを畳む」の 2 つを書く側が背負う。
+func hsb(_ hue: Float, _ saturation: Float, _ brightness: Float,
+         max maxima: (Float, Float, Float) = (255, 255, 255), alpha: Float = 255) -> LinearRGBA {
+    let h = (hue / maxima.0).truncatingRemainder(dividingBy: 1) * 6
+    let s = min(max(saturation / maxima.1, 0), 1)
+    let v = min(max(brightness / maxima.2, 0), 1)
+    let i = Int(h.rounded(.down))
+    let f = h - Float(i)
+    let p = v * (1 - s), q = v * (1 - s * f), t = v * (1 - s * (1 - f))
+    let (r, g, b): (Float, Float, Float) = switch i % 6 {
+    case 0: (v, t, p)
+    case 1: (q, v, p)
+    case 2: (p, v, t)
+    case 3: (p, q, v)
+    case 4: (t, p, v)
+    default: (v, p, q)
+    }
+    return .display(red: r, green: g, blue: b, alpha: alpha / 255)
+}
