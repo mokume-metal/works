@@ -1,0 +1,148 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>比較 (準備中)</title>
+<style>
+  body { font: 14px -apple-system, sans-serif; margin: 16px; background: #fff; }
+  #stage { position: absolute; left: -9999px; top: 0; }
+  #log { white-space: pre; }
+</style>
+<div id="log">はじめる…</div>
+<div id="stage"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+<script>
+const ITEMS = [
+  { slug: 'mouse2d',         title: 'Basics/Input/Mouse2D' },
+  { slug: 'map',             title: 'Basics/Math/Map' },
+  { slug: 'bezier',          title: 'Basics/Form/Bezier' },
+  { slug: 'noloop',          title: 'Basics/Structure/NoLoop' },
+  { slug: 'continuouslines', title: 'Topics/Drawing/ContinuousLines' },
+];
+
+const W = 640, H = 360, GAP = 16, BAR = 34, PAD = 8;
+const log = (m) => { document.getElementById('log').textContent += '\n' + m; };
+
+const loadImage = (src) => new Promise((ok, ng) => {
+  const img = new Image();
+  img.onload = () => ok(img);
+  img.onerror = ng;
+  img.src = src;
+});
+
+// p5 のインスタンスを 1 つ作り、数フレーム走らせてから canvas を返す。
+// **マウスは一度も動かさない** ので mouseX / mouseY は 0 のまま — mokume 側の
+// 書き出し (窓を持たないので入力が来ない) と条件が揃う。
+async function runOriginal(slug) {
+  const source = await (await fetch(`live/${slug}.js`)).text();
+  const original = new Function(source + '\n; return runLiveSketch;')();
+  // **setup() の中の noLoop() を無効にする。** 効かせると draw が 1 度も走らず面が
+  // 黒いまま残る (rAF が回らない面では p5 の自動の 1 枚目も来ない)。比べたいのは
+  // 1 枚目の絵で、noLoop の有無は「そのあと止まるか」の違いなので、絵は変わらない。
+  const factory = (s) => {
+    s.noLoop = () => {};
+    original(s);
+    const userSetup = s.setup, userDraw = s.draw;
+    let drawn = false;
+    // **等倍で描かせる。** 既定は密度 2 なので canvas が 1280x720 になり、640x360 へ
+    // 縮めるときに 1px の線が 2 行へ薄く散る (NoLoop の線が 255 ではなく 128 の 2 行に
+    // なっていた)。mokume の書き出しは等倍なので、こちらを合わせる。
+    s.setup = () => { s.pixelDensity(1); userSetup(); };
+    // **1 枚目で止める。** noLoop を潰すと今度は rAF が回り続け、撮るまでに 30 枚以上
+    // 進んでしまう (NoLoop の線が y=180 ではなく 148 にあった)。mokume 側は
+    // `--render out 1` の 1 枚目なので、ここも 1 枚目で固定する。
+    s.draw = () => { if (drawn) return; userDraw(); drawn = true; };
+  };
+  const holder = document.createElement('div');
+  document.getElementById('stage').appendChild(holder);
+  const instance = new p5(factory, holder);
+  await new Promise((r) => setTimeout(r, 400));
+  // **draw() は自分で 1 回呼ぶ。** requestAnimationFrame は表に出ていない面では
+  // 回らないことがあり、放っておくと setup() の結果だけが残る (実際、背景を setup で
+  // 塗る ContinuousLines だけが描けて、他の 4 本が真っ白になった)。
+  // mokume 側の `--render out 1` も advance() を 1 回なので、これで条件が揃う。
+  //
+  // **既に 1 枚描けているなら呼ばない。** noLoop() を setup で呼ぶ例は p5 が自動で
+  // 1 回だけ draw を走らせるので、そこへ redraw を足すと 2 枚目になり、mokume の
+  // 1 枚目と 1 フレームずれる (NoLoop の線が 1px 上にある絵になっていた)。
+  if (instance.frameCount < 1) instance.redraw();
+  if (instance.frameCount < 1) log(`  ${slug}: 1 枚も描けていない`);
+  await new Promise((r) => setTimeout(r, 120));
+  const canvas = holder.querySelector('canvas');
+  const frozen = document.createElement('canvas');
+  frozen.width = W; frozen.height = H;
+  frozen.getContext('2d').drawImage(canvas, 0, 0, W, H);
+  instance.remove();
+  return frozen;
+}
+
+// 原典と mokume の絵が、画素としてどれだけ一致しているか。
+// **色が合っているかどうかは目より数で見たほうが速い。**
+function difference(left, right) {
+  const read = (canvas) => canvas.getContext('2d').getImageData(0, 0, W, H).data;
+  const a = read(left), b = read(right);
+  let same = 0, sum = 0, max = 0, count = 0;
+  for (let i = 0; i < a.length; i += 4) {
+    const d = Math.max(
+      Math.abs(a[i] - b[i]), Math.abs(a[i + 1] - b[i + 1]), Math.abs(a[i + 2] - b[i + 2]));
+    if (d === 0) same++;
+    sum += d;
+    if (d > max) max = d;
+    count++;
+  }
+  return { same: (same / count) * 100, mean: sum / count, max };
+}
+
+function compose(left, right, title, diff) {
+  const out = document.createElement('canvas');
+  out.width = W * 2 + GAP;
+  out.height = BAR + H + PAD + 22;
+  const g = out.getContext('2d');
+  g.fillStyle = '#ffffff';
+  g.fillRect(0, 0, out.width, out.height);
+
+  g.fillStyle = '#111111';
+  g.font = 'bold 15px -apple-system, BlinkMacSystemFont, sans-serif';
+  g.fillText('Processing (p5.js) — 原典', 2, 22);
+  g.fillText('mokume — Atlas', W + GAP + 2, 22);
+
+  g.fillStyle = '#666666';
+  g.font = '13px -apple-system, BlinkMacSystemFont, sans-serif';
+  const label = title;
+  g.fillText(label, out.width - g.measureText(label).width - 2, 22);
+
+  g.drawImage(left, 0, BAR, W, H);
+  g.drawImage(right, W + GAP, BAR, W, H);
+
+  // 面の縁を見せる (黒い絵が背景と溶けるため)
+  g.strokeStyle = '#dddddd';
+  g.lineWidth = 1;
+  g.strokeRect(0.5, BAR + 0.5, W - 1, H - 1);
+  g.strokeRect(W + GAP + 0.5, BAR + 0.5, W - 1, H - 1);
+
+  g.fillStyle = '#444444';
+  g.font = '12px ui-monospace, SFMono-Regular, Menlo, monospace';
+  const line = `画素が完全に一致 ${diff.same.toFixed(1)}%  ・  平均差 ${diff.mean.toFixed(2)} / 255  ・  最大差 ${diff.max} / 255`;
+  g.fillText(line, 2, BAR + H + 17);
+  return out;
+}
+
+(async () => {
+  for (const item of ITEMS) {
+    try {
+      const original = await runOriginal(item.slug);
+      const image = await loadImage(`mokume/${item.slug}.png`);
+      const ours = document.createElement('canvas');
+      ours.width = W; ours.height = H;
+      ours.getContext('2d').drawImage(image, 0, 0, W, H);
+
+      const diff = difference(original, ours);
+      const sheet = compose(original, ours, item.title, diff);
+      const res = await fetch('/save', { method: 'POST', body: item.slug + '|' + sheet.toDataURL('image/png') });
+      log(`${item.slug}: 一致 ${diff.same.toFixed(1)}% / 平均差 ${diff.mean.toFixed(2)} / 最大差 ${diff.max}  (${await res.text()})`);
+    } catch (e) {
+      log(`${item.slug}: 失敗 ${e}`);
+    }
+  }
+  document.title = 'done';
+  log('おわり');
+})();
+</script>
