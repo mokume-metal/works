@@ -4,10 +4,13 @@ import mokume
 /// Processing の [Load File 2](https://processing.org/examples/loadfile2/) を 1 行ずつ移したもの。
 ///
 /// **台帳は `out-of-scope` と言った (ファイル入出力が主題)。絵は出る。**
-/// 止まるのは 3 つ — `loadFont("...vlw")` (**書体ファイルを読む口が無い**)、
-/// `noLoop()` / `redraw()`、`mousePressed()`
-/// ([#723](https://github.com/mokume-metal/mokume/issues/723))。押して次の 9 件へ
-/// 送る、という主題が移せないので、最初の 9 件が出たまま止まる。
+/// `v0.6.0` で `mousePressed()` の口が入ったので
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)、押して次の 9 件へ
+/// 送れるようになった。
+///
+/// 残る歪みは 2 つ — `loadFont("...vlw")` (**書体ファイルを読む口が無い**) と、
+/// `noLoop()` / `redraw()` ([#900](https://github.com/mokume-metal/mokume/issues/900))。
+/// 止まらないので毎フレーム描き直しているが、**出る絵は同じ**である。
 ///
 /// **字形は環境で変わる**ので、原典と画素では比べられない。
 final class LoadFile2: Sketch {
@@ -62,6 +65,13 @@ final class LoadFile2: Sketch {
         }
     }
 
-    // 原典はここに `void mousePressed()` を持ち、次の 9 件へ送って `redraw()` する。
-    // **どちらの口も無い**
+    /// 原典の `void mousePressed()` — 次の 9 件へ送る。
+    func mousePressed() {
+        startingEntry += num
+        if startingEntry > records.count {
+            startingEntry = 0    // 先頭へ戻る
+        }
+        // 原典はここで `redraw()` を呼ぶ。**書けない**が、止まっていないので次の
+        // フレームで描き直される
+    }
 }

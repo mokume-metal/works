@@ -5,9 +5,10 @@ import mokume
 ///
 /// **台帳は `out-of-scope` と言った (データ構造が主題)。絵は出る。**
 /// `JSONObject` の一式は Foundation の `JSONSerialization` で当たる (`host`)。
-/// 止まるのは `mousePressed()` の口が無いところ
-/// ([#723](https://github.com/mokume-metal/mokume/issues/723))。押して足して
-/// 書き戻す、という往復が移せないので、読んだところで止まる。
+/// `mousePressed()` の口は `v0.6.0` で入った
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた) ので、押して足せる。
+/// **書き戻すところは移していない** — 資材は `upstream/` (gitignore 済み) にあり、
+/// works が上流の複製を書き換える理由が無いためである。
 final class LoadSaveJSON: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Load Save JSON")
 
@@ -70,6 +71,16 @@ final class LoadSaveJSON: Sketch {
         }
     }
 
-    // 原典はここに `void mousePressed()` を持ち、押した場所を JSON へ足して書き戻す。
-    // **受ける口が無い**
+    /// 原典の `void mousePressed()` — 押した場所へ 1 つ足す。
+    ///
+    /// **書き戻すところは移していない。** 原典は `saveJSONObject()` で `data/` の
+    /// JSON を上書きするが、資材は `upstream/` (gitignore 済み) にあり、works が
+    /// 上流の複製を書き換える理由が無い。**足したものは走っている間だけ残る。**
+    func mousePressed() {
+        bubbles.append(Bubble(mouseX, mouseY, random(40, 80), "New label"))
+        // 原典はここで古いものを 1 つ落として 10 個に保ち、JSON へ書き戻す
+        if bubbles.count > 10 {
+            bubbles.removeFirst()
+        }
+    }
 }

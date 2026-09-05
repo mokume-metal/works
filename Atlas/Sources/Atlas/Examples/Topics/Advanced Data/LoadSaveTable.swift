@@ -5,8 +5,8 @@ import mokume
 ///
 /// **台帳は `out-of-scope` と言った (データ構造が主題)。絵は出る。**
 /// **`Table` に当たる型は mokume にも Foundation にも無い**ので、CSV を読むところは
-/// 自分で書く (台帳の `write`)。`mousePressed()` の口も無いので、押して足して書き戻す
-/// 往復が移せない ([#723](https://github.com/mokume-metal/mokume/issues/723))。
+/// 自分で書く (台帳の `write`)。`mousePressed()` の口は `v0.6.0` で入った
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた) ので、押して足せる。
 final class LoadSaveTable: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Load Save Table")
 
@@ -71,5 +71,16 @@ final class LoadSaveTable: Sketch {
         }
     }
 
-    // 原典はここに `void mousePressed()` を持ち、行を足して CSV へ書き戻す。**受ける口が無い**
+    /// 原典の `void mousePressed()` — 押した場所へ 1 つ足す。
+    ///
+    /// **書き戻すところは移していない。** 原典は `saveTable()` で `data/` の CSV を
+    /// 上書きするが、資材は `upstream/` (gitignore 済み) にあり、works が上流の複製を
+    /// 書き換える理由が無い。**足したものは走っている間だけ残る。**
+    func mousePressed() {
+        bubbles.append(Bubble(mouseX, mouseY, random(40, 80), "Blah"))
+        // 原典はここで古い行を 1 つ落として 10 行に保ち、CSV へ書き戻す
+        if bubbles.count > 10 {
+            bubbles.removeFirst()
+        }
+    }
 }

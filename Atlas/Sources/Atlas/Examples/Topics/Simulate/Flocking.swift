@@ -4,12 +4,13 @@ import mokume
 /// Processing の [Flocking](https://processing.org/examples/flocking/) を 1 行ずつ移したもの。
 /// 原典は 3 つのタブ (`Flocking` / `Flock` / `Boid`) に分かれている。
 ///
-/// **台帳は `bend` と言った。当たっている。歪みが 3 つ。**
+/// **台帳は `bend` と言った。`v0.6.0` で歪みが 3 つから 2 つに減った。**
 /// 1. **`PVector` に当たるメソッドが 1 つも無い** — `add` / `sub` / `mult` / `div` /
 ///    `normalize` / `limit` / `mag` / `dist` / `heading2D` の 9 個をすべて書き直す。
 ///    この例は**ベクトルの算術そのものが主題**なので、歪みがいちばん大きく出る
 /// 2. `beginShape(TRIANGLES)` は `VertexKind.triangles` で当たる (ここは届く)
-/// 3. `mousePressed()` の口が無い ([#723](https://github.com/mokume-metal/mokume/issues/723))
+/// 3. `mousePressed()` の口は **`v0.6.0` で入った**
+///    ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)。押した場所へ 1 羽足せる
 ///
 /// 乱数で向きを決めるので **画素では比べられない。**
 final class Flocking: Sketch {
@@ -173,5 +174,8 @@ final class Flocking: Sketch {
         flock.run(on: self)
     }
 
-    // 原典はここに `void mousePressed()` を持ち、押した場所へ 1 羽足す。**受ける口が無い**
+    /// 原典の `void mousePressed()` — 押した場所へ 1 羽足す。
+    func mousePressed() {
+        flock.addBoid(Boid(mouseX, mouseY, angle: random(.pi * 2)))
+    }
 }

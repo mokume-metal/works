@@ -3,10 +3,10 @@ import mokume
 /// Processing の [Forces With Vectors](https://processing.org/examples/forceswithvectors/) を 1 行ずつ移したもの。
 /// 原典は 3 つのタブ (`ForcesWithVectors` / `Liquid` / `Mover`) に分かれている。
 ///
-/// **台帳は `bend` と言った。当たっている。** 歪みは 2 つ — `PVector` の
-/// `div` / `add` / `mult` / `mag` / `copy` / `setMag` に当たるものが無いことと、
-/// `mousePressed()` の出来事の口が無いこと ([#723](https://github.com/mokume-metal/mokume/issues/723))。
-/// 押して並べ直せないので、1 度落ちきったら止まったままになる。
+/// **台帳は `bend` と言った。`v0.6.0` で歪みが 2 つから 1 つに減った。**
+/// 残るのは `PVector` の `div` / `add` / `mult` / `mag` / `copy` / `setMag` に当たるものが
+/// 無いこと。`mousePressed()` の出来事の口は入ったので
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)、押して並べ直せる。
 ///
 /// 乱数で重さを決めるので **画素では比べられない。**
 final class ForcesWithVectors: Sketch {
@@ -101,7 +101,11 @@ final class ForcesWithVectors: Sketch {
         text("click mouse to reset", 10, 30)
     }
 
-    // 原典はここに `void mousePressed()` を持ち、押すたびに並べ直す。**受ける口が無い**
+    /// 原典の `void mousePressed()` — 押すたびに並べ直す。
+    func mousePressed() {
+        reset()
+    }
+
 
     private func reset() {
         movers = (0..<10).map { Mover(random(0.5, 3), 40 + Float($0) * 70, 0) }

@@ -2,11 +2,15 @@ import mokume
 
 /// Processing の [Pixel Array](https://processing.org/examples/pixelarray/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `bend` と言った。当たっている。歪みが 3 つ。**
+/// **台帳は `bend` と言った。`v0.6.0` でも当たっている。歪みは 3 つのまま。**
 /// `frameRate(30)` は走り出す前にしか決められず、`mousePressed` / `keyPressed` は
-/// 変数なので `isMousePressed` / `isKeyDown` へ名前が変わり
-/// ([#723](https://github.com/mokume-metal/mokume/issues/723))、
+/// 変数なので `isMousePressed` / `isKeyDown(_:)` へ名前が変わり、
 /// **`set(0, 0, img)` — 絵を面へ丸ごと貼る速い口が無い** (`image()` で置き換える)。
+///
+/// **[#723](https://github.com/mokume-metal/mokume/issues/723) は閉じたが、この例には効かない** —
+/// あれが入れたのは出来事の口で、この例が読むのは「いま押されているか」のほうである。
+/// **`keyPressed` の変数のほうはとくに歪む** — mokume の `isKeyDown(_:)` はキーを 1 つ
+/// 名指しで問うので、「何かキーが押されているか」を聞く口が無い。
 final class PixelArray: Sketch {
     var settings = SketchSettings(width: 640, height: 360, frameRate: 30, title: "Pixel Array")
 

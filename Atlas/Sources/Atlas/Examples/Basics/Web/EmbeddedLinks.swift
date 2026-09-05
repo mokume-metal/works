@@ -3,11 +3,12 @@ import mokume
 /// Processing の [Embedded Links](https://processing.org/examples/embeddedlinks/) を 1 行ずつ移したもの。
 ///
 /// **台帳は `out-of-scope` と言った (ブラウザ向けの出力が主題)。絵は出る。**
-/// 止まるのは 2 つ — **`link()` でページを開く口が無い**のと、
-/// `mousePressed()` / `mouseMoved()` / `mouseDragged()` の**出来事を受ける口が無い**
-/// ([#723](https://github.com/mokume-metal/mokume/issues/723))。
-/// 触れているかどうかを見る側は `draw()` の中でポーリングに書き直せるが、
-/// **押して開くという例の主題そのものが移せない。**
+/// `v0.6.0` で `mousePressed()` / `mouseMoved()` / `mouseDragged()` の口が入った
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた) ので、
+/// 原典と同じ組み立てに戻した。
+///
+/// **残るのは `link()` でページを開く口が無いことだけ。** 押されたことは受け取れるが、
+/// 開く先が無いので、そこで止まる — **口が 1 つ埋まっても主題は移らない**例である。
 final class EmbeddedLinks: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Embedded Links")
 
@@ -15,10 +16,6 @@ final class EmbeddedLinks: Sketch {
 
     func draw() {
         background(204)
-        // 原典は `mouseMoved()` / `mouseDragged()` から `checkButtons()` を呼ぶ。
-        // **出来事の口が無い**のでここで見る
-        overButton = mouseX > 105 && mouseX < 180 && mouseY > 60 && mouseY < 135
-
         if overButton == true {
             fill(255)
         } else {
@@ -30,6 +27,26 @@ final class EmbeddedLinks: Sketch {
         line(155, 85, 155, 100)
     }
 
-    // 原典はここに `void mousePressed()` を持ち、`link("http://www.processing.org")` を
-    // 呼ぶ。**どちらの口も無い**
+    /// 原典の `void mousePressed()`。
+    func mousePressed() {
+        if overButton {
+            // 原典はここで `link("http://www.processing.org")` を呼ぶ。**書けない**
+        }
+    }
+
+    /// 原典の `void mouseMoved()`。
+    func mouseMoved() {
+        checkButtons()
+    }
+
+    /// 原典の `void mouseDragged()`。**引数は使わない** — 原典は動いた量ではなく
+    /// いまの位置を見るので、`checkButtons()` が `mouseX` / `mouseY` を読む。
+    func mouseDragged(deltaX: Float, deltaY: Float) {
+        checkButtons()
+    }
+
+    /// 原典の `void checkButtons()`。
+    private func checkButtons() {
+        overButton = mouseX > 105 && mouseX < 180 && mouseY > 60 && mouseY < 135
+    }
 }
