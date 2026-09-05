@@ -198,7 +198,12 @@ def bands(book: dict) -> list[tuple[str, int]]:
 
 
 def write_gallery(book: dict) -> None:
-    """全数の置き場。**丸ごと生成物**なので手で直さない。"""
+    """全数の置き場。**丸ごと生成物**なので手で直さない。
+
+    **絵はリンクではなく埋め込む。** 157 本を突き合わせた結果は、数字の表だけ見ても
+    「同じ絵になっているか」が分からない — 1 枚ずつ開かせると、まとめて眺めるという
+    いちばん自然な見方ができなくなる。上から流し読みできることを優先する。
+    """
     groups: dict[str, list] = {}
     for example, entry in rows(book):
         groups.setdefault(entry["group"], []).append((example, entry))
@@ -209,14 +214,23 @@ def write_gallery(book: dict) -> None:
         "",
         "<!-- scripts/compare/publish.py が書く。手で直さない -->",
         "",
-        f"移した {len(book['shots'])} 本を、原典と並べて突き合わせたもの。原典は"
-        " processing-website が例ごとに配る `liveSketch.js` (Processing 版と 1 行ずつ"
-        "対応した p5.js) を走らせたもので、**条件を 3 つ揃えてある** — マウスを動かさない"
-        "・決めた枚数で止める・等倍。",
+        f"移した {len(book['shots'])} 本を、原典と並べて突き合わせたもの。**左が原典・右が"
+        " mokume。** 原典は processing-website が例ごとに配る `liveSketch.js`"
+        " (Processing 版と 1 行ずつ対応した p5.js) を走らせたもので、**条件を 3 つ揃えて"
+        "ある** — マウスを動かさない・決めた枚数で止める・等倍。",
         "",
         f"画素で測れたのが {counts['pixel']} 本、原典が静止画しか無くて参考値なのが"
         f" {counts['resampled']} 本、測らないと決めたのが {counts['none']} 本"
         " (乱数・時計・書体を使う例は、原典と mokume で列が違うので一致率に意味が無い)。",
+        "",
+        "数は 4 つ出す。**どれが「同じ絵」かは決めていない** — 見て決めるのは人である。",
+        "",
+        "| | 何を見るか |",
+        "| --- | --- |",
+        "| その場 | そのままの位置で、色が差 8 以内 (目で見て同じ色) |",
+        "| 半画素 | mokume を半画素動かしてよいとしたとき。**ずらすと合うなら、正体は線の載せ方** |",
+        "| 形 | 明るさの縁だけを取り出し、1 画素の幅を許して比べたもの |",
+        "| 完全 | 1 画素も違わない |",
         "",
         f"道具は mokume v{book['tool']['mokume']} / p5.js {book['tool']['p5']}。",
         "",
@@ -231,21 +245,20 @@ def write_gallery(book: dict) -> None:
     out.append("")
 
     for group, items in sorted(groups.items()):
-        out += [f"## {group}", "",
-                "| 例 | 台帳 | その場で一致 | 半画素ずらして | 形が一致 | 完全一致 | 差はどこから | 並べた 1 枚 |",
-                "| --- | --- | ---: | ---: | ---: | ---: | --- | --- |"]
+        out += [f"## {group}", ""]
         for example, entry in items:
             leaf = example.split("/")[-1]
             diff = entry.get("diff")
             if diff:
-                near, half = f"{diff.get('near', 0):.1f}%", f"{diff.get('half', 0):.1f}%"
-                shape, same = f"{diff.get('shape', 0):.1f}%", f"{diff['same']:.1f}%"
+                score = (f"その場 **{diff['near']:.1f}%** ・ 半画素 {diff.get('half', 0):.1f}%"
+                         f" ・ 形 {diff.get('shape', 0):.1f}% ・ 完全 {diff['same']:.1f}%")
             else:
-                near = half = shape = same = "—"
-            why = entry.get("note") or entry.get("why") or ""
-            out.append(f"| `{leaf}` | `{entry['class']}` | {near} | {half} | {shape} | {same}"
-                       f" | {why} | [見る]({entry['url']}) |")
-        out.append("")
+                score = f"**測らない** — {entry.get('why') or '原典と条件が揃わない'}"
+            note = f" ・ {entry['note']}" if entry.get("note") else ""
+            frame = f" ・ {entry['frame']} 枚目" if entry.get("frame", 1) > 1 else ""
+            out += [f"### `{leaf}`", "",
+                    f"台帳は `{entry['class']}`{frame} ・ {score}{note}", "",
+                    f"![{example}]({entry['url']})", ""]
     GALLERY.write_text("\n".join(out) + "\n")
 
 
@@ -272,7 +285,8 @@ def write_readme(book: dict) -> None:
         "縮めて比べているので参考値。**どれが「同じ絵」かは決めていない** — 数と並べた"
         " 1 枚を出すところまでが機械の仕事で、見て決めるのは人である。",
         "",
-        "全数は [`ledger/comparison.md`](ledger/comparison.md)。",
+        "**157 枚を並べたものが [`ledger/comparison.md`](ledger/comparison.md)** にある"
+        " (リンクではなく埋め込んであるので、上から流し読みできる)。",
         "",
     ]
     for example, entry in rows(book):
