@@ -15,7 +15,7 @@ final class Primitives3D: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Primitives 3D")
 
     func draw() {
-        background(gray(0))
+        background(0)
         lights()
         noStroke()
         pushMatrix()
@@ -25,7 +25,7 @@ final class Primitives3D: Sketch {
         box(100)
         popMatrix()
         noFill()
-        stroke(gray(255))
+        stroke(255)
         pushMatrix()
         translate(500, height * 0.35, -200)
         sphere(280)

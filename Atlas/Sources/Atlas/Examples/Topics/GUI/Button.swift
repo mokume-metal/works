@@ -26,11 +26,11 @@ final class Button: Sketch {
     private var circleOver = false
 
     func setup() {
-        rectColor = gray(0)
-        rectHighlight = gray(51)
-        circleColor = gray(255)
-        circleHighlight = gray(204)
-        baseColor = gray(102)
+        rectColor = color(0)
+        rectHighlight = color(51)
+        circleColor = color(255)
+        circleHighlight = color(204)
+        baseColor = color(102)
         currentColor = baseColor
         circleX = width / 2 + circleSize / 2 + 10
         circleY = height / 2
@@ -44,11 +44,11 @@ final class Button: Sketch {
         background(currentColor)
 
         fill(rectOver ? rectHighlight : rectColor)
-        stroke(gray(255))
+        stroke(255)
         rect(rectX, rectY, rectSize, rectSize)
 
         fill(circleOver ? circleHighlight : circleColor)
-        stroke(gray(0))
+        stroke(0)
         ellipse(circleX, circleY, circleSize, circleSize)
     }
 

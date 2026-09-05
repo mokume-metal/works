@@ -104,7 +104,7 @@ final class CircleCollision: Sketch {
 
         func display(on sketch: any Sketch) {
             sketch.noStroke()
-            sketch.fill(gray(204))
+            sketch.fill(204)
             sketch.ellipse(position.x, position.y, radius * 2, radius * 2)
         }
     }
@@ -119,7 +119,7 @@ final class CircleCollision: Sketch {
     }
 
     func draw() {
-        background(gray(51))
+        background(51)
         for b in balls {
             b.update()
             b.display(on: self)

@@ -29,18 +29,18 @@ final class IncrementDecrement: Sketch {
             direction = !direction
         }
         if direction == true {
-            stroke(gray(a / width * 255))
+            stroke(a / width * 255)
         } else {
-            stroke(gray((width - a) / width * 255))
+            stroke((width - a) / width * 255)
         }
         line(a, 0, a, height / 2)
 
         b -= 1
         if b < 0 { b = width }
         if direction == true {
-            stroke(gray((width - b) / width * 255))
+            stroke((width - b) / width * 255)
         } else {
-            stroke(gray(b / width * 255))
+            stroke(b / width * 255)
         }
         line(b, height / 2 + 1, b, height)
     }

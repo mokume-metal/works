@@ -10,7 +10,7 @@ final class Pattern: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Pattern")
 
     func setup() {
-        background(gray(102))
+        background(102)
     }
 
     func draw() {
@@ -20,7 +20,7 @@ final class Pattern: Sketch {
 
     private func variableEllipse(_ x: Float, _ y: Float, _ px: Float, _ py: Float) {
         let speed = abs(x - px) + abs(y - py)
-        stroke(gray(speed))
+        stroke(speed)
         ellipse(x, y, speed, speed)
     }
 }

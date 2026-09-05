@@ -26,11 +26,11 @@ final class Array2D: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         // 飛ばしながら読むので、配列に入っている値より描く点のほうが少ない
         for y in stride(from: 0, to: Int(height), by: spacer) {
             for x in stride(from: 0, to: Int(width), by: spacer) {
-                stroke(gray(distances[x][y]))
+                stroke(distances[x][y])
                 point(Float(x + spacer / 2), Float(y + spacer / 2))
             }
         }

@@ -63,9 +63,9 @@ final class Scrollbar: Sketch {
 
         func display(on sketch: any Sketch) {
             sketch.noStroke()
-            sketch.fill(gray(204))
+            sketch.fill(204)
             sketch.rect(xpos, ypos, swidth, sheight)
-            sketch.fill(over || locked ? rgb(0, 0, 0) : rgb(102, 102, 102))
+            sketch.fill(over || locked ? color(0, 0, 0) : color(102, 102, 102))
             sketch.rect(spos, ypos, sheight, sheight)
         }
 
@@ -86,19 +86,19 @@ final class Scrollbar: Sketch {
         firstMousePress = isMousePressed && !wasPressed
         wasPressed = isMousePressed
 
-        background(gray(255))
+        background(255)
         guard let hs1, let hs2 else { return }
         let img1Pos = hs1.getPos() - width / 2
-        fill(gray(255))
+        fill(255)
         if let img1 { image(img1, width / 2 - Float(img1.width) / 2 + img1Pos * 1.5, 0) }
         let img2Pos = hs2.getPos() - width / 2
-        fill(gray(255))
+        fill(255)
         if let img2 { image(img2, width / 2 - Float(img2.width) / 2 + img2Pos * 1.5, height / 2) }
         hs1.update(on: self, firstMousePress: firstMousePress)
         hs2.update(on: self, firstMousePress: firstMousePress)
         hs1.display(on: self)
         hs2.display(on: self)
-        stroke(gray(0))
+        stroke(0)
         line(0, height / 2, width, height / 2)
     }
 }

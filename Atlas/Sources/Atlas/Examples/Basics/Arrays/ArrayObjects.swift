@@ -45,7 +45,7 @@ final class ArrayObjects: Sketch {
         }
 
         func display(on sketch: any Sketch) {
-            sketch.fill(gray(255))
+            sketch.fill(255)
             sketch.ellipse(xOffset + x, yOffset + y, 6, 6)
         }
     }
@@ -66,7 +66,7 @@ final class ArrayObjects: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         for mod in mods {
             mod.update()
             mod.display(on: self)

@@ -36,7 +36,7 @@ final class MultipleConstructors: Sketch {
     private var sp2: Spot?
 
     func setup() {
-        background(gray(204))
+        background(204)
         // 原典はここで `noLoop()` を呼ぶ。**書けない**
         sp1 = Spot(width: width, height: height)
         sp2 = Spot(width * 0.5, height * 0.5, 120)

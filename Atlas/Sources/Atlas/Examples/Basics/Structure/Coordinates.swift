@@ -8,21 +8,21 @@ final class Coordinates: Sketch {
 
     func setup() {
         // 背景を黒にして、塗りを消す
-        background(gray(0))
+        background(0)
         noFill()
 
         // point() の 2 つの引数が位置を決める。1 つ目が x、2 つ目が y
-        stroke(gray(255))
+        stroke(255)
         point(320, 180)
         point(320, 90)
 
         // 座標は点だけでなく、すべての形を描くのに使う。line() は最初の 2 つが
         // 一方の端、後の 2 つがもう一方の端
-        stroke(rgb(0, 153, 255))
+        stroke(0, 153, 255)
         line(0, 120, 640, 120)
 
         // rect() は最初の 2 つが左上の角、後の 2 つが幅と高さ
-        stroke(rgb(255, 153, 0))
+        stroke(255, 153, 0)
         rect(160, 36, 320, 288)
     }
 }

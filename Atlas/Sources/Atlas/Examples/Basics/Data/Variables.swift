@@ -8,8 +8,8 @@ final class Variables: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Variables")
 
     func setup() {
-        background(gray(0))
-        stroke(gray(153))
+        background(0)
+        stroke(153)
         strokeWeight(4)
         strokeCap(.square)
 

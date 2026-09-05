@@ -21,7 +21,7 @@ final class LoadingImages: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         if let img {
             for i in 0..<5 {
                 image(img, 0, Float(img.height * i))

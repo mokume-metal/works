@@ -53,7 +53,7 @@ final class Wolfram: Sketch {
 
         func render(on sketch: any Sketch) {
             for i in cells.indices {
-                sketch.fill(cells[i] == 1 ? gray(255) : gray(0))
+                sketch.fill(cells[i] == 1 ? color(255) : color(0))
                 sketch.noStroke()
                 sketch.rect(Float(i * scl), Float(generation * scl), Float(scl), Float(scl))
             }
@@ -81,7 +81,7 @@ final class Wolfram: Sketch {
     func setup() {
         let ruleset = [0, 1, 0, 1, 1, 0, 1, 0]   // はじめの規則
         ca = CA(ruleset, width: Int(width), height: Int(height))
-        background(gray(0))
+        background(0)
     }
 
     func draw() {
@@ -91,7 +91,7 @@ final class Wolfram: Sketch {
 
         // 下まで届いたら消して、新しい規則で作り直す
         if ca.finished() {
-            background(gray(0))
+            background(0)
             ca.randomize { self.random($0) }
             ca.restart()
         }

@@ -16,7 +16,7 @@ final class PixelArray: Sketch {
 
     func setup() {
         noFill()
-        stroke(gray(255))
+        stroke(255)
         // 原典はここで `frameRate(30)` を呼ぶ。settings へ移した
         img = try? loadImage(asset("Topics/Image Processing/PixelArray", "sea.jpg"))
     }

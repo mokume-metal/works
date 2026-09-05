@@ -60,8 +60,8 @@ final class Handles: Sketch {
 
         func display(on sketch: any Sketch) {
             sketch.line(x, y, x + stretch, y)
-            sketch.fill(gray(255))
-            sketch.stroke(gray(0))
+            sketch.fill(255)
+            sketch.stroke(0)
             sketch.rect(boxx, boxy, size, size)
             if over || press {
                 sketch.line(boxx, boxy, boxx + size, boxy + size)
@@ -94,12 +94,12 @@ final class Handles: Sketch {
         }
         wasPressed = isMousePressed
 
-        background(gray(153))
+        background(153)
         for handle in handles {
             handle.update(on: self, firstMousePress: firstMousePress)
             handle.display(on: self)
         }
-        fill(gray(0))
+        fill(0)
         rect(0, 0, width / 2, height)
     }
 }

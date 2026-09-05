@@ -22,10 +22,10 @@ final class GameOfLife: Sketch {
     private var rows: Int { Int(height) / cellSize }
 
     func setup() {
-        alive = rgb(0, 200, 0)
-        dead = gray(0)
+        alive = color(0, 200, 0)
+        dead = color(0)
         // 背景の格子を描く線
-        stroke(gray(48))
+        stroke(48)
         // 原典はここで `noSmooth()` を呼ぶ。**書けない**
 
         cells = (0..<cols).map { _ in
@@ -34,7 +34,7 @@ final class GameOfLife: Sketch {
         cellsBuffer = cells
 
         // 升目が面を覆いきらないときのために黒で埋める
-        background(gray(0))
+        background(0)
     }
 
     func draw() {

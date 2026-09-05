@@ -28,7 +28,7 @@ final class Graphing2DEquation: Sketch {
                 // 極座標の式。-1 から 1 の間の値になる
                 let val = sin(n * cos(r) + 5 * theta)
                 // 出た値を灰色の値へ移す (0 から 255 の間へ)
-                pixels[i, j] = gray((val + 1.0) * 255.0 / 2.0)
+                pixels[i, j] = color((val + 1.0) * 255.0 / 2.0)
                 y += dy
             }
             x += dx

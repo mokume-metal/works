@@ -13,11 +13,11 @@ final class Follow2: Sketch {
 
     func setup() {
         strokeWeight(20.0)
-        stroke(gray(255, 100))
+        stroke(255, 100)
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         dragSegment(0, mouseX, mouseY)
         dragSegment(1, x[0], y[0])
     }

@@ -14,14 +14,14 @@ final class Mouse1D: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         let r1 = map(mouseX, 0, width, 0, height)
         let r2 = height - r1
 
-        fill(gray(r1 / height * 255))
+        fill(r1 / height * 255)
         rect(width / 2 + r1 / 2, height / 2, r1, r1)
 
-        fill(gray(r2 / height * 255))
+        fill(r2 / height * 255)
         rect(width / 2 - r2 / 2, height / 2, r2, r2)
     }
 }

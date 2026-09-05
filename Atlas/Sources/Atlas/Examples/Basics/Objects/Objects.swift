@@ -45,7 +45,7 @@ final class Objects: Sketch {
     private var r4: MRect?
 
     func setup() {
-        fill(gray(255, 204))
+        fill(255, 204)
         noStroke()
         r1 = MRect(1, 134.0, 0.532, 0.1 * height, 10.0, 60.0)
         r2 = MRect(2, 44.0, 0.166, 0.3 * height, 5.0, 50.0)
@@ -54,7 +54,7 @@ final class Objects: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         r1?.display(on: self)
         r2?.display(on: self)

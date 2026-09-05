@@ -20,13 +20,13 @@ final class TriangleStrip: Sketch {
     private let insideRadius: Float = 100
 
     func setup() {
-        background(gray(204))
+        background(204)
         x = width / 2
         y = height / 2
     }
 
     func draw() {
-        background(gray(204))
+        background(204)
 
         let numPoints = Int(map(mouseX, 0, width, 6, 60))
         var angle: Float = 0

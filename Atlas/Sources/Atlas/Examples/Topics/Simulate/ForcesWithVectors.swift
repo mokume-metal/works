@@ -36,9 +36,9 @@ final class ForcesWithVectors: Sketch {
         }
 
         func display(on sketch: any Sketch) {
-            sketch.stroke(gray(255))
+            sketch.stroke(255)
             sketch.strokeWeight(2)
-            sketch.fill(gray(255, 200))
+            sketch.fill(255, 200)
             sketch.ellipse(position.x, position.y, mass * 16, mass * 16)
         }
 
@@ -70,7 +70,7 @@ final class ForcesWithVectors: Sketch {
 
         func display(on sketch: any Sketch) {
             sketch.noStroke()
-            sketch.fill(gray(127))
+            sketch.fill(127)
             sketch.rect(x, y, w, h)
         }
     }
@@ -84,7 +84,7 @@ final class ForcesWithVectors: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         guard let liquid else { return }
         liquid.display(on: self)
         for mover in movers {
@@ -97,7 +97,7 @@ final class ForcesWithVectors: Sketch {
             mover.display(on: self)
             mover.checkEdges(height: height)
         }
-        fill(gray(255))
+        fill(255)
         text("click mouse to reset", 10, 30)
     }
 

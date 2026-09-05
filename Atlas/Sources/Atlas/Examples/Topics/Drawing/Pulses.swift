@@ -12,9 +12,9 @@ final class Pulses: Sketch {
     private var angle: Float = 0
 
     func setup() {
-        background(gray(102))
+        background(102)
         noStroke()
-        fill(gray(0, 102))
+        fill(0, 102)
     }
 
     func draw() {
@@ -25,10 +25,10 @@ final class Pulses: Sketch {
             for a in stride(from: 0, to: 360, by: 75) {
                 let xoff = cos(radians(Float(a))) * val
                 let yoff = sin(radians(Float(a))) * val
-                fill(gray(0))
+                fill(0)
                 ellipse(mouseX + xoff, mouseY + yoff, val, val)
             }
-            fill(gray(255))
+            fill(255)
             ellipse(mouseX, mouseY, 2, 2)
         }
     }

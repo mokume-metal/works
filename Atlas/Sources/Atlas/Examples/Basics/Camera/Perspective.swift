@@ -15,7 +15,7 @@ final class Perspective: Sketch {
 
     func draw() {
         lights()
-        background(gray(0))
+        background(0)
         let cameraY = height / 2.0
         let fov = mouseX / width * .pi / 2
         let cameraZ = cameraY / tan(fov / 2.0)

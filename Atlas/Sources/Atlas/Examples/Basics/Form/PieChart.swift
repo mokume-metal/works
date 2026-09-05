@@ -15,7 +15,7 @@ final class PieChart: Sketch {
     }
 
     func draw() {
-        background(gray(100))
+        background(100)
         pieChart(300, angles)
     }
 
@@ -23,7 +23,7 @@ final class PieChart: Sketch {
         var lastAngle: Float = 0
         for i in data.indices {
             let shade = map(Float(i), 0, Float(data.count), 0, 255)
-            fill(gray(shade))
+            fill(shade)
             arc(width / 2, height / 2, diameter, diameter, lastAngle, lastAngle + radians(data[i]))
             lastAngle += radians(data[i])
         }

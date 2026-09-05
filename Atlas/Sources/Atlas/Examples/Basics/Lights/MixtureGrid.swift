@@ -13,7 +13,7 @@ final class MixtureGrid: Sketch {
 
     func draw() {
         defineLights()
-        background(gray(0))
+        background(0)
 
         for x in stride(from: Float(0), through: width, by: 60) {
             for y in stride(from: Float(0), through: height, by: 60) {
@@ -28,9 +28,9 @@ final class MixtureGrid: Sketch {
     }
 
     private func defineLights() {
-        pointLight(rgb(150, 100, 0), 200, -150, 0)
-        directionalLight(rgb(0, 102, 255), 1, 0, 0)
+        pointLight(150, 100, 0, 200, -150, 0)
+        directionalLight(0, 102, 255, 1, 0, 0)
         // **原典の集中度 2 は渡せない**
-        spotLight(rgb(255, 255, 109), 0, 40, 200, 0, -0.5, -0.5, angle: .pi / 2)
+        spotLight(255, 255, 109, 0, 40, 200, 0, -0.5, -0.5, angle: .pi / 2)
     }
 }

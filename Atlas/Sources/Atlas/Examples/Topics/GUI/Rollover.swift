@@ -22,9 +22,9 @@ final class Rollover: Sketch {
     private var circleOver = false
 
     func setup() {
-        rectColor = gray(0)
-        circleColor = gray(255)
-        baseColor = gray(102)
+        rectColor = color(0)
+        circleColor = color(255)
+        baseColor = color(102)
         circleX = width / 2 + circleSize / 2 + 10
         circleY = height / 2
         rectX = width / 2 - rectSize - 10
@@ -42,10 +42,10 @@ final class Rollover: Sketch {
         } else {
             background(baseColor)
         }
-        stroke(gray(255))
+        stroke(255)
         fill(rectColor)
         rect(rectX, rectY, rectSize, rectSize)
-        stroke(gray(0))
+        stroke(0)
         fill(circleColor)
         ellipse(circleX, circleY, circleSize, circleSize)
     }

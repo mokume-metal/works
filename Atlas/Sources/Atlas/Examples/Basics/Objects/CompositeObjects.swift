@@ -34,7 +34,7 @@ final class CompositeObjects: Sketch {
 
         func display(on sketch: any Sketch) {
             sketch.noStroke()
-            sketch.fill(gray(255))
+            sketch.fill(255)
             sketch.pushMatrix()
             sketch.translate(x, y)
             sketch.rotate(tilt)
@@ -75,7 +75,7 @@ final class CompositeObjects: Sketch {
             if on == true {
                 sketch.noFill()
                 sketch.strokeWeight(4)
-                sketch.stroke(gray(155, 153))
+                sketch.stroke(155, 153)
                 sketch.ellipse(x, y, diameter, diameter)
             }
         }
@@ -109,7 +109,7 @@ final class CompositeObjects: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         er1?.transmit(on: self)
         er2?.transmit(on: self)
     }

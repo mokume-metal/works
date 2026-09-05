@@ -16,10 +16,10 @@ final class LinearGradient: Sketch {
     private var c2 = LinearRGBA.transparent
 
     func setup() {
-        b1 = gray(255)
-        b2 = gray(0)
-        c1 = rgb(204, 102, 0)
-        c2 = rgb(0, 102, 153)
+        b1 = color(255)
+        b2 = color(0)
+        c1 = color(204, 102, 0)
+        c2 = color(0, 102, 153)
         // 原典はここで `noLoop()` を呼ぶ。**書けない**
     }
 

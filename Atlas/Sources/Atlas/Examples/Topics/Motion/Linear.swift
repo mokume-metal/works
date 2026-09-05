@@ -9,12 +9,12 @@ final class Linear: Sketch {
     private var a: Float = 0
 
     func setup() {
-        stroke(gray(255))
+        stroke(255)
         a = height / 2
     }
 
     func draw() {
-        background(gray(51))
+        background(51)
         line(0, a, width, a)
         a = a - 0.5
         if a < 0 { a = height }

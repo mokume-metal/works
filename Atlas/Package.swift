@@ -15,7 +15,7 @@ let package = Package(
         // Grain / Garden / Solids / Ring と同じ版で固定する。**どの版で描いたかは
         // Package.resolved が持つ**ので、この作品のコミットへ戻れば当時の mokume に戻る。
         // 台帳もこの版に対して組んである (ledger/sources.json が刻んでいる)
-        .package(url: "https://github.com/mokume-metal/mokume.git", from: "0.5.0")
+        .package(url: "https://github.com/mokume-metal/mokume.git", from: "0.6.0")
     ],
     targets: [
         .executableTarget(

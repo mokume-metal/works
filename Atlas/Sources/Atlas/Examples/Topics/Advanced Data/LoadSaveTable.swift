@@ -23,12 +23,12 @@ final class LoadSaveTable: Sketch {
         }
 
         func display(on sketch: any Sketch) {
-            sketch.stroke(gray(0))
+            sketch.stroke(0)
             sketch.strokeWeight(2)
             sketch.noFill()
             sketch.ellipse(x, y, diameter, diameter)
             if over {
-                sketch.fill(gray(0))
+                sketch.fill(0)
                 sketch.textAlign(.center)
                 sketch.text(name, x, y + diameter / 2 + 20)
             }
@@ -42,13 +42,13 @@ final class LoadSaveTable: Sketch {
     }
 
     func draw() {
-        background(gray(255))
+        background(255)
         for b in bubbles {
             b.display(on: self)
             b.rollover(mouseX, mouseY)
         }
         textAlign(.left)
-        fill(gray(0))
+        fill(0)
         text("Click to add bubbles.", 10, height - 10)
     }
 

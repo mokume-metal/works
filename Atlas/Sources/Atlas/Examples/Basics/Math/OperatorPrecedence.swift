@@ -8,11 +8,11 @@ final class OperatorPrecedence: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Operator Precedence")
 
     func setup() {
-        background(gray(51))
+        background(51)
         noFill()
-        stroke(gray(51))
+        stroke(51)
 
-        stroke(gray(204))
+        stroke(204)
         for i in stride(from: 0, to: Int(width) - 20, by: 4) {
             // 30 に 70 を足してから "i" と比べる
             if i > 30 + 70 {
@@ -20,12 +20,12 @@ final class OperatorPrecedence: Sketch {
             }
         }
 
-        stroke(gray(255))
+        stroke(255)
         // 2 に 8 を掛けてから 4 を足す
         rect(4 + 2 * 8, 52, 290, 48)
         rect((4 + 2) * 8, 100, 290, 49)
 
-        stroke(gray(153))
+        stroke(153)
         for i in stride(from: 0, to: Int(width), by: 2) {
             // 比べる式が先に、次に論理積、最後に論理和
             if i > 20 && i < 50 || i > 100 && i < Int(width) - 20 {

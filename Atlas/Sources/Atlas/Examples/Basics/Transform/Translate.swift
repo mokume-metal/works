@@ -14,19 +14,19 @@ final class Translate: Sketch {
     }
 
     func draw() {
-        background(gray(102))
+        background(102)
 
         x = x + 0.8
 
         if x > width + dim { x = -dim }
 
         translate(x, height / 2 - dim / 2)
-        fill(gray(255))
+        fill(255)
         rect(-dim / 2, -dim / 2, dim, dim)
 
         // 変換は積み上がる。こちらの矩形は同じ x を渡しているのに 2 倍の速さで動く
         translate(x, dim)
-        fill(gray(0))
+        fill(0)
         rect(-dim / 2, -dim / 2, dim, dim)
     }
 }

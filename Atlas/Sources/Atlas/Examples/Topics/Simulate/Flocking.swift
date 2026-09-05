@@ -63,8 +63,8 @@ final class Flocking: Sketch {
             // 速さの向きへ回した三角形を描く。原典は `velocity.heading2D()`
             let theta = atan2(velocity.y, velocity.x) + radians(90)
 
-            sketch.fill(gray(200, 100))
-            sketch.stroke(gray(255))
+            sketch.fill(200, 100)
+            sketch.stroke(255)
             sketch.pushMatrix()
             sketch.translate(position.x, position.y)
             sketch.rotate(theta)
@@ -169,7 +169,7 @@ final class Flocking: Sketch {
     }
 
     func draw() {
-        background(gray(50))
+        background(50)
         flock.run(on: self)
     }
 

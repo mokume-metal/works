@@ -23,7 +23,7 @@ final class Reflection1: Sketch {
     private let speed: Float = 3.5
 
     func setup() {
-        fill(gray(128))
+        fill(128)
         base1 = SIMD2(0, height - 150)
         base2 = SIMD2(width, height)
         createGround()
@@ -35,11 +35,11 @@ final class Reflection1: Sketch {
     }
 
     func draw() {
-        fill(gray(0, 12))
+        fill(0, 12)
         noStroke()
         rect(0, 0, width, height)
         // 地面
-        fill(gray(200))
+        fill(200)
         quad(base1.x, base1.y, base2.x, base2.y, base2.x, height, 0, height)
         // 地面の法線
         let delta = base2 - base1
@@ -47,7 +47,7 @@ final class Reflection1: Sketch {
         let normal = SIMD2<Float>(-baseDelta.y, baseDelta.x)
         // 円
         noStroke()
-        fill(gray(255))
+        fill(255)
         ellipse(position.x, position.y, r * 2, r * 2)
         position += velocity
         // 入ってくる向き (長さ 1)
@@ -60,7 +60,7 @@ final class Reflection1: Sketch {
                 let dot = incidence.x * normal.x + incidence.y * normal.y
                 velocity = SIMD2(2 * normal.x * dot - incidence.x,
                                  2 * normal.y * dot - incidence.y) * speed
-                stroke(rgb(255, 128, 0))
+                stroke(255, 128, 0)
                 line(position.x, position.y,
                      position.x - normal.x * 100, position.y - normal.y * 100)
             }

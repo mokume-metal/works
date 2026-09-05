@@ -12,7 +12,7 @@ final class RandomGaussian: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Random Gaussian")
 
     func setup() {
-        background(gray(0))
+        background(0)
     }
 
     func draw() {
@@ -24,7 +24,7 @@ final class RandomGaussian: Sketch {
         let x = (val * sd) + mean          // 標準偏差と平均で伸ばす
 
         noStroke()
-        fill(gray(255, 10))
+        fill(255, 10)
         ellipse(x, height / 2, 32, 32)
     }
 

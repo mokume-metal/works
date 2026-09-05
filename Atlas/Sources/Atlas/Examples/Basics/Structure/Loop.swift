@@ -14,12 +14,12 @@ final class Loop: Sketch {
     private var y: Float = 180
 
     func setup() {
-        stroke(gray(255))
+        stroke(255)
         // 原典はここで `noLoop()` を呼ぶ。**書けない**
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         line(0, y, width, y)
         y = y - 1
         if y < 0 { y = height }

@@ -37,8 +37,8 @@ final class MultipleParticleSystems: Sketch {
         }
 
         func display(on sketch: any Sketch) {
-            sketch.stroke(gray(255, lifespan))
-            sketch.fill(gray(255, lifespan))
+            sketch.stroke(255, lifespan)
+            sketch.fill(255, lifespan)
             sketch.ellipse(position.x, position.y, 8, 8)
         }
 
@@ -60,7 +60,7 @@ final class MultipleParticleSystems: Sketch {
             sketch.pushMatrix()
             sketch.translate(position.x, position.y)
             sketch.rotate(theta)
-            sketch.stroke(gray(255, lifespan))
+            sketch.stroke(255, lifespan)
             sketch.line(0, 0, 25, 0)
             sketch.popMatrix()
         }
@@ -92,14 +92,14 @@ final class MultipleParticleSystems: Sketch {
     private var systems: [ParticleSystem] = []
 
     func draw() {
-        background(gray(0))
+        background(0)
         for ps in systems {
             ps.run(on: self)
             ps.addParticle(velocity: SIMD2(random(-1, 1), random(-2, 0)),
                            crazy: Int(random(0, 2)) != 0)
         }
         if systems.isEmpty {
-            fill(gray(255))
+            fill(255)
             textAlign(.center)
             text("click mouse to add particle systems", width / 2, height / 2)
         }

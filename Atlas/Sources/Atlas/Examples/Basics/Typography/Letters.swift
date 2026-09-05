@@ -13,7 +13,7 @@ final class Letters: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Letters")
 
     func setup() {
-        background(gray(0))
+        background(0)
         // 原典はここで `printArray(PFont.list())` と
         // `f = createFont("SourceCodePro-Regular.ttf", 24)` を呼ぶ。**どちらも書けない**
         textFont("Menlo")
@@ -22,7 +22,7 @@ final class Letters: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         // 左と上の余白
         let margin: Float = 10
         translate(margin * 4, margin * 4)
@@ -34,9 +34,9 @@ final class Letters: Sketch {
                 let letter = String(UnicodeScalar(UInt8(counter)))
 
                 if ["A", "E", "I", "O", "U"].contains(letter) {
-                    fill(rgb(255, 204, 0))
+                    fill(255, 204, 0)
                 } else {
-                    fill(gray(255))
+                    fill(255)
                 }
                 text(letter, x, y)
                 counter += 1

@@ -15,13 +15,13 @@ final class Orthographic: Sketch {
 
     func setup() {
         noFill()
-        fill(gray(255))
+        fill(255)
         noStroke()
     }
 
     func draw() {
         lights()
-        background(gray(0))
+        background(0)
         let far = map(mouseX, 0, width, 120, 400)
         if showPerspective == true {
             perspective(.pi / 3.0, width / height, 10, far)

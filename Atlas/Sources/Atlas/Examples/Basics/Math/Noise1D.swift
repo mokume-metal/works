@@ -11,13 +11,13 @@ final class Noise1D: Sketch {
     private let xincrement: Float = 0.01
 
     func setup() {
-        background(gray(0))
+        background(0)
         noStroke()
     }
 
     func draw() {
         // 半透明を重ねて背景を作る
-        fill(gray(0, 10))
+        fill(0, 10)
         rect(0, 0, width, height)
 
         // xoff から雑音の値を取り、面の幅へ広げる
@@ -27,7 +27,7 @@ final class Noise1D: Sketch {
         xoff += xincrement
 
         // パーリン雑音が出した位置へ円を描く
-        fill(gray(200))
+        fill(200)
         ellipse(n, height / 2, 64, 64)
     }
 }

@@ -9,11 +9,11 @@ final class ColorVariables: Sketch {
 
     func setup() {
         noStroke()
-        background(rgb(51, 0, 0))
+        background(51, 0, 0)
 
-        let inside = rgb(204, 102, 0)
-        let middle = rgb(204, 153, 0)
-        let outside = rgb(153, 51, 0)
+        let inside = color(204, 102, 0)
+        let middle = color(204, 153, 0)
+        let outside = color(153, 51, 0)
 
         // 原典は下の書き方も等価だと言う (hex() で同じものが書ける)
         //   let inside = hex(0xCC6600)

@@ -21,7 +21,7 @@ final class Sequential: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         currentFrame = (currentFrame + 1) % numFrames
         var offset = 0
         guard let first = images[0] else { return }

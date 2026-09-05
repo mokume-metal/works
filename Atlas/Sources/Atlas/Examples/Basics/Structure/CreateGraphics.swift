@@ -18,17 +18,17 @@ final class CreateGraphics: Sketch {
     }
 
     func draw() {
-        fill(gray(0, 12))
+        fill(0, 12)
         rect(0, 0, width, height)
-        fill(gray(255))
+        fill(255)
         noStroke()
         ellipse(mouseX, mouseY, 60, 60)
 
         guard let pg else { return }
         pg.beginDraw()
-        pg.background(gray(51))
+        pg.background(51)
         pg.noFill()
-        pg.stroke(gray(255))
+        pg.stroke(255)
         pg.ellipse(mouseX - 120, mouseY - 60, 60, 60)
         pg.endDraw()
 

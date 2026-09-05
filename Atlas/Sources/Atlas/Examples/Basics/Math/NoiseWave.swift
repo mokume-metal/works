@@ -12,9 +12,9 @@ final class NoiseWave: Sketch {
     private var yoff: Float = 0   // パーリン雑音の 2 つ目の軸
 
     func draw() {
-        background(gray(51))
+        background(51)
 
-        fill(gray(255))
+        fill(255)
         // 波の点をつないだ多角形にする
         beginShape()
 

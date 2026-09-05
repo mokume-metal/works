@@ -23,19 +23,19 @@ final class MouseFunctions: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         // 箱の上に来ているか
         if mouseX > bx - boxSize && mouseX < bx + boxSize
             && mouseY > by - boxSize && mouseY < by + boxSize {
             overBox = true
             if !locked {
-                stroke(gray(255))
-                fill(gray(153))
+                stroke(255)
+                fill(153)
             }
         } else {
-            stroke(gray(153))
-            fill(gray(153))
+            stroke(153)
+            fill(153)
             overBox = false
         }
 

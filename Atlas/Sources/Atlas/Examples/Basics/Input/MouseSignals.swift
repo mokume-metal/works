@@ -19,7 +19,7 @@ final class MouseSignals: Sketch {
     }
 
     func draw() {
-        background(gray(102))
+        background(102)
 
         for i in 1..<Int(width) {
             xvals[i - 1] = xvals[i]
@@ -36,20 +36,20 @@ final class MouseSignals: Sketch {
             bvals[Int(width) - 1] = height / 3
         }
 
-        fill(gray(255))
+        fill(255)
         noStroke()
         rect(0, height / 3, width, height / 3 + 1)
         for i in 1..<Int(width) {
             // x の値
-            stroke(gray(255))
+            stroke(255)
             point(Float(i), map(xvals[i], 0, width, 0, height / 3 - 1))
 
             // y の値
-            stroke(gray(0))
+            stroke(0)
             point(Float(i), height / 3 + yvals[i] / 3)
 
             // 押されたかどうか
-            stroke(gray(255))
+            stroke(255)
             line(Float(i), (2 * height / 3) + bvals[i], Float(i), (2 * height / 3) + bvals[i - 1])
         }
     }

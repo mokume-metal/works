@@ -10,7 +10,7 @@ final class SaveOneImage: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Save One Image")
 
     func draw() {
-        background(gray(204))
+        background(204)
         line(0, 0, mouseX, height)
         line(width, 0, 0, mouseY)
     }

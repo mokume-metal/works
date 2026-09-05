@@ -10,15 +10,15 @@ final class MousePress: Sketch {
 
     func setup() {
         // 原典はここで `noSmooth()` を呼ぶ。**書けない**
-        fill(gray(126))
-        background(gray(102))
+        fill(126)
+        background(102)
     }
 
     func draw() {
         if isMousePressed {
-            stroke(gray(255))
+            stroke(255)
         } else {
-            stroke(gray(0))
+            stroke(0)
         }
         line(mouseX - 66, mouseY, mouseX + 66, mouseY)
         line(mouseX, mouseY - 66, mouseX, mouseY + 66)

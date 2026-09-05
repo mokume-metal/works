@@ -18,7 +18,7 @@ final class Words: Sketch {
     }
 
     func draw() {
-        background(gray(102))
+        background(102)
         textAlign(.right)
         drawType(width * 0.25)
         textAlign(.center)
@@ -30,13 +30,13 @@ final class Words: Sketch {
     private func drawType(_ x: Float) {
         line(x, 0, x, 65)
         line(x, 220, x, height)
-        fill(gray(0))
+        fill(0)
         text("ichi", x, 95)
-        fill(gray(51))
+        fill(51)
         text("ni", x, 130)
-        fill(gray(204))
+        fill(204)
         text("san", x, 165)
-        fill(gray(255))
+        fill(255)
         text("shi", x, 210)
     }
 }

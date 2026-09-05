@@ -73,6 +73,6 @@ final class Convolution: Sketch {
                 btotal += blue(pixel) * matrix[i][j]
             }
         }
-        return rgb(constrain(rtotal, 0, 255), constrain(gtotal, 0, 255), constrain(btotal, 0, 255))
+        return color(constrain(rtotal, 0, 255), constrain(gtotal, 0, 255), constrain(btotal, 0, 255))
     }
 }

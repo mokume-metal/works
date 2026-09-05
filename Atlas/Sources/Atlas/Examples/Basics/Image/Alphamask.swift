@@ -30,7 +30,7 @@ final class AlphaMask: Sketch {
     }
 
     func draw() {
-        background(rgb(0, 102, 153))
+        background(0, 102, 153)
         guard let img else { return }
         image(img, width / 2, height / 2)
         image(img, mouseX, mouseY)

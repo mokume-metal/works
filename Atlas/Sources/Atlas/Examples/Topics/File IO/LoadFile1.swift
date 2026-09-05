@@ -13,8 +13,8 @@ final class LoadFile1: Sketch {
     private var index = 0
 
     func setup() {
-        background(gray(0))
-        stroke(gray(255))
+        background(0)
+        stroke(255)
         // 原典はここで `frameRate(12)` を呼ぶ。settings へ移した
         // 原典は `loadStrings("positions.txt")`。**読む口は無いが Foundation で書ける**
         let path = asset("Topics/File IO/LoadFile1", "positions.txt")

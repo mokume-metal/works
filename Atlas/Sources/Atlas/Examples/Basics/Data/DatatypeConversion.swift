@@ -12,7 +12,7 @@ final class DatatypeConversion: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Datatype Conversion")
 
     func setup() {
-        background(gray(0))
+        background(0)
         noStroke()
         // 原典は `textFont(createFont("SourceCodePro-Regular.ttf", 24))`。**書体を読めない**
         textFont("Menlo")

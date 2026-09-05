@@ -14,13 +14,13 @@ final class EmbeddedLinks: Sketch {
     private var overButton = false
 
     func draw() {
-        background(gray(204))
+        background(204)
         // 原典は `mouseMoved()` / `mouseDragged()` から `checkButtons()` を呼ぶ。
         // **出来事の口が無い**のでここで見る
         overButton = mouseX > 105 && mouseX < 180 && mouseY > 60 && mouseY < 135
 
         if overButton == true {
-            fill(gray(255))
+            fill(255)
         } else {
             noFill()
         }

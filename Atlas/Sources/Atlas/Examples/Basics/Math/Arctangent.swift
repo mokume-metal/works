@@ -31,10 +31,10 @@ final class Arctangent: Sketch {
         func display(on sketch: any Sketch) {
             sketch.pushMatrix()
             sketch.translate(x, y)
-            sketch.fill(gray(255))
+            sketch.fill(255)
             sketch.ellipse(0, 0, size, size)
             sketch.rotate(angle)
-            sketch.fill(rgb(153, 204, 0))
+            sketch.fill(153, 204, 0)
             sketch.ellipse(size / 4, 0, size / 2, size / 2)
             sketch.popMatrix()
         }
@@ -49,7 +49,7 @@ final class Arctangent: Sketch {
     }
 
     func draw() {
-        background(gray(102))
+        background(102)
 
         e1.update(mouseX, mouseY)
         e2.update(mouseX, mouseY)

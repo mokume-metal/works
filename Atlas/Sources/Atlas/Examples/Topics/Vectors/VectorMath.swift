@@ -9,7 +9,7 @@ final class VectorMath: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Vector Math")
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         // マウスを指すベクトル
         var mouse = SIMD2<Float>(mouseX, mouseY)
@@ -27,7 +27,7 @@ final class VectorMath: Sketch {
         // 長さを 150 倍する (原典は `mouse.mult(150)`)
         mouse *= 150
         translate(width / 2, height / 2)
-        stroke(gray(255))
+        stroke(255)
         strokeWeight(4)
         line(0, 0, mouse.x, mouse.y)
     }

@@ -21,7 +21,7 @@ final class CharactersStrings: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         textSize(14)
         text("Click on the program, then type to add to the String", 50, 50)
         text("Current key: \(letter)", 50, 70)

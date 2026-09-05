@@ -21,7 +21,7 @@ final class Brownian: Sketch {
     }
 
     func draw() {
-        background(gray(51))
+        background(51)
 
         // 中身を 1 つずつ左へ寄せる
         for i in 1..<num {
@@ -38,7 +38,7 @@ final class Brownian: Sketch {
         // 点をつないだ線を引く
         for i in 1..<num {
             let val = Float(i) / Float(num) * 204.0 + 51
-            stroke(gray(val))
+            stroke(val)
             line(ax[i - 1], ay[i - 1], ax[i], ay[i])
         }
     }

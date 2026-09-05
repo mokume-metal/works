@@ -24,7 +24,7 @@ final class IntListLottery: Sketch {
     }
 
     func draw() {
-        background(gray(51))
+        background(51)
 
         // 並びをでたらめに混ぜる (原典は `lottery.shuffle()`)
         lottery.shuffle()
@@ -36,9 +36,9 @@ final class IntListLottery: Sketch {
         // 引いた番号が ticket と合っているか
         for i in results.indices where i < ticket.count {
             if results[i] == ticket[i] {
-                fill(rgb(0, 255, 0, 100))
+                fill(0, 255, 0, 100)
             } else {
-                fill(rgb(255, 0, 0, 100))
+                fill(255, 0, 0, 100)
             }
             ellipse(16 + Float(i) * 32, 140, 24, 24)
         }
@@ -56,11 +56,11 @@ final class IntListLottery: Sketch {
 
     private func showList(_ list: [Int], _ x: Float, _ y: Float) {
         for (i, val) in list.enumerated() {
-            stroke(gray(255))
+            stroke(255)
             noFill()
             ellipse(x + Float(i) * 32, y, 24, 24)
             textAlign(.center)
-            fill(gray(255))
+            fill(255)
             text("\(val)", x + Float(i) * 32, y + 6)
         }
     }

@@ -22,7 +22,7 @@ final class Milliseconds: Sketch {
         for i in 0..<Int(scale) {
             // 原典はここで `colorMode(RGB, (i+1) * scale * 10)` を呼ぶ。**書けない**
             let top = Float(i + 1) * scale * 10
-            fill(gray(millis().truncatingRemainder(dividingBy: top) / top * 255))
+            fill(millis().truncatingRemainder(dividingBy: top) / top * 255)
             rect(Float(i) * scale, 0, scale, height)
         }
     }

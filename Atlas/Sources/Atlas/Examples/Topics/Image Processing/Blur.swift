@@ -44,7 +44,7 @@ final class Blur: Sketch {
                         sumBlue += k[ky + 1][kx + 1] * blue(pixel)
                     }
                 }
-                blurImg.set(x, y, rgb(sumRed, sumGreen, sumBlue))
+                blurImg.set(x, y, color(sumRed, sumGreen, sumBlue))
             }
         }
         // 原典はここで `blurImg.updatePixels()` を呼ぶ。**合図の口が無い**

@@ -12,16 +12,16 @@ final class TextRotation: Sketch {
     private var angleRotate: Float = 0.0
 
     func setup() {
-        background(gray(0))
+        background(0)
         // 原典はここで `f = createFont("SourceCodePro-Regular.ttf", 18)`。**書けない**
         textFont("Menlo")
         textSize(18)
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         strokeWeight(1)
-        stroke(gray(153))
+        stroke(153)
         pushMatrix()
         let angle1 = radians(45)
         translate(100, 180)
@@ -46,7 +46,7 @@ final class TextRotation: Sketch {
         popMatrix()
 
         angleRotate += 0.25
-        stroke(rgb(255, 0, 0))
+        stroke(255, 0, 0)
         strokeWeight(4)
         point(100, 180)
         point(200, 180)

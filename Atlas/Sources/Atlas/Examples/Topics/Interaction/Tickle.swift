@@ -32,7 +32,7 @@ final class Tickle: Sketch {
 
     func draw() {
         // 背景を消す代わりに、半透明の矩形を上から重ねて薄れさせる
-        fill(rgb(204, 204, 204, 120))
+        fill(204, 204, 204, 120)
         rect(0, 0, width, height)
 
         // 字の上にカーソルが来たら位置を動かす
@@ -40,7 +40,7 @@ final class Tickle: Sketch {
             x += random(-5, 5)
             y += random(-5, 5)
         }
-        fill(gray(0))
+        fill(0)
         text("tickle", x, y)
     }
 }

@@ -23,7 +23,7 @@ final class PolarToCartesian: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         // 原点を面の中央へ移す
         translate(width / 2, height / 2)
@@ -34,7 +34,7 @@ final class PolarToCartesian: Sketch {
 
         ellipseMode(.center)
         noStroke()
-        fill(gray(200))
+        fill(200)
         ellipse(x, y, 32, 32)
 
         // 角度に加速と速さを効かせる

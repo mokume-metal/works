@@ -35,8 +35,8 @@ final class SimpleParticleSystem: Sketch {
         }
 
         func display(on sketch: any Sketch) {
-            sketch.stroke(gray(255, lifespan))
-            sketch.fill(gray(255, lifespan))
+            sketch.stroke(255, lifespan)
+            sketch.fill(255, lifespan)
             sketch.ellipse(position.x, position.y, 8, 8)
         }
 
@@ -71,7 +71,7 @@ final class SimpleParticleSystem: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         // 原典は Particle の作り方の中で random を呼ぶ。**乱数は面の上にある**ので、
         // クラスの側からは呼べず、作るときに渡すことになる
         ps?.addParticle(velocity: SIMD2(random(-1, 1), random(-2, 0)))

@@ -18,7 +18,7 @@ final class Pointillism: Sketch {
         img = try? loadImage(asset("Basics/Image/Pointillism", "moonwalk.jpg"))
         imageMode(.center)
         noStroke()
-        background(gray(255))
+        background(255)
     }
 
     func draw() {

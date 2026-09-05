@@ -28,14 +28,14 @@ final class MovingOnCurves: Sketch {
     }
 
     func draw() {
-        fill(gray(0, 2))
+        fill(0, 2)
         rect(0, 0, width, height)
         pct += step
         if pct < 1.0 {
             x = beginX + (pct * distX)
             y = beginY + (pow(pct, exponent) * distY)
         }
-        fill(gray(255))
+        fill(255)
         ellipse(x, y, 20, 20)
     }
 

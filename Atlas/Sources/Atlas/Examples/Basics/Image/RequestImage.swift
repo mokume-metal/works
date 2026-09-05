@@ -35,7 +35,7 @@ final class RequestImage: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         runLoaderAni()
         if checkLoadStates() { drawImages() }
     }

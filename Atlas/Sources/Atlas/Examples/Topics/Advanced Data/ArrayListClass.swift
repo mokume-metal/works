@@ -38,7 +38,7 @@ final class ArrayListClass: Sketch {
         }
 
         func display(on sketch: any Sketch) {
-            sketch.fill(gray(0, life))
+            sketch.fill(0, life)
             sketch.ellipse(x, y, w, w)
         }
     }
@@ -52,7 +52,7 @@ final class ArrayListClass: Sketch {
     }
 
     func draw() {
-        background(gray(255))
+        background(255)
         // 消しながら回すので後ろから見る
         for i in stride(from: balls.count - 1, through: 0, by: -1) {
             balls[i].move(height: height)

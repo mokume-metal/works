@@ -22,7 +22,7 @@ final class LoadDisplayOBJ: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         lights()
 
         translate(width / 2, height / 2 + 100, -200)

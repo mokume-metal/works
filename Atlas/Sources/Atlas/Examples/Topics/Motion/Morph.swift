@@ -33,7 +33,7 @@ final class Morph: Sketch {
     }
 
     func draw() {
-        background(gray(51))
+        background(51)
         // 目標からどれだけ離れているか
         var totalDistance: Float = 0
 
@@ -52,7 +52,7 @@ final class Morph: Sketch {
         strokeWeight(4)
         beginShape()
         noFill()
-        stroke(gray(255))
+        stroke(255)
         for v in morph { vertex(v.x, v.y) }
         endShape(.close)
     }

@@ -24,7 +24,7 @@ final class Bounce: Sketch {
     }
 
     func draw() {
-        background(gray(102))
+        background(102)
 
         xpos = xpos + (xspeed * xdirection)
         ypos = ypos + (yspeed * ydirection)

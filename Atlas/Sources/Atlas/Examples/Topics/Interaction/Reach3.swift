@@ -24,14 +24,14 @@ final class Reach3: Sketch {
         y = [Float](repeating: 0, count: numSegments)
         angle = [Float](repeating: 0, count: numSegments)
         strokeWeight(20.0)
-        stroke(gray(255, 100))
+        stroke(255, 100)
         noFill()
         x[x.count - 1] = width / 2
         y[x.count - 1] = height
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         strokeWeight(20)
         ballX = ballX + 1.0 * ballXDirection

@@ -15,7 +15,7 @@ final class Distance2D: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         for i in stride(from: Float(0), through: width, by: 20) {
             for j in stride(from: Float(0), through: height, by: 20) {

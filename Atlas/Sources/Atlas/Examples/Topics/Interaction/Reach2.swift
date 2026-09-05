@@ -20,13 +20,13 @@ final class Reach2: Sketch {
         y = [Float](repeating: 0, count: numSegments)
         angle = [Float](repeating: 0, count: numSegments)
         strokeWeight(20.0)
-        stroke(gray(255, 100))
+        stroke(255, 100)
         x[x.count - 1] = width / 2    // 根もとの x
         y[x.count - 1] = height       // 根もとの y
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         reachSegment(0, mouseX, mouseY)
         for i in 1..<numSegments {

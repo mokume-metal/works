@@ -13,12 +13,12 @@ final class MoveEye: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Move Eye")
 
     func setup() {
-        fill(gray(204))
+        fill(204)
     }
 
     func draw() {
         lights()
-        background(gray(0))
+        background(0)
 
         // マウスの高さで視点を動かす
         camera(30.0, mouseY, 220.0,   // 目の位置
@@ -27,7 +27,7 @@ final class MoveEye: Sketch {
 
         noStroke()
         box(90)
-        stroke(gray(255))
+        stroke(255)
         // 原典は `line(-100, 0, 0, 100, 0, 0)` の 3 行。**立体の line が無い**ので、
         // 線の頂点列として書き下す
         beginShape(.lines)

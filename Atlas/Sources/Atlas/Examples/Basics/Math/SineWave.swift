@@ -24,7 +24,7 @@ final class SineWave: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         calcWave()
         renderWave()
     }
@@ -41,7 +41,7 @@ final class SineWave: Sketch {
 
     private func renderWave() {
         noStroke()
-        fill(gray(255))
+        fill(255)
         for x in yvalues.indices {
             ellipse(Float(x) * xspacing, height / 2 + yvalues[x], 16, 16)
         }

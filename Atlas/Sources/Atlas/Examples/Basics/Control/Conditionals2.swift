@@ -8,20 +8,20 @@ final class Conditionals2: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Conditionals 2")
 
     func setup() {
-        background(gray(0))
+        background(0)
 
         for i in stride(from: 2, to: Int(width) - 2, by: 2) {
             // 'i' が 20 で割り切れるとき
             if i % 20 == 0 {
-                stroke(gray(255))
+                stroke(255)
                 line(Float(i), 80, Float(i), height / 2)
             // 'i' が 10 で割り切れるとき
             } else if i % 10 == 0 {
-                stroke(gray(153))
+                stroke(153)
                 line(Float(i), 20, Float(i), 180)
             // 上のどちらでもないとき
             } else {
-                stroke(gray(102))
+                stroke(102)
                 line(Float(i), height / 2, Float(i), height - 20)
             }
         }

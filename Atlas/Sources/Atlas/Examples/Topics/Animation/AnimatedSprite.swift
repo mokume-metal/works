@@ -35,7 +35,7 @@ final class AnimatedSprite: Sketch {
     private let drag: Float = 30.0
 
     func setup() {
-        background(rgb(255, 204, 0))
+        background(255, 204, 0)
         // 原典はここで `frameRate(24)` を呼ぶ。settings へ移した
         let load: (String) -> Image? = { [self] name in
             try? loadImage(asset("Topics/Animation/AnimatedSprite", name))
@@ -50,10 +50,10 @@ final class AnimatedSprite: Sketch {
         xpos = xpos + dx / drag
         guard let animation1, let animation2 else { return }
         if isMousePressed {
-            background(rgb(153, 153, 0))
+            background(153, 153, 0)
             animation1.display(on: self, xpos - animation1.getWidth() / 2, ypos)
         } else {
-            background(rgb(255, 204, 0))
+            background(255, 204, 0)
             animation2.display(on: self, xpos - animation1.getWidth() / 2, ypos)
         }
     }

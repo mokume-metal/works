@@ -11,9 +11,9 @@ final class Tree: Sketch {
     private var theta: Float = 0
 
     func draw() {
-        background(gray(0))
+        background(0)
         // 原典はここで `frameRate(30)` を呼ぶ。settings へ移した
-        stroke(gray(255))
+        stroke(255)
         // マウスの位置から 0〜90 度を選ぶ
         let a = (mouseX / width) * 90
         theta = radians(a)

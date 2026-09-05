@@ -43,7 +43,7 @@ final class SmokeParticleSystem: Sketch {
 
         func render(on sketch: any Sketch) {
             sketch.imageMode(.center)
-            sketch.tint(gray(255, lifespan))
+            sketch.tint(255, lifespan)
             if let img { sketch.image(img, loc.x, loc.y) }
         }
 
@@ -85,7 +85,7 @@ final class SmokeParticleSystem: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         // マウスの横の位置で「風」を作る
         let dx = map(mouseX, 0, width, -0.2, 0.2)
         let wind = SIMD2<Float>(dx, 0)
@@ -101,7 +101,7 @@ final class SmokeParticleSystem: Sketch {
         pushMatrix()
         let arrowsize: Float = 4
         translate(loc.x, loc.y)
-        stroke(gray(255))
+        stroke(255)
         // 原典は `v.heading()`。**向きを聞く口が無い**ので atan2 で書く
         rotate(atan2(v.y, v.x))
         let len = mag(v.x, v.y) * scayl

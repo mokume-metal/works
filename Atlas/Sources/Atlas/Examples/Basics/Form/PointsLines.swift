@@ -16,14 +16,14 @@ final class PointsLines: Sketch {
         let p4 = p3 + d
 
         // 原典はここで `noSmooth()` を呼ぶ。**書けない** — 均しを切る口が無い
-        background(gray(0))
+        background(0)
         translate(140, 0)
-        stroke(gray(153))
+        stroke(153)
         line(p3, p3, p2, p3)
         line(p2, p3, p2, p2)
         line(p2, p2, p3, p2)
         line(p3, p2, p3, p3)
-        stroke(gray(255))
+        stroke(255)
         point(p1, p1)
         point(p1, p3)
         point(p2, p4)

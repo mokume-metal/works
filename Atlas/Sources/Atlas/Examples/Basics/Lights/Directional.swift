@@ -9,15 +9,15 @@ final class Directional: Sketch {
 
     func setup() {
         noStroke()
-        fill(gray(204))
+        fill(204)
     }
 
     func draw() {
         noStroke()
-        background(gray(0))
+        background(0)
         let dirY = (mouseY / height - 0.5) * 2
         let dirX = (mouseX / width - 0.5) * 2
-        directionalLight(rgb(204, 204, 204), -dirX, -dirY, -1)
+        directionalLight(204, 204, 204, -dirX, -dirY, -1)
         translate(width / 2 - 100, height / 2, 0)
         sphere(80)
         translate(200, 0, 0)

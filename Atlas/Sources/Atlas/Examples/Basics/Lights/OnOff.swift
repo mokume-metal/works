@@ -14,7 +14,7 @@ final class OnOff: Sketch {
     }
 
     func draw() {
-        background(gray(51))
+        background(51)
 
         if !isMousePressed {
             lights()

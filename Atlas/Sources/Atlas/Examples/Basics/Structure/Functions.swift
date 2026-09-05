@@ -7,7 +7,7 @@ final class Functions: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Functions")
 
     func setup() {
-        background(gray(51))
+        background(51)
         noStroke()
         // 原典はここで `noLoop()` を呼ぶ。**書けない**
     }
@@ -24,7 +24,7 @@ final class Functions: Sketch {
         let grayvalues = Float(255 / num)
         let steps = Float(size / num)
         for i in 0..<num {
-            fill(gray(Float(i) * grayvalues))
+            fill(Float(i) * grayvalues)
             ellipse(xloc, yloc, Float(size) - Float(i) * steps, Float(size) - Float(i) * steps)
         }
     }

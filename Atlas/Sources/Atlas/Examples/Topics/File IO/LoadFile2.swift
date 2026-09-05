@@ -38,7 +38,7 @@ final class LoadFile2: Sketch {
     private var startingEntry = 0
 
     func setup() {
-        fill(gray(255))
+        fill(255)
         // 原典はここで `noLoop()` を呼ぶ。**書けない**
         // 原典は `loadFont("TheSans-Plain-12.vlw")`。**書体ファイルを読む口が無い**
         textFont("Menlo")
@@ -53,7 +53,7 @@ final class LoadFile2: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         for i in 0..<num {
             let thisEntry = startingEntry + i
             if thisEntry < records.count {

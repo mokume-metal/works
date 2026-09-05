@@ -15,14 +15,14 @@ final class Arm: Sketch {
 
     func setup() {
         strokeWeight(30)
-        stroke(gray(255, 160))
+        stroke(255, 160)
 
         x = width * 0.3
         y = height * 0.5
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         angle1 = (mouseX / width - 0.5) * -.pi
         angle2 = (mouseY / height - 0.5) * .pi

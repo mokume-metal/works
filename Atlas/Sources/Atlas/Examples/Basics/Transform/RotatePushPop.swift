@@ -17,13 +17,13 @@ final class RotatePushPop: Sketch {
     func draw() {
         lights()
 
-        background(rgb(0, 0, 26))
+        background(0, 0, 26)
         translate(width / 2, height / 2)
 
         for i in 0..<num {
             let shade = map(Float(i), 0, Float(num - 1), 0, 255)
             pushMatrix()
-            fill(gray(shade))
+            fill(shade)
             rotateY(a + offset * Float(i))
             rotateX(a / 2 + offset * Float(i))
             box(200)
