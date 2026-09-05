@@ -39,7 +39,7 @@ swift run Ring --frames <置き場> <数>     # 連番で書き出す
 
 | | |
 | --- | --- |
-| works | この作品を足した PR の merge コミット (`Package.resolved` が同じツリーにある) |
+| works | [#8](https://github.com/mokume-metal/works/pull/8) の merge コミット (`Package.resolved` が同じツリーにある) |
 | mokume | `v0.5.0` / `f0d136d1d70b172b49b3419f795feba018fe4101` (`Package.resolved` が固定している) |
 
 ```bash
@@ -74,9 +74,9 @@ MOKUME_WORK_DIR="$PWD" mokume run Ring   # 作品の親から立てるとき
 | --- | --- | --- |
 | `beginShape()` / `vertex(x, y)` / `endShape()` | 同名。引数の順も同じ | そのまま当たる |
 | `fill()` を `vertex()` の間で切り替える | **同じように効く** | 置いた時点の塗りが頂点ごとに残る (`BuildingVertex.fill`)。原典の虹はこれがそのまま当たった |
-| `beginShape(TRIANGLE_STRIP)` | **無い** | `VertexKind` は `.polygon` / `.points` / `.lines` / `.triangles` の 4 つ。帯は書く側で三角形へ畳む。→ [mokume#881](https://github.com/mokume-metal/mokume/issues/881) |
-| `map(v, a, b, c, d)` | **無い** | 割って掛ける。→ [mokume#882](https://github.com/mokume-metal/mokume/issues/882) |
-| `angleMode(DEGREES)` | **無い** | 度をラジアンへ直すのは書く側の仕事 (Solids でも同じ場所で詰まった) |
+| `beginShape(TRIANGLE_STRIP)` | **無い** | `VertexKind` は `.polygon` / `.points` / `.lines` / `.triangles` の 4 つ。帯は書く側で三角形へ畳む。→ [mokume#882](https://github.com/mokume-metal/mokume/issues/882) |
+| `map(v, a, b, c, d)` | **無い** | 割って掛ける。→ [mokume#883](https://github.com/mokume-metal/mokume/issues/883) |
+| `angleMode(DEGREES)` | **無い** | 度をラジアンへ直すのは書く側の仕事 (Solids でも同じ場所で詰まった)。→ [mokume#883](https://github.com/mokume-metal/mokume/issues/883) |
 | `colorMode(HSB)` + `fill(色相, 255, 255)` | **無い** | 色相から表示値を作る式を書く ([`Hue.swift`](Sources/Ring/Hue.swift))。**Issue にしていない** — `main` には [#778](https://github.com/mokume-metal/mokume/issues/778) で既に入っている |
 | `round(x)` | `x.rounded()` | Swift の語彙 |
 | `mouseX` | `mouseX` | 同じ。**外から送った座標も面の座標のまま届く** |
@@ -108,7 +108,7 @@ endShape()
 
 **同じ頂点を 3 回書くので、位置と色を先に溜める場所も要る** (`Ring.Point`)。原典が置くそばから `vertex()` を呼べるのは、使い回しを面の側が引き受けているからである。
 
-→ [mokume#881](https://github.com/mokume-metal/mokume/issues/881)
+→ [mokume#882](https://github.com/mokume-metal/mokume/issues/882)
 
 #### 2. 角度の単位変換と写像が無い
 
@@ -125,7 +125,7 @@ private static func radians(_ degrees: Float) -> Float { degrees * .pi / 180 }
 
 作品トラックから見えたので戻した。Garden は「`map` / `lerp` / `constrain` は無いが 1 度も要らなかった」と書いており、**要った作品はこれが最初**である。
 
-→ [mokume#882](https://github.com/mokume-metal/mokume/issues/882)
+→ [mokume#883](https://github.com/mokume-metal/mokume/issues/883)
 
 ### 詰まらなかったが、違うところ
 
@@ -156,5 +156,5 @@ private static func radians(_ degrees: Float) -> Float { degrees * .pi / 180 }
 
 | 踏んだもの | |
 | --- | --- |
-| 頂点の並べ方に帯・扇・四角が無く、`TRIANGLE_STRIP` を写すと使い回しが書く側の仕事になる | [mokume#881](https://github.com/mokume-metal/mokume/issues/881) |
-| 角度の単位変換と写像 (`map` / `radians`) が無い — アンブレラが待っていた実需 | [mokume#882](https://github.com/mokume-metal/mokume/issues/882) |
+| 頂点の並べ方に帯・扇・四角が無く、`TRIANGLE_STRIP` を写すと使い回しが書く側の仕事になる | [mokume#882](https://github.com/mokume-metal/mokume/issues/882) |
+| 角度の単位変換と写像 (`map` / `radians`) が無い — アンブレラが待っていた実需 | [mokume#883](https://github.com/mokume-metal/mokume/issues/883) |
