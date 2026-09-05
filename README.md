@@ -60,6 +60,7 @@ brew upgrade mokume                    # 古いと感じたら
 | [Grain](Grain/) | 挽いた板を並べた面。木目を手続き的に作る |
 | [Garden](Garden/) | p5.js の Data Structure Garden を 1 行ずつ移した庭。作品であると同時に、p5 の語彙との対応を測る物差し |
 | [Solids](Solids/) | p5.js の 3D Geometries を 1 行ずつ移した立体の並び。Garden が測らなかった**立体の**語彙の物差し |
+| [Ring](Ring/) | p5.js の Triangle Strip を 1 行ずつ移した虹の輪。原形の外へ出る唯一の道である**頂点列**の物差し |
 
 **`Package.resolved` は作品ごとに持ち、コミットする。** 作品のコミットへ戻れば mokume も
 当時の版に戻るので、別の作品が新しい mokume を要求しても前の作品の再現は壊れない。
