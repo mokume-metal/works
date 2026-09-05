@@ -47,7 +47,7 @@ final class Pentigree: Sketch {
                 switch step {
                 case "F":
                     sketch.noFill()
-                    sketch.stroke(gray(255))
+                    sketch.stroke(255)
                     sketch.line(0, 0, 0, -drawLength)
                     sketch.translate(0, -drawLength)
                 case "+": sketch.rotate(theta)
@@ -67,7 +67,7 @@ final class Pentigree: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         ps.render(on: self)
     }
 }

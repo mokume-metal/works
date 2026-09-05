@@ -10,8 +10,8 @@ final class TrueFalse: Sketch {
     func setup() {
         var b = false
 
-        background(gray(0))
-        stroke(gray(255))
+        background(0)
+        stroke(255)
 
         let d = 20
         let middle = Int(width) / 2

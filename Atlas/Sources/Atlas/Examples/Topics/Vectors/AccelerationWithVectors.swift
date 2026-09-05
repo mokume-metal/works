@@ -34,9 +34,9 @@ final class AccelerationWithVectors: Sketch {
         }
 
         func display(on sketch: any Sketch) {
-            sketch.stroke(gray(255))
+            sketch.stroke(255)
             sketch.strokeWeight(2)
-            sketch.fill(gray(127))
+            sketch.fill(127)
             sketch.ellipse(location.x, location.y, 48, 48)
         }
     }
@@ -48,7 +48,7 @@ final class AccelerationWithVectors: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         mover?.update(mouseX: mouseX, mouseY: mouseY)
         mover?.display(on: self)
     }

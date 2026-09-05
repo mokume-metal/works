@@ -20,7 +20,7 @@ final class BackgroundImage: Sketch {
     func draw() {
         // 原典は `background(bg)`。**絵を渡す形が無い**ので置き直す
         if let bg { image(bg, 0, 0) }
-        stroke(rgb(226, 204, 0))
+        stroke(226, 204, 0)
         line(0, y, width, y)
         y += 1
         if y > height { y = 0 }

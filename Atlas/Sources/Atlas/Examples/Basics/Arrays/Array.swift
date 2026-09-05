@@ -20,7 +20,7 @@ final class ArrayCosine: Sketch {
             let amount = map(Float(i), 0, width, 0, .pi)
             return abs(cos(amount))
         }
-        background(gray(255))
+        background(255)
         // 原典はここで `noLoop()` を呼ぶ。**書けない** — 進行を止める口が無いので、
         // draw() は毎フレーム呼ばれ続ける
     }
@@ -29,21 +29,21 @@ final class ArrayCosine: Sketch {
         var y1: Float = 0
         var y2 = height / 3
         for i in 0..<Int(width) {
-            stroke(gray(coswave[i] * 255))
+            stroke(coswave[i] * 255)
             line(Float(i), y1, Float(i), y2)
         }
 
         y1 = y2
         y2 = y1 + y1
         for i in 0..<Int(width) {
-            stroke(gray(coswave[i] * 255 / 4))
+            stroke(coswave[i] * 255 / 4)
             line(Float(i), y1, Float(i), y2)
         }
 
         y1 = y2
         y2 = height
         for i in 0..<Int(width) {
-            stroke(gray(255 - coswave[i] * 255))
+            stroke(255 - coswave[i] * 255)
             line(Float(i), y1, Float(i), y2)
         }
     }

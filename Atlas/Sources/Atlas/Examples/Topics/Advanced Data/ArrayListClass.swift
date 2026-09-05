@@ -3,9 +3,9 @@ import mokume
 /// Processing の [ArrayList Class](https://processing.org/examples/arraylistclass/) を 1 行ずつ移したもの。
 ///
 /// **台帳は `out-of-scope` と言った (データ構造が主題)。絵は出る。**
-/// `ArrayList` は Swift の配列でそのまま書ける (`host`)。止まるのは
-/// `mousePressed()` の口が無いところ ([#723](https://github.com/mokume-metal/mokume/issues/723))
-/// と、`fill(0, life)` の**明るさ + 透かしの 2 つ組**。
+/// `ArrayList` は Swift の配列でそのまま書ける (`host`)。`mousePressed()` の口は
+/// `v0.6.0` で入ったので ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)、
+/// 押した場所へ足せる。残るのは `fill(0, life)` の**明るさ + 透かしの 2 つ組**。
 final class ArrayListClass: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "ArrayList Class")
 
@@ -38,7 +38,7 @@ final class ArrayListClass: Sketch {
         }
 
         func display(on sketch: any Sketch) {
-            sketch.fill(gray(0, life))
+            sketch.fill(0, life)
             sketch.ellipse(x, y, w, w)
         }
     }
@@ -52,7 +52,7 @@ final class ArrayListClass: Sketch {
     }
 
     func draw() {
-        background(gray(255))
+        background(255)
         // 消しながら回すので後ろから見る
         for i in stride(from: balls.count - 1, through: 0, by: -1) {
             balls[i].move(height: height)
@@ -61,5 +61,8 @@ final class ArrayListClass: Sketch {
         }
     }
 
-    // 原典はここに `void mousePressed()` を持ち、押した場所へ 1 つ足す。**受ける口が無い**
+    /// 原典の `void mousePressed()` — 押した場所へ 1 つ足す。
+    func mousePressed() {
+        balls.append(Ball(mouseX, mouseY, ballWidth))
+    }
 }

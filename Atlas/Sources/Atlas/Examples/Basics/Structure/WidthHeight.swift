@@ -8,12 +8,12 @@ final class WidthHeight: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Width Height")
 
     func draw() {
-        background(gray(127))
+        background(127)
         noStroke()
         for i in stride(from: 0, to: Int(height), by: 20) {
-            fill(rgb(129, 206, 15))
+            fill(129, 206, 15)
             rect(0, Float(i), width, 10)
-            fill(gray(255))
+            fill(255)
             rect(Float(i), 0, 10, height)
         }
     }

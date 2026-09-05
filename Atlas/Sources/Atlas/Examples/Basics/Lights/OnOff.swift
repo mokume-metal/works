@@ -2,8 +2,9 @@ import mokume
 
 /// Processing の [On/Off](https://processing.org/examples/onoff/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `bend` と言った。当たっている** — 原典の `mousePressed` は変数なので
-/// `isMousePressed` に名前が変わる ([#723](https://github.com/mokume-metal/mokume/issues/723))。
+/// **台帳は `bend` と言った。`v0.6.0` でも当たっている** — 原典の `mousePressed` は変数なので
+/// `isMousePressed` に名前が変わる。[#723](https://github.com/mokume-metal/mokume/issues/723) が
+/// 入れたのは出来事の口 (`mousePressed()`) で、変数を読むこの例には効かない。
 final class OnOff: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "On/Off")
 
@@ -14,7 +15,7 @@ final class OnOff: Sketch {
     }
 
     func draw() {
-        background(gray(51))
+        background(51)
 
         if !isMousePressed {
             lights()

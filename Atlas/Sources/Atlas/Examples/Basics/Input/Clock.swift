@@ -20,7 +20,7 @@ final class Clock: Sketch {
     private var clockDiameter: Float = 0
 
     func setup() {
-        stroke(gray(255))
+        stroke(255)
 
         let radius = min(width, height) / 2
         secondsRadius = radius * 0.72
@@ -33,10 +33,10 @@ final class Clock: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         // 文字盤
-        fill(gray(80))
+        fill(80)
         noStroke()
         ellipse(cx, cy, clockDiameter, clockDiameter)
 
@@ -46,7 +46,7 @@ final class Clock: Sketch {
         let h = map(hour() + norm(minute(), 0, 60), 0, 24, 0, .pi * 4) - .pi / 2
 
         // 針
-        stroke(gray(255))
+        stroke(255)
         strokeWeight(1)
         line(cx, cy, cx + cos(s) * secondsRadius, cy + sin(s) * secondsRadius)
         strokeWeight(2)

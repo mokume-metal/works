@@ -14,15 +14,15 @@ final class Mixture: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         translate(width / 2, height / 2)
 
         // 右からの橙の点光源
-        pointLight(rgb(150, 100, 0), 200, -150, 0)
+        pointLight(150, 100, 0, 200, -150, 0)
         // 左からの青い平行光源
-        directionalLight(rgb(0, 102, 255), 1, 0, 0)
+        directionalLight(0, 102, 255, 1, 0, 0)
         // 手前からの黄色いスポット。**原典の最後の引数 (集中度 2) は渡せない**
-        spotLight(rgb(255, 255, 109), 0, 40, 200, 0, -0.5, -0.5, angle: .pi / 2)
+        spotLight(255, 255, 109, 0, 40, 200, 0, -0.5, -0.5, angle: .pi / 2)
 
         rotateY(map(mouseX, 0, width, 0, .pi))
         rotateX(map(mouseY, 0, height, 0, .pi))

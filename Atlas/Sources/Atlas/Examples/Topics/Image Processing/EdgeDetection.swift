@@ -25,7 +25,10 @@ final class EdgeDetection: Sketch {
         guard let grayImg = try? createImage(img.width, img.height) else { return }
         for y in 0..<img.height {
             for x in 0..<img.width {
-                grayImg.set(x, y, gray(brightness(img.get(x, y))))
+                // `brightness()` は **0…100 の百分率**で返る (`v0.6.0`)。
+                // 原典の `brightness()` は colorMode の上限 (既定 255) で返すので、
+                // 灰色を作る `color(_:)` (0…255) へ渡す前に目盛りを直す
+                grayImg.set(x, y, color(brightness(img.get(x, y)) * 2.55))
             }
         }
 
@@ -40,7 +43,7 @@ final class EdgeDetection: Sketch {
                         sum += kernel[ky + 1][kx + 1] * blue(grayImg.get(x + kx, y + ky))
                     }
                 }
-                edgeImg.set(x, y, gray(sum))
+                edgeImg.set(x, y, color(sum))
             }
         }
         // 原典はここで `edgeImg.updatePixels()` を呼ぶ。**書けない**

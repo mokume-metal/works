@@ -20,7 +20,7 @@ final class Transparency: Sketch {
         image(img, 0, 0)   // そのままの濃さで置く
         let dx = (mouseX - Float(img.width) / 2) - offset
         offset += dx * easing
-        tint(gray(255, 127))   // 半分の濃さで置く
+        tint(255, 127)   // 半分の濃さで置く
         image(img, offset, 0)
     }
 }

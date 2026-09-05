@@ -3,8 +3,9 @@ import mokume
 
 /// Processing の [Moving On Curves](https://processing.org/examples/movingoncurves/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `bend` と言った。当たっている** — `mousePressed()` の出来事を受ける口が
-/// 無い ([#723](https://github.com/mokume-metal/mokume/issues/723))。押して行き先を
+/// **台帳は `bend` と言い、`v0.5.0` では押しても何も起きなかった。`v0.6.0` で動く** —
+/// `mousePressed()` の出来事を受ける口が入った
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)。押して行き先を
 /// 変えるところが落ちるので、最初の 1 本の道すじを走ったまま止まる。
 final class MovingOnCurves: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Moving On Curves")
@@ -28,17 +29,25 @@ final class MovingOnCurves: Sketch {
     }
 
     func draw() {
-        fill(gray(0, 2))
+        fill(0, 2)
         rect(0, 0, width, height)
         pct += step
         if pct < 1.0 {
             x = beginX + (pct * distX)
             y = beginY + (pow(pct, exponent) * distY)
         }
-        fill(gray(255))
+        fill(255)
         ellipse(x, y, 20, 20)
     }
 
-    // 原典はここに `void mousePressed()` を持ち、押した場所を新しい行き先にする。
-    // **受ける口が無い**
+    /// 原典の `void mousePressed()` — 押した場所を新しい行き先にする。
+    func mousePressed() {
+        pct = 0.0
+        beginX = x
+        beginY = y
+        endX = mouseX
+        endY = mouseY
+        distX = endX - beginX
+        distY = endY - beginY
+    }
 }

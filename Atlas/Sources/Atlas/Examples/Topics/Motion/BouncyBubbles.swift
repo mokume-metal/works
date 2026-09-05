@@ -86,11 +86,11 @@ final class BouncyBubbles: Sketch {
         // 原典は作るときに並びごと渡す。Swift では作り終えてから差し込む
         for ball in balls { ball.others = balls }
         noStroke()
-        fill(gray(255, 204))
+        fill(255, 204)
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         for ball in balls {
             ball.collide(spring: spring)
             ball.move(gravity: gravity, friction: friction, width: width, height: height)

@@ -10,11 +10,11 @@ final class Iteration: Sketch {
         let num = 14
         var y: Float = 0
 
-        background(gray(102))
+        background(102)
         noStroke()
 
         // 白い帯
-        fill(gray(255))
+        fill(255)
         y = 60
         for _ in 0..<(num / 3) {
             rect(50, y, 475, 10)
@@ -22,7 +22,7 @@ final class Iteration: Sketch {
         }
 
         // 灰色の帯
-        fill(gray(51))
+        fill(51)
         y = 40
         for _ in 0..<num {
             rect(405, y, 30, 10)
@@ -36,7 +36,7 @@ final class Iteration: Sketch {
 
         // 細い線
         y = 45
-        fill(gray(0))
+        fill(0)
         for _ in 0..<(num - 1) {
             rect(120, y, 40, 1)
             y += 20

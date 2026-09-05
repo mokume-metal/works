@@ -2,10 +2,14 @@ import mokume
 
 /// Processing の [Convolution](https://processing.org/examples/convolution/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `blocked` と言った。半分だけ — 絵は出る。**
-/// 止まるのは **`mousePressed()` / `mouseMoved()` / `mouseDragged()` から `redraw()` を
-/// 呼ぶところ** ([#723](https://github.com/mokume-metal/mokume/issues/723))。
-/// 押して効き目を切り替える主題が落ち、最初の 1 つ (Identity) のまま動かない。
+/// **台帳は `blocked` と言い、`v0.5.0` では主題が落ちていた。`v0.6.0` で動く。**
+/// `mousePressed()` / `mouseMoved()` / `mouseDragged()` の口が入ったので
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)、押して効き目を
+/// 切り替えられる。
+///
+/// **`redraw()` はまだ無い** ([#900](https://github.com/mokume-metal/mokume/issues/900))。
+/// 原典は `noLoop()` で止めておいて出来事のたびに `redraw()` するが、こちらは止まらないので
+/// 毎フレーム描き直している — **結果は同じで、無駄が多い形になる。**
 /// 画素の読み書きは `Blur` と同じで、1 次元の並びが無く、色の空間を戻す必要がある。
 final class Convolution: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Convolution")
@@ -34,7 +38,15 @@ final class Convolution: Sketch {
         // 原典はここで `noLoop()` を呼ぶ。**書けない**
     }
 
-    // 原典はここに mousePressed / mouseMoved / mouseDragged を持ち、redraw() を呼ぶ。
+    /// 原典の `void mousePressed()` — 押すたびに次の効き目へ送る。
+    func mousePressed() {
+        effect += 1
+        if effect >= effectNames.count { effect = 0 }
+        // 原典はここで `redraw()` を呼ぶ。**書けない**が、止まっていないので次の
+        // フレームで描き直される
+    }
+
+    // 原典は `mouseMoved()` / `mouseDragged()` も持つが、どちらも `redraw()` を呼ぶだけ。
     // **どの口も無い**ので、効き目の切り替えが落ちる
 
     func draw() {
@@ -73,6 +85,6 @@ final class Convolution: Sketch {
                 btotal += blue(pixel) * matrix[i][j]
             }
         }
-        return rgb(constrain(rtotal, 0, 255), constrain(gtotal, 0, 255), constrain(btotal, 0, 255))
+        return color(constrain(rtotal, 0, 255), constrain(gtotal, 0, 255), constrain(btotal, 0, 255))
     }
 }

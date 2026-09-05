@@ -10,7 +10,7 @@ final class Mandelbrot: Sketch {
 
     func setup() {
         // 原典はここで `noLoop()` を呼ぶ。**書けない**
-        background(gray(255))
+        background(255)
         let w: Float = 4
         let h = (w * height) / width
         let xmin = -w / 2
@@ -51,10 +51,10 @@ final class Mandelbrot: Sketch {
                 }
                 // 無限へ届くまでの長さで色を決める。届かなかったら黒
                 if n == maxiterations {
-                    pixels[i, j] = gray(0)
+                    pixels[i, j] = color(0)
                 } else {
                     let norm = map(convergeNumber, 0, Float(maxiterations), 0, 1)
-                    pixels[i, j] = gray(map(norm.squareRoot(), 0, 1, 0, 255))
+                    pixels[i, j] = color(map(norm.squareRoot(), 0, 1, 0, 255))
                 }
                 x += dx
             }

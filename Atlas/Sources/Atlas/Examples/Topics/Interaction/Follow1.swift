@@ -15,11 +15,11 @@ final class Follow1: Sketch {
 
     func setup() {
         strokeWeight(20.0)
-        stroke(gray(255, 100))
+        stroke(255, 100)
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         let dx = mouseX - x
         let dy = mouseY - y

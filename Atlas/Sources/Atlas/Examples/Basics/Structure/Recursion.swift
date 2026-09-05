@@ -17,7 +17,7 @@ final class Recursion: Sketch {
 
     private func drawCircle(_ x: Int, _ radius: Int, _ level: Int) {
         let tt = 126 * Float(level) / 4.0
-        fill(gray(tt))
+        fill(tt)
         ellipse(Float(x), height / 2, Float(radius * 2), Float(radius * 2))
         if level > 1 {
             let level = level - 1

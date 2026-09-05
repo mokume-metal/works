@@ -182,20 +182,42 @@ def publish(force: bool) -> int:
     return 0
 
 
-def write_renders(book: dict) -> None:
-    """mokume が書き出した絵のハッシュ。**再現の手がかりで、157 行ある。**
+# **ハッシュを載せない例。** 面の外の値を読むので、同じフレーム番号からでも
+# 同じ絵にならない。載せると `--render-all` の diff が毎回 2 行ずれる。
+#
+# **mokume の乱数はここに来ない** — 同じフレーム番号から同じ値を出すので
+# (ADR-0001 原則 2)、`random()` を使う例の書き出しは再現する。ここに来るのは
+# mokume の外から値を取っているものだけである。
+NOT_REPRODUCIBLE = {
+    "clock-1.png": "壁時計 (second / minute / hour) を読む",
+    "intlistlottery-1.png": "Swift の shuffle() を呼ぶ (系の乱数で、種を指せない)",
+}
 
-    README に 157 行を貼れないのでここに置く。**乱数を使う例も入る** — mokume の
+
+def write_renders(book: dict) -> None:
+    """mokume が書き出した絵のハッシュ。**再現の手がかり。**
+
+    README に全数を貼れないのでここに置く。**乱数を使う例も入る** — mokume の
     乱数は同じフレーム番号から同じ値を出すので (ADR-0001 原則 2)、書き出しは
-    再現する。再現しないのは原典 (ブラウザ) の側だけである。
+    再現する。再現しないのは原典 (ブラウザ) の側と、``NOT_REPRODUCIBLE`` が
+    名指す例だけである。
     """
     lines = ["# swift run -c release Atlas --render-all out 1 && shasum -a 256 out/*.png",
-             f"# mokume v{book['tool']['mokume']}"]
+             f"# mokume v{book['tool']['mokume']}",
+             "#",
+             "# **次の例はハッシュを載せない** (面の外の値を読むので毎回変わる)。",
+             "# README の突き合わせでも両側から外している:"]
+    lines += [f"#   {name} — {why}" for name, why in sorted(NOT_REPRODUCIBLE.items())]
+
+    # **ファイル名の順に書く。** README の突き合わせは `shasum -a 256 out/*.png` と
+    # 行ごとに比べるので、こちらが例の名前順だと中身が同じでも全行ずれる
+    # (実際にずれていた)。
+    hashed = []
     for example, entry in rows(book):
         shot = ROOT / "out" / f"{entry['slug']}-{entry['frame']}.png"
-        if shot.exists():
-            lines.append(f"{hashlib.sha256(shot.read_bytes()).hexdigest()}  {shot.name}")
-    RENDERS.write_text("\n".join(lines) + "\n")
+        if shot.exists() and shot.name not in NOT_REPRODUCIBLE:
+            hashed.append(f"{hashlib.sha256(shot.read_bytes()).hexdigest()}  {shot.name}")
+    RENDERS.write_text("\n".join(lines + sorted(hashed, key=lambda l: l.split()[1])) + "\n")
 
 
 def rows(book: dict) -> list[tuple[str, dict]]:

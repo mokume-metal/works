@@ -13,11 +13,11 @@ final class Follow3: Sketch {
 
     func setup() {
         strokeWeight(9)
-        stroke(gray(255, 100))
+        stroke(255, 100)
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         dragSegment(0, mouseX, mouseY)
         for i in 0..<(x.count - 1) {
             dragSegment(i + 1, x[i], y[i])

@@ -27,7 +27,7 @@ final class Inheritance: Sketch {
     final class SpinArm: Spin {
         func display(on sketch: any Sketch) {
             sketch.strokeWeight(1)
-            sketch.stroke(gray(0))
+            sketch.stroke(0)
             sketch.pushMatrix()
             sketch.translate(x, y)
             angle += speed
@@ -66,7 +66,7 @@ final class Inheritance: Sketch {
     }
 
     func draw() {
-        background(gray(204))
+        background(204)
         arm?.update()
         arm?.display(on: self)
         spots?.update()

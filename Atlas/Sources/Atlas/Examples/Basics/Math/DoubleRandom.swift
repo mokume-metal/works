@@ -14,12 +14,12 @@ final class DoubleRandom: Sketch {
     private var steps: Float { Float(totalPts + 1) }
 
     func setup() {
-        stroke(gray(255))
+        stroke(255)
         // 原典はここで `frameRate(1)` を呼ぶ。settings へ移した
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         var rand: Float = 0
         for i in 1..<Int(steps) {
             point((width / steps) * Float(i), (height / 2) + random(-rand, rand))

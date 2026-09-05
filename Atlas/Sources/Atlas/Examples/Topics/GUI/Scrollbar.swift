@@ -3,14 +3,15 @@ import mokume
 
 /// Processing の [Scrollbar](https://processing.org/examples/scrollbar/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `bend` と言った。当たっている。** `Handles` と同じで、押した瞬間の印を
-/// 自分で作る必要がある ([#723](https://github.com/mokume-metal/mokume/issues/723))。
+/// **台帳は `bend` と言い、`v0.5.0` では歪んでいた。`v0.6.0` で原典の形に戻った。**
+/// `Handles` と同じで、出来事の口が無かった頃は押した瞬間の印を自分で作っていた
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)。
+/// いまは原典と同じ `mousePressed()` がそのまま書ける。
 /// `constrain()` は原典が自前で持っているので、そのまま写している。
 final class Scrollbar: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Scrollbar")
 
     private var firstMousePress = false
-    private var wasPressed = false
     private var hs1: HScrollbar?
     private var hs2: HScrollbar?
     private var img1: Image?
@@ -63,9 +64,9 @@ final class Scrollbar: Sketch {
 
         func display(on sketch: any Sketch) {
             sketch.noStroke()
-            sketch.fill(gray(204))
+            sketch.fill(204)
             sketch.rect(xpos, ypos, swidth, sheight)
-            sketch.fill(over || locked ? rgb(0, 0, 0) : rgb(102, 102, 102))
+            sketch.fill(over || locked ? color(0, 0, 0) : color(102, 102, 102))
             sketch.rect(spos, ypos, sheight, sheight)
         }
 
@@ -82,23 +83,31 @@ final class Scrollbar: Sketch {
     }
 
     func draw() {
-        // 原典は `mousePressed()` で立てる印。**出来事の口が無い**ので自分で作る
-        firstMousePress = isMousePressed && !wasPressed
-        wasPressed = isMousePressed
-
-        background(gray(255))
+        background(255)
         guard let hs1, let hs2 else { return }
         let img1Pos = hs1.getPos() - width / 2
-        fill(gray(255))
+        fill(255)
         if let img1 { image(img1, width / 2 - Float(img1.width) / 2 + img1Pos * 1.5, 0) }
         let img2Pos = hs2.getPos() - width / 2
-        fill(gray(255))
+        fill(255)
         if let img2 { image(img2, width / 2 - Float(img2.width) / 2 + img2Pos * 1.5, height / 2) }
         hs1.update(on: self, firstMousePress: firstMousePress)
         hs2.update(on: self, firstMousePress: firstMousePress)
         hs1.display(on: self)
         hs2.display(on: self)
-        stroke(gray(0))
+        stroke(0)
         line(0, height / 2, width, height / 2)
+
+        // 使い終えたら倒す。原典と同じ 1 行
+        if firstMousePress {
+            firstMousePress = false
+        }
+    }
+
+    /// 原典の `void mousePressed()`。
+    func mousePressed() {
+        if !firstMousePress {
+            firstMousePress = true
+        }
     }
 }

@@ -12,8 +12,8 @@ final class VariableScope: Sketch {
     private let a: Float = 80
 
     func setup() {
-        background(gray(0))
-        stroke(gray(255))
+        background(0)
+        stroke(255)
         // 原典はここで `noLoop()` を呼ぶ。**書けない**
     }
 

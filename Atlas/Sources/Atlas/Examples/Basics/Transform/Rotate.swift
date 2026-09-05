@@ -16,12 +16,12 @@ final class Rotate: Sketch {
 
     func setup() {
         noStroke()
-        fill(gray(255))
+        fill(255)
         rectMode(.center)
     }
 
     func draw() {
-        background(gray(51))
+        background(51)
         // 原典は `second() % 2 == 0` (壁時計の偶数秒)。**書けない**ので、起動からの秒で読む
         if Int(time) % 2 == 0 {
             jitter = random(-0.1, 0.1)

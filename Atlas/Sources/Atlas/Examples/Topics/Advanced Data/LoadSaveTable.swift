@@ -5,8 +5,8 @@ import mokume
 ///
 /// **台帳は `out-of-scope` と言った (データ構造が主題)。絵は出る。**
 /// **`Table` に当たる型は mokume にも Foundation にも無い**ので、CSV を読むところは
-/// 自分で書く (台帳の `write`)。`mousePressed()` の口も無いので、押して足して書き戻す
-/// 往復が移せない ([#723](https://github.com/mokume-metal/mokume/issues/723))。
+/// 自分で書く (台帳の `write`)。`mousePressed()` の口は `v0.6.0` で入った
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた) ので、押して足せる。
 final class LoadSaveTable: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Load Save Table")
 
@@ -23,12 +23,12 @@ final class LoadSaveTable: Sketch {
         }
 
         func display(on sketch: any Sketch) {
-            sketch.stroke(gray(0))
+            sketch.stroke(0)
             sketch.strokeWeight(2)
             sketch.noFill()
             sketch.ellipse(x, y, diameter, diameter)
             if over {
-                sketch.fill(gray(0))
+                sketch.fill(0)
                 sketch.textAlign(.center)
                 sketch.text(name, x, y + diameter / 2 + 20)
             }
@@ -42,13 +42,13 @@ final class LoadSaveTable: Sketch {
     }
 
     func draw() {
-        background(gray(255))
+        background(255)
         for b in bubbles {
             b.display(on: self)
             b.rollover(mouseX, mouseY)
         }
         textAlign(.left)
-        fill(gray(0))
+        fill(0)
         text("Click to add bubbles.", 10, height - 10)
     }
 
@@ -71,5 +71,16 @@ final class LoadSaveTable: Sketch {
         }
     }
 
-    // 原典はここに `void mousePressed()` を持ち、行を足して CSV へ書き戻す。**受ける口が無い**
+    /// 原典の `void mousePressed()` — 押した場所へ 1 つ足す。
+    ///
+    /// **書き戻すところは移していない。** 原典は `saveTable()` で `data/` の CSV を
+    /// 上書きするが、資材は `upstream/` (gitignore 済み) にあり、works が上流の複製を
+    /// 書き換える理由が無い。**足したものは走っている間だけ残る。**
+    func mousePressed() {
+        bubbles.append(Bubble(mouseX, mouseY, random(40, 80), "Blah"))
+        // 原典はここで古い行を 1 つ落として 10 行に保ち、CSV へ書き戻す
+        if bubbles.count > 10 {
+            bubbles.removeFirst()
+        }
+    }
 }

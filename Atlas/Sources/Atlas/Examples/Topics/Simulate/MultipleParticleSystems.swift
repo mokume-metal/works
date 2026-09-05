@@ -4,12 +4,12 @@ import mokume
 /// Processing の [Multiple Particle Systems](https://processing.org/examples/multipleparticlesystems/) を 1 行ずつ移したもの。
 /// 原典は 4 つのタブに分かれている。
 ///
-/// **台帳は `bend` と言った。当たっている。ここで半分止まっている。**
-/// 原典は**押した場所に新しい系を足す**例で、`mousePressed()` の口が無い
-/// ([#723](https://github.com/mokume-metal/mokume/issues/723))。押せないので系が
-/// 1 つも生まれず、面には案内の字だけが残る。
+/// **台帳は `bend` と言い、`v0.5.0` では半分止まっていた。`v0.6.0` で動く。**
+/// 原典は**押した場所に新しい系を足す**例で、`mousePressed()` の口が無かった頃は
+/// 系が 1 つも生まれず、面には案内の字だけが残っていた
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)。
 ///
-/// **動くように書き替えていない** — 押せないという事実がそのまま絵に出る。
+/// 押していない間は原典と同じく案内の字だけが出る (書き出した絵はそこで比べている)。
 final class MultipleParticleSystems: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Multiple Particle Systems")
 
@@ -37,8 +37,8 @@ final class MultipleParticleSystems: Sketch {
         }
 
         func display(on sketch: any Sketch) {
-            sketch.stroke(gray(255, lifespan))
-            sketch.fill(gray(255, lifespan))
+            sketch.stroke(255, lifespan)
+            sketch.fill(255, lifespan)
             sketch.ellipse(position.x, position.y, 8, 8)
         }
 
@@ -60,7 +60,7 @@ final class MultipleParticleSystems: Sketch {
             sketch.pushMatrix()
             sketch.translate(position.x, position.y)
             sketch.rotate(theta)
-            sketch.stroke(gray(255, lifespan))
+            sketch.stroke(255, lifespan)
             sketch.line(0, 0, 25, 0)
             sketch.popMatrix()
         }
@@ -92,18 +92,23 @@ final class MultipleParticleSystems: Sketch {
     private var systems: [ParticleSystem] = []
 
     func draw() {
-        background(gray(0))
+        background(0)
         for ps in systems {
             ps.run(on: self)
             ps.addParticle(velocity: SIMD2(random(-1, 1), random(-2, 0)),
                            crazy: Int(random(0, 2)) != 0)
         }
         if systems.isEmpty {
-            fill(gray(255))
+            fill(255)
             textAlign(.center)
             text("click mouse to add particle systems", width / 2, height / 2)
         }
     }
 
-    // 原典はここに `void mousePressed()` を持ち、押した場所に系を足す。**受ける口が無い**
+    /// 原典の `void mousePressed()` — 押した場所に系を足す。
+    func mousePressed() {
+        systems.append(ParticleSystem(1, SIMD2(mouseX, mouseY)) {
+            SIMD2(self.random(-1, 1), self.random(-2, 0))
+        })
+    }
 }

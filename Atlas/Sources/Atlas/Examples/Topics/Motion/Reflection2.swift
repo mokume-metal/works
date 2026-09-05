@@ -46,7 +46,7 @@ final class Reflection2: Sketch {
 
         func display(on sketch: any Sketch) {
             sketch.noStroke()
-            sketch.fill(gray(200))
+            sketch.fill(200)
             sketch.ellipse(position.x, position.y, r * 2, r * 2)
         }
 
@@ -104,7 +104,7 @@ final class Reflection2: Sketch {
 
     func draw() {
         noStroke()
-        fill(gray(0, 15))
+        fill(0, 15)
         rect(0, 0, width, height)
 
         guard let orb else { return }
@@ -113,7 +113,7 @@ final class Reflection2: Sketch {
         orb.checkWallCollision(width: width)
         for segment in ground { orb.checkGroundCollision(segment) }
 
-        fill(gray(127))
+        fill(127)
         beginShape()
         for segment in ground {
             vertex(segment.x1, segment.y1)

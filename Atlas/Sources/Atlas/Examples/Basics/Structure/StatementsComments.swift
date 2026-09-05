@@ -12,6 +12,6 @@ final class StatementsComments: Sketch {
 
     func setup() {
         // background は、表に出す面の色 (または灰色の値) を決める文
-        background(rgb(204, 153, 0))
+        background(204, 153, 0)
     }
 }

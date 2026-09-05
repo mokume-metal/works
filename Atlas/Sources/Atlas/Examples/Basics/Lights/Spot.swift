@@ -10,21 +10,21 @@ final class Spot: Sketch {
 
     func setup() {
         noStroke()
-        fill(gray(204))
+        fill(204)
         // 原典はここで `sphereDetail(60)` を呼ぶ。mokume では sphere の引数へ移る
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         // 球の下側を照らす
-        directionalLight(rgb(51, 102, 126), 0, -1, 0)
+        directionalLight(51, 102, 126, 0, -1, 0)
 
         // 右上からの橙のスポット。**集中度 600 は渡せない**
-        spotLight(rgb(204, 153, 0), 360, 160, 600, 0, 0, -1, angle: .pi / 2)
+        spotLight(204, 153, 0, 360, 160, 600, 0, 0, -1, angle: .pi / 2)
 
         // マウスを追うスポット
-        spotLight(rgb(102, 153, 204), 360, mouseY, 600, 0, 0, -1, angle: .pi / 2)
+        spotLight(102, 153, 204, 360, mouseY, 600, 0, 0, -1, angle: .pi / 2)
         translate(width / 2, height / 2, 0)
         sphere(120, detail: 60)
     }

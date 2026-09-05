@@ -14,11 +14,11 @@ final class Sine: Sketch {
     func setup() {
         diameter = height - 10
         noStroke()
-        fill(rgb(255, 204, 0))
+        fill(255, 204, 0)
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         let d1 = 10 + (sin(angle) * diameter / 2) + diameter / 2
         let d2 = 10 + (sin(angle + .pi / 2) * diameter / 2) + diameter / 2

@@ -17,13 +17,13 @@ final class CreateImage: Sketch {
         for i in 0..<count {
             let a = map(Float(i), 0, Float(count), 255, 0)
             // 原典は `img.pixels[i] = color(0, 153, 204, a)`。**1 次元の並びが無い**
-            picture.set(i % picture.width, i / picture.width, rgb(0, 153, 204, a))
+            picture.set(i % picture.width, i / picture.width, color(0, 153, 204, a))
         }
         img = picture
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         guard let img else { return }
         image(img, 90, 80)
         image(img, mouseX - Float(img.width) / 2, mouseY - Float(img.height) / 2)

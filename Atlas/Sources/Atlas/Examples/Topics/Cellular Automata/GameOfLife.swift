@@ -2,10 +2,12 @@ import mokume
 
 /// Processing の [Game of Life](https://processing.org/examples/gameoflife/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `blocked` と言った。半分だけ — 絵は出る。** 止まるのは 2 つ:
-/// `noSmooth()` (均しを切る口が無い) と `keyPressed()`
-/// ([#723](https://github.com/mokume-metal/mokume/issues/723))。
-/// キーで「やり直す・止める・消す」の 3 つを操るところが丸ごと落ちる。
+/// **台帳は `blocked` と言い、`v0.5.0` では半分止まっていた。`v0.6.0` で動く。**
+/// キーで「やり直す・止める・消す」の 3 つを操るところが `keyPressed()` で戻った
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)。
+/// 止めている間に升目を手で塗る `pause && mousePressed` も戻っている。
+///
+/// **残る歪みは `noSmooth()` (均しを切る口が無い) だけ。**
 ///
 /// 乱数で初期の生死を決めるので **画素では比べられない。**
 final class GameOfLife: Sketch {
@@ -17,15 +19,17 @@ final class GameOfLife: Sketch {
     private var dead = LinearRGBA.transparent
     private var cells: [[Int]] = []
     private var cellsBuffer: [[Int]] = []
+    /// 原典の `pause`。空白キーで止める。
+    private var pause = false
 
     private var cols: Int { Int(width) / cellSize }
     private var rows: Int { Int(height) / cellSize }
 
     func setup() {
-        alive = rgb(0, 200, 0)
-        dead = gray(0)
+        alive = color(0, 200, 0)
+        dead = color(0)
         // 背景の格子を描く線
-        stroke(gray(48))
+        stroke(48)
         // 原典はここで `noSmooth()` を呼ぶ。**書けない**
 
         cells = (0..<cols).map { _ in
@@ -34,7 +38,7 @@ final class GameOfLife: Sketch {
         cellsBuffer = cells
 
         // 升目が面を覆いきらないときのために黒で埋める
-        background(gray(0))
+        background(0)
     }
 
     func draw() {
@@ -45,6 +49,22 @@ final class GameOfLife: Sketch {
                 rect(Float(x * cellSize), Float(y * cellSize), Float(cellSize), Float(cellSize))
             }
         }
+
+        // 止めている間は、押した升目を手で生かしたり殺したりできる
+        if pause && isMousePressed {
+            let xCellOver = Int(constrain(map(mouseX, 0, width, 0, Float(cols)), 0, Float(cols - 1)))
+            let yCellOver = Int(constrain(map(mouseY, 0, height, 0, Float(rows)), 0, Float(rows - 1)))
+            if cellsBuffer[xCellOver][yCellOver] == 1 {
+                cells[xCellOver][yCellOver] = 0
+                fill(dead)
+            } else {
+                cells[xCellOver][yCellOver] = 1
+                fill(alive)
+            }
+        }
+
+        // 止めている間は世代を進めない
+        guard !pause else { return }
 
         cellsBuffer = cells
 
@@ -70,6 +90,23 @@ final class GameOfLife: Sketch {
         }
     }
 
-    // 原典はここに `void keyPressed()` を持ち、r で作り直し・空白で止め・c で消す。
-    // **受ける口が無い**
+    /// 原典の `void keyPressed()` — r で作り直し・空白で止め・c で消す。
+    ///
+    /// **`key` は文字 1 つではなく `String`。** 押しっぱなしのキーは原典と同じく連射する。
+    func keyPressed() {
+        if key == "r" || key == "R" {
+            // 作り直す
+            cells = (0..<cols).map { _ in
+                (0..<rows).map { _ in random(100) > probabilityOfAliveAtStart ? 0 : 1 }
+            }
+        }
+        if key == " " {
+            // 止める / 動かす
+            pause = !pause
+        }
+        if key == "c" || key == "C" {
+            // 全部消す
+            cells = (0..<cols).map { _ in [Int](repeating: 0, count: rows) }
+        }
+    }
 }

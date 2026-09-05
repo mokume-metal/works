@@ -23,17 +23,17 @@ final class Distance1D: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         let mx = mouseX * 0.4 - width / 5.0
 
-        fill(gray(102))
+        fill(102)
         rect(xpos2, 0, thick, height / 2)
-        fill(gray(204))
+        fill(204)
         rect(xpos1, 0, thin, height / 2)
-        fill(gray(102))
+        fill(102)
         rect(xpos4, height / 2, thick, height / 2)
-        fill(gray(204))
+        fill(204)
         rect(xpos3, height / 2, thin, height / 2)
 
         xpos1 += mx / 16

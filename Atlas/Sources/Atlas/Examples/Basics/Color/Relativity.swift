@@ -14,11 +14,11 @@ final class Relativity: Sketch {
 
     func setup() {
         noStroke()
-        a = rgb(165, 167, 20)
-        b = rgb(77, 86, 59)
-        c = rgb(42, 106, 105)
-        d = rgb(165, 89, 20)
-        e = rgb(146, 150, 127)
+        a = color(165, 167, 20)
+        b = color(77, 86, 59)
+        c = color(42, 106, 105)
+        d = color(165, 89, 20)
+        e = color(146, 150, 127)
         // 原典はここで `noLoop()` を呼ぶ (「1 度だけ描く」)。**書けない**
     }
 

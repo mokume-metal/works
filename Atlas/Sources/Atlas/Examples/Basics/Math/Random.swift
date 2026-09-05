@@ -10,7 +10,7 @@ final class Random: Sketch {
     var settings = SketchSettings(width: 640, height: 360, frameRate: 2, title: "Random")
 
     func setup() {
-        background(gray(0))
+        background(0)
         strokeWeight(20)
         // 原典はここで `frameRate(2)` を呼ぶ。settings へ移した
     }
@@ -18,7 +18,7 @@ final class Random: Sketch {
     func draw() {
         for i in 0..<Int(width) {
             let r = random(255)
-            stroke(gray(r))
+            stroke(r)
             line(Float(i), 0, Float(i), height)
         }
     }

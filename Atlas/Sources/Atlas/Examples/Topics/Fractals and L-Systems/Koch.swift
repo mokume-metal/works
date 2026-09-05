@@ -18,7 +18,7 @@ final class Koch: Sketch {
         let b: SIMD2<Float>
 
         func display(on sketch: any Sketch) {
-            sketch.stroke(gray(255))
+            sketch.stroke(255)
             sketch.line(a.x, a.y, b.x, b.y)
         }
 
@@ -87,7 +87,7 @@ final class Koch: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         k?.render(on: self)
         k?.nextLevel()
         // 5 回より多くはしない

@@ -13,13 +13,13 @@ final class StoringInput: Sketch {
 
     func setup() {
         noStroke()
-        fill(gray(255, 153))
+        fill(255, 153)
         mx = [Float](repeating: 0, count: num)
         my = [Float](repeating: 0, count: num)
     }
 
     func draw() {
-        background(gray(51))
+        background(51)
 
         // 並びを 1 つずつ使い回す。剰余で回すほうが、値を全部ずらすより速い
         let which = frameCount % num

@@ -70,13 +70,13 @@ final class PenroseSnowflake: Sketch {
     private let ps = PenroseSnowflakeLSystem()
 
     func setup() {
-        stroke(gray(255))
+        stroke(255)
         noFill()
         ps.simulate(4)
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         ps.render(on: self)
     }
 }

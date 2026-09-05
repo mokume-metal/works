@@ -25,7 +25,7 @@ final class Noise2D: Sketch {
                 yoff += increment
 
                 let bright = noise(xoff, yoff) * 255
-                pixels[x, y] = gray(bright)
+                pixels[x, y] = color(bright)
             }
         }
         // 原典はここで `updatePixels()` を呼ぶ。**書けない**

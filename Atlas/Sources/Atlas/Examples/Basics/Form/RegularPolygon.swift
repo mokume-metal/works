@@ -9,7 +9,7 @@ final class RegularPolygon: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Regular Polygon")
 
     func draw() {
-        background(gray(102))
+        background(102)
 
         pushMatrix()
         translate(width * 0.2, height * 0.5)

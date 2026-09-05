@@ -3,10 +3,10 @@ import mokume
 
 /// Processing の [Button](https://processing.org/examples/button/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `bend` と言った。当たっている。ここで半分止まっている。**
+/// **台帳は `bend` と言い、`v0.5.0` では半分止まっていた。`v0.6.0` で動く。**
 /// 触れているかどうかを見る側 (`update`) は `draw()` の中のポーリングなのでそのまま
-/// 移るが、**押して色を選ぶ `mousePressed()` の口が無い**
-/// ([#723](https://github.com/mokume-metal/mokume/issues/723))。押しても何も起きない。
+/// 移っていたが、**押して色を選ぶ `mousePressed()` の口が無かった**ので、押しても
+/// 何も起きなかった ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)。
 final class Button: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Button")
 
@@ -26,11 +26,11 @@ final class Button: Sketch {
     private var circleOver = false
 
     func setup() {
-        rectColor = gray(0)
-        rectHighlight = gray(51)
-        circleColor = gray(255)
-        circleHighlight = gray(204)
-        baseColor = gray(102)
+        rectColor = color(0)
+        rectHighlight = color(51)
+        circleColor = color(255)
+        circleHighlight = color(204)
+        baseColor = color(102)
         currentColor = baseColor
         circleX = width / 2 + circleSize / 2 + 10
         circleY = height / 2
@@ -44,11 +44,11 @@ final class Button: Sketch {
         background(currentColor)
 
         fill(rectOver ? rectHighlight : rectColor)
-        stroke(gray(255))
+        stroke(255)
         rect(rectX, rectY, rectSize, rectSize)
 
         fill(circleOver ? circleHighlight : circleColor)
-        stroke(gray(0))
+        stroke(0)
         ellipse(circleX, circleY, circleSize, circleSize)
     }
 
@@ -65,7 +65,15 @@ final class Button: Sketch {
         }
     }
 
-    // 原典はここに `void mousePressed()` を持ち、押した側の色を選ぶ。**受ける口が無い**
+    /// 原典の `void mousePressed()` — 押した側の色を選ぶ。
+    func mousePressed() {
+        if circleOver {
+            currentColor = circleColor
+        }
+        if rectOver {
+            currentColor = rectColor
+        }
+    }
 
     private func overRect(_ x: Float, _ y: Float, _ w: Float, _ h: Float) -> Bool {
         mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h

@@ -15,7 +15,7 @@ final class Reach1: Sketch {
 
     func setup() {
         strokeWeight(20.0)
-        stroke(gray(255, 100))
+        stroke(255, 100)
 
         x = width / 2
         y = height / 2
@@ -24,7 +24,7 @@ final class Reach1: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         var dx = mouseX - x
         var dy = mouseY - y

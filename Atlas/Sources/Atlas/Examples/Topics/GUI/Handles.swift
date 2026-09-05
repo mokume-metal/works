@@ -2,18 +2,19 @@ import mokume
 
 /// Processing の [Handles](https://processing.org/examples/handles/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `bend` と言った。当たっている。ここで止まっている。**
+/// **台帳は `bend` と言い、`v0.5.0` では歪んでいた。`v0.6.0` で原典の形に戻った。**
 /// 原典は `firstMousePress` — **押した最初の 1 フレームだけを真にする印**を
-/// `mousePressed()` で立て、`mouseReleased()` で掴みを解く。mokume には出来事の口が
-/// 無い ([#723](https://github.com/mokume-metal/mokume/issues/723))。
-/// `isMousePressed` のポーリングから「押した瞬間」を作るには、**前のフレームの値を
-/// 自分で覚えておく**しかない。原典が 1 行で言っていることを、こちらは状態で持つ。
+/// `mousePressed()` で立て、`mouseReleased()` で掴みを解く。出来事の口が無かった頃は
+/// `isMousePressed` のポーリングから「押した瞬間」を作るしかなく、**前のフレームの値を
+/// 自分で覚える**状態 (`wasPressed`) を 1 つ余分に持っていた
+/// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)。
+///
+/// いまは原典と同じ 2 つのコールバックがそのまま書ける。
 final class Handles: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Handles")
 
     private var handles: [Handle] = []
     private var firstMousePress = false
-    private var wasPressed = false
 
     final class Handle {
         let x: Float
@@ -60,8 +61,8 @@ final class Handles: Sketch {
 
         func display(on sketch: any Sketch) {
             sketch.line(x, y, x + stretch, y)
-            sketch.fill(gray(255))
-            sketch.stroke(gray(0))
+            sketch.fill(255)
+            sketch.stroke(0)
             sketch.rect(boxx, boxy, size, size)
             if over || press {
                 sketch.line(boxx, boxy, boxx + size, boxy + size)
@@ -86,20 +87,29 @@ final class Handles: Sketch {
     }
 
     func draw() {
-        // 原典は `mousePressed()` / `mouseReleased()` で立てる印。**出来事の口が無い**ので、
-        // 前のフレームの値と見比べて「押した瞬間」を自分で作る
-        firstMousePress = isMousePressed && !wasPressed
-        if !isMousePressed {
-            for handle in handles { handle.releaseEvent() }
-        }
-        wasPressed = isMousePressed
-
-        background(gray(153))
+        background(153)
         for handle in handles {
             handle.update(on: self, firstMousePress: firstMousePress)
             handle.display(on: self)
         }
-        fill(gray(0))
+        fill(0)
         rect(0, 0, width / 2, height)
+
+        // 使い終えたら倒す。原典と同じ 1 行
+        if firstMousePress {
+            firstMousePress = false
+        }
+    }
+
+    /// 原典の `void mousePressed()`。
+    func mousePressed() {
+        if !firstMousePress {
+            firstMousePress = true
+        }
+    }
+
+    /// 原典の `void mouseReleased()`。
+    func mouseReleased() {
+        for handle in handles { handle.releaseEvent() }
     }
 }

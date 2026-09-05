@@ -13,13 +13,13 @@ final class Redraw: Sketch {
     private var y: Float = 0
 
     func setup() {
-        stroke(gray(255))
+        stroke(255)
         // 原典はここで `noLoop()` を呼ぶ。**書けない**
         y = height * 0.5
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         y = y - 4
         if y < 0 { y = height }
         line(0, y, width, y)

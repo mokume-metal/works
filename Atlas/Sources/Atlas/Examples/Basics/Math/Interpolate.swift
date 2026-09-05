@@ -15,15 +15,15 @@ final class Interpolate: Sketch {
     }
 
     func draw() {
-        background(gray(51))
+        background(51)
 
         // lerp() は 2 つの数の間を、指定した割合の位置で取る。0.0 なら 1 つ目、
         // 0.5 ならちょうど半分。ここでは毎フレーム 5% ずつマウスへ寄る
         x = lerp(x, mouseX, 0.05)
         y = lerp(y, mouseY, 0.05)
 
-        fill(gray(255))
-        stroke(gray(255))
+        fill(255)
+        stroke(255)
         ellipse(x, y, 66, 66)
     }
 }

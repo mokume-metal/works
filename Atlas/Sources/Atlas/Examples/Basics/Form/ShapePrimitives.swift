@@ -8,19 +8,19 @@ final class ShapePrimitives: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Shape Primitives")
 
     func setup() {
-        background(gray(0))
+        background(0)
         noStroke()
-        fill(gray(204))
+        fill(204)
         triangle(18, 18, 18, 360, 81, 360)
-        fill(gray(102))
+        fill(102)
         rect(81, 81, 63, 63)
-        fill(gray(204))
+        fill(204)
         quad(189, 18, 216, 18, 216, 360, 144, 360)
-        fill(gray(255))
+        fill(255)
         ellipse(252, 144, 72, 72)
-        fill(gray(204))
+        fill(204)
         triangle(288, 18, 351, 360, 288, 360)
-        fill(gray(255))
+        fill(255)
         arc(479, 300, 280, 280, .pi, .pi * 2)
     }
 }

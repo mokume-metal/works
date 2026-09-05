@@ -16,7 +16,7 @@ final class Easing: Sketch {
     }
 
     func draw() {
-        background(gray(51))
+        background(51)
 
         let targetX = mouseX
         let dx = targetX - x

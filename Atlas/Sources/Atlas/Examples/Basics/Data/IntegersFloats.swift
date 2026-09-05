@@ -14,11 +14,11 @@ final class IntegersFloats: Sketch {
     private var b: Float = 0 // 小数の変数
 
     func setup() {
-        stroke(gray(255))
+        stroke(255)
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         a = a + 1
         b = b + 0.2

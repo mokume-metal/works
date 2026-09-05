@@ -15,11 +15,11 @@
 | 形 | 明るさの縁だけを取り出し、1 画素の幅を許して比べたもの |
 | 完全 | 1 画素も違わない |
 
-道具は mokume v0.5.0 / p5.js 1.9.4。
+道具は mokume v0.6.0 / p5.js 1.9.4。
 
 ## 動きの証跡について
 
-**静止画の下に動くものが付いている例が 117 本ある。** 止まった 1 枚では正しいかどうか判断できないもの (動く例・マウスが要る例) には、アニメーション WebP を併載してある。**置き換えではない** — 細かい差は静止画のほうが向いている。
+**静止画の下に動くものが付いている例が 123 本ある。** 止まった 1 枚では正しいかどうか判断できないもの (動く例・マウスが要る例) には、アニメーション WebP を併載してある。**置き換えではない** — 細かい差は静止画のほうが向いている。
 
 - **撮影範囲**: スケッチの面だけ (窓の縁も他のアプリも入らない)。左が原典・右が mokume
 - **何を撮ったか**: 12 fps で 24 枚 = 2 秒。半分の大きさ
@@ -29,17 +29,17 @@
 
 | 群 | 本数 | 測った | その場で一致の中央値 |
 | --- | ---: | ---: | ---: |
-| [Basics/Arrays](#basicsarrays) | 3 | 1 | 74.1% |
+| [Basics/Arrays](#basicsarrays) | 3 | 1 | 63.2% |
 | [Basics/Camera](#basicscamera) | 3 | 2 | 98.0% |
 | [Basics/Color](#basicscolor) | 7 | 6 | 100.0% |
-| [Basics/Control](#basicscontrol) | 5 | 5 | 86.5% |
-| [Basics/Data](#basicsdata) | 6 | 4 | 99.8% |
+| [Basics/Control](#basicscontrol) | 5 | 5 | 84.3% |
+| [Basics/Data](#basicsdata) | 6 | 4 | 98.1% |
 | [Basics/Form](#basicsform) | 8 | 8 | 98.9% |
 | [Basics/Image](#basicsimage) | 7 | 6 | 98.7% |
 | [Basics/Input](#basicsinput) | 12 | 9 | 99.9% |
 | [Basics/Lights](#basicslights) | 6 | 6 | 83.2% |
-| [Basics/Math](#basicsmath) | 20 | 12 | 100.0% |
-| [Basics/Objects](#basicsobjects) | 4 | 4 | 99.3% |
+| [Basics/Math](#basicsmath) | 20 | 12 | 99.9% |
+| [Basics/Objects](#basicsobjects) | 4 | 4 | 99.2% |
 | [Basics/Shape](#basicsshape) | 1 | 1 | 90.8% |
 | [Basics/Structure](#basicsstructure) | 10 | 10 | 99.2% |
 | [Basics/Transform](#basicstransform) | 6 | 5 | 97.1% |
@@ -50,13 +50,13 @@
 | [Topics/Cellular Automata](#topicscellular-automata) | 2 | 0 | — |
 | [Topics/Drawing](#topicsdrawing) | 3 | 3 | 100.0% |
 | [Topics/File IO](#topicsfile-io) | 3 | 2 | 100.0% |
-| [Topics/Fractals and L-Systems](#topicsfractals-and-l-systems) | 6 | 6 | 100.0% |
-| [Topics/GUI](#topicsgui) | 4 | 4 | 99.5% |
+| [Topics/Fractals and L-Systems](#topicsfractals-and-l-systems) | 6 | 6 | 99.9% |
+| [Topics/GUI](#topicsgui) | 4 | 4 | 99.4% |
 | [Topics/Image Processing](#topicsimage-processing) | 6 | 5 | 100.0% |
 | [Topics/Interaction](#topicsinteraction) | 7 | 6 | 99.3% |
 | [Topics/Motion](#topicsmotion) | 9 | 5 | 100.0% |
 | [Topics/Simulate](#topicssimulate) | 5 | 0 | — |
-| [Topics/Vectors](#topicsvectors) | 3 | 3 | 99.9% |
+| [Topics/Vectors](#topicsvectors) | 3 | 3 | 99.8% |
 
 ## Basics/Arrays
 
@@ -68,17 +68,17 @@
 
 ### `Array2D`
 
-台帳は `blocked` ・ その場 **74.1%** ・ 半画素 74.1% ・ 形 84.5% ・ 完全 74.0%
+台帳は `blocked` ・ その場 **63.2%** ・ 半画素 63.5% ・ 形 72.8% ・ 完全 63.0%
 
-![Basics/Arrays/Array2D](https://i.gyazo.com/7a2e54430961d15377980f7e975361ae.png)
+![Basics/Arrays/Array2D](https://i.gyazo.com/7abb4b640c6864cf4149a8a6d1cb9a95.png)
 
 ### `ArrayObjects`
 
 台帳は `clean` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Basics/Arrays/ArrayObjects](https://i.gyazo.com/07ae696a513c08833e20f22d8c02a436.png)
+![Basics/Arrays/ArrayObjects](https://i.gyazo.com/df93ebe47be3cb385933bcfa3afee216.png)
 
-![Basics/Arrays/ArrayObjects の動き](https://i.gyazo.com/571ac38994c6fa789d9a5b5d59a46c30.webp)
+![Basics/Arrays/ArrayObjects の動き](https://i.gyazo.com/7708e439e1e70eff2067606978ca3f7b.webp)
 
 ## Basics/Camera
 
@@ -92,11 +92,11 @@
 
 ### `Orthographic`
 
-台帳は `bend` ・ **測らない** — 面の大きさが違う (原典 640x360 / mokume 600x360)
+台帳は `clean` ・ **測らない** — 面の大きさが違う (原典 640x360 / mokume 600x360)
 
 ![Basics/Camera/Orthographic](https://i.gyazo.com/4118c33a6163975a5e55114396d9f977.png)
 
-![Basics/Camera/Orthographic の動き](https://i.gyazo.com/b918044dae55d47ec2c3cb6df40dc5a0.webp)
+![Basics/Camera/Orthographic の動き](https://i.gyazo.com/8b798272efb85981ca6ced27eeaf69f7.webp)
 
 ### `Perspective`
 
@@ -104,7 +104,7 @@
 
 ![Basics/Camera/Perspective](https://i.gyazo.com/fee42201d3c9dba48f5b500d32a57552.png)
 
-![Basics/Camera/Perspective の動き](https://i.gyazo.com/fe669322308421d54f277bd423f27e9a.webp)
+![Basics/Camera/Perspective の動き](https://i.gyazo.com/b07ac26e622373931ad78794b3fe38a4.webp)
 
 ## Basics/Color
 
@@ -140,9 +140,9 @@
 
 台帳は `bend` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Basics/Color/RadialGradient](https://i.gyazo.com/0b3ccfd716d7c816c08f4ee2dca171eb.png)
+![Basics/Color/RadialGradient](https://i.gyazo.com/796bbc00beccab7e332d02286707868c.png)
 
-![Basics/Color/RadialGradient の動き](https://i.gyazo.com/bdffd7ac7cde214aeaf563db14237c4c.webp)
+![Basics/Color/RadialGradient の動き](https://i.gyazo.com/0b8f38017ad35cd6f3da2e922702b9ec.webp)
 
 ### `Relativity`
 
@@ -174,9 +174,9 @@
 
 ### `EmbeddedIteration`
 
-台帳は `clean` ・ その場 **86.5%** ・ 半画素 86.5% ・ 形 100.0% ・ 完全 85.3%
+台帳は `clean` ・ その場 **84.3%** ・ 半画素 84.4% ・ 形 100.0% ・ 完全 83.2%
 
-![Basics/Control/EmbeddedIteration](https://i.gyazo.com/ef972dca3709132496fdf5f066522d4f.png)
+![Basics/Control/EmbeddedIteration](https://i.gyazo.com/8bd3ad1b6540e1b495926d3f6923416c.png)
 
 ### `Iteration`
 
@@ -188,7 +188,7 @@
 
 台帳は `clean` ・ その場 **81.7%** ・ 半画素 99.8% ・ 形 99.9% ・ 完全 81.7%
 
-![Basics/Control/LogicalOperators](https://i.gyazo.com/08ad3d9813fb976e4d6fc2a756adb049.png)
+![Basics/Control/LogicalOperators](https://i.gyazo.com/205cddfb4c8d7bb3a6246c6a74f0cf2c.png)
 
 ## Basics/Data
 
@@ -206,11 +206,11 @@
 
 ### `IntegersFloats`
 
-台帳は `clean` ・ その場 **99.8%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.8%
+台帳は `clean` ・ その場 **99.7%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.7%
 
-![Basics/Data/IntegersFloats](https://i.gyazo.com/1591ba1b8e8b44eb3868ab504312262c.png)
+![Basics/Data/IntegersFloats](https://i.gyazo.com/191e5b49d652bacb3731c21169234d27.png)
 
-![Basics/Data/IntegersFloats の動き](https://i.gyazo.com/44888b6d8748a57e77d188ad42dc8f99.webp)
+![Basics/Data/IntegersFloats の動き](https://i.gyazo.com/4597021cceaf8fff5948f29167415d2e.webp)
 
 ### `TrueFalse`
 
@@ -226,9 +226,9 @@
 
 ### `Variables`
 
-台帳は `clean` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
+台帳は `clean` ・ その場 **98.1%** ・ 半画素 98.1% ・ 形 100.0% ・ 完全 98.1%
 
-![Basics/Data/Variables](https://i.gyazo.com/2305d324287849ab6dc9b8f1f838c510.png)
+![Basics/Data/Variables](https://i.gyazo.com/e4133c65d58248fddfc11a911ef196e8.png)
 
 ## Basics/Form
 
@@ -242,9 +242,9 @@
 
 ### `PieChart`
 
-台帳は `blocked` ・ その場 **99.4%** ・ 半画素 99.8% ・ 形 100.0% ・ 完全 94.3%
+台帳は `blocked` ・ その場 **99.2%** ・ 半画素 99.6% ・ 形 100.0% ・ 完全 93.9%
 
-![Basics/Form/PieChart](https://i.gyazo.com/722593716d37b44d8d33a7bb1b29a2be.png)
+![Basics/Form/PieChart](https://i.gyazo.com/66daf505a597a927cdd25263be837c58.png)
 
 ### `PointsLines`
 
@@ -268,9 +268,9 @@
 
 ### `ShapePrimitives`
 
-台帳は `clean` ・ その場 **99.4%** ・ 半画素 99.6% ・ 形 100.0% ・ 完全 99.4%
+台帳は `clean` ・ その場 **99.2%** ・ 半画素 99.3% ・ 形 100.0% ・ 完全 99.1%
 
-![Basics/Form/ShapePrimitives](https://i.gyazo.com/2b09a094394fea7b9b305bed1d6a1ec3.png)
+![Basics/Form/ShapePrimitives](https://i.gyazo.com/f642282b74aa7c405fef09602b747b38.png)
 
 ### `Star`
 
@@ -282,7 +282,7 @@
 
 ### `TriangleStrip`
 
-台帳は `bend` ・ その場 **98.2%** ・ 半画素 98.2% ・ 形 98.8% ・ 完全 98.2%
+台帳は `clean` ・ その場 **98.2%** ・ 半画素 98.2% ・ 形 98.8% ・ 完全 98.2%
 
 ![Basics/Form/TriangleStrip](https://i.gyazo.com/72f39cc6388b8b26f19e340a80b74a79.png)
 
@@ -308,7 +308,7 @@
 
 ### `CreateImage`
 
-台帳は `write-only` ・ その場 **72.6%** ・ 半画素 72.8% ・ 形 100.0% ・ 完全 71.7%
+台帳は `clean` ・ その場 **72.6%** ・ 半画素 72.8% ・ 形 100.0% ・ 完全 71.7%
 
 ![Basics/Image/CreateImage](https://i.gyazo.com/80e1e1e5fb09e234945c7f1957d8bef2.png)
 
@@ -322,19 +322,19 @@
 
 ### `Pointillism`
 
-台帳は `write-only` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
+台帳は `clean` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Basics/Image/Pointillism](https://i.gyazo.com/1aed65163fa6e58eff9371555aafd24b.png)
+![Basics/Image/Pointillism](https://i.gyazo.com/b14bb8b41c97eee74eb8257a91029371.png)
 
-![Basics/Image/Pointillism の動き](https://i.gyazo.com/b841d14898ee7aaa5dc005f0edef3baa.webp)
+![Basics/Image/Pointillism の動き](https://i.gyazo.com/a1bd98106e4268ba96c796229dc74975.webp)
 
 ### `RequestImage`
 
 台帳は `clean` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
 
-![Basics/Image/RequestImage](https://i.gyazo.com/aa52707419405ba259411982fa4dd0c2.png)
+![Basics/Image/RequestImage](https://i.gyazo.com/a4da035ea23b61ba81cf14624fbc8574.png)
 
-![Basics/Image/RequestImage の動き](https://i.gyazo.com/e557682405611478fd96df3458eb92cc.webp)
+![Basics/Image/RequestImage の動き](https://i.gyazo.com/ad00efe64c08c45c597820217831f18b.webp)
 
 ### `Transparency`
 
@@ -350,25 +350,25 @@
 
 台帳は `blocked` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Basics/Input/Clock](https://i.gyazo.com/003aebbae89e797aca9cb4a5e8628678.png)
+![Basics/Input/Clock](https://i.gyazo.com/f9008f7559912b2a4c846d9e53b33a33.png)
 
-![Basics/Input/Clock の動き](https://i.gyazo.com/c120eb9a839689bf5f3a38afb18078b0.webp)
+![Basics/Input/Clock の動き](https://i.gyazo.com/b600c25422df4c3f252b3cedac5dc55d.webp)
 
 ### `Constrain`
 
-台帳は `write-only` ・ その場 **99.9%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 99.9%
+台帳は `write-only` ・ その場 **99.9%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.9%
 
-![Basics/Input/Constrain](https://i.gyazo.com/8fa56fc0a73cb3ae488ba3e58cbdf7ef.png)
+![Basics/Input/Constrain](https://i.gyazo.com/73994e00b42c255b74703232221335a1.png)
 
-![Basics/Input/Constrain の動き](https://i.gyazo.com/292fc1b56e04c1460ebd1ea00627d412.webp)
+![Basics/Input/Constrain の動き](https://i.gyazo.com/1b5195887ab4409c58a0d9c878305c74.webp)
 
 ### `Easing`
 
 台帳は `clean` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
 
-![Basics/Input/Easing](https://i.gyazo.com/0b4215e3aced54840d238b28c683b0f2.png)
+![Basics/Input/Easing](https://i.gyazo.com/4525c5391c2969306dd4a9d5565d4a9f.png)
 
-![Basics/Input/Easing の動き](https://i.gyazo.com/4c4ab11feb0f360e452b93145f91377d.webp)
+![Basics/Input/Easing の動き](https://i.gyazo.com/a9b2049d5c8023822c8590da32cb8589.webp)
 
 ### `Keyboard`
 
@@ -378,17 +378,17 @@
 
 ### `KeyboardFunctions`
 
-台帳は `bend` ・ その場 **0.0%** ・ 半画素 0.0% ・ 形 100.0% ・ 完全 0.0%
+台帳は `bend` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 0.0%
 
-![Basics/Input/KeyboardFunctions](https://i.gyazo.com/ed869d94f2d5139a8955be6e55cf41c6.png)
+![Basics/Input/KeyboardFunctions](https://i.gyazo.com/9bdd220dee578adb8bd246b063b2747d.png)
 
 ### `Milliseconds`
 
 台帳は `blocked` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Basics/Input/Milliseconds](https://i.gyazo.com/03c158b715acde4d8413767020b334b2.png)
+![Basics/Input/Milliseconds](https://i.gyazo.com/5efba4b45dd681e15556d7c859afec25.png)
 
-![Basics/Input/Milliseconds の動き](https://i.gyazo.com/a190f7a5bb9b47b17adde99888baf1b0.webp)
+![Basics/Input/Milliseconds の動き](https://i.gyazo.com/7bc01fbf85f420de70fc42c0933eca80.webp)
 
 ### `Mouse1D`
 
@@ -396,7 +396,7 @@
 
 ![Basics/Input/Mouse1D](https://i.gyazo.com/f339ca3d0fc0fd8f99db3b003ab6ea49.png)
 
-![Basics/Input/Mouse1D の動き](https://i.gyazo.com/8f41931a3c84181ff016d1addd444989.webp)
+![Basics/Input/Mouse1D の動き](https://i.gyazo.com/9caf012f793a101c3d5e6d2a1a38dcb7.webp)
 
 ### `Mouse2D`
 
@@ -408,7 +408,7 @@
 
 ### `MouseFunctions`
 
-台帳は `bend` ・ その場 **99.7%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 99.7%
+台帳は `clean` ・ その場 **99.7%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 99.7%
 
 ![Basics/Input/MouseFunctions](https://i.gyazo.com/1d5702fca6283ae762bdefd246d3745f.png)
 
@@ -420,23 +420,23 @@
 
 ![Basics/Input/MousePress](https://i.gyazo.com/3affe41ebf6f7d65d635496d6889e857.png)
 
-![Basics/Input/MousePress の動き](https://i.gyazo.com/35c9ec6f1327f6b8041356b25d440c0c.webp)
+![Basics/Input/MousePress の動き](https://i.gyazo.com/6fe726bb5191c6ae91f5e0c1227b0746.webp)
 
 ### `MouseSignals`
 
-台帳は `write-only` ・ その場 **99.1%** ・ 半画素 99.1% ・ 形 100.0% ・ 完全 99.1%
+台帳は `clean` ・ その場 **99.1%** ・ 半画素 99.1% ・ 形 100.0% ・ 完全 99.1%
 
 ![Basics/Input/MouseSignals](https://i.gyazo.com/2c0cdd521499745b94d1e8f600b2eae2.png)
 
-![Basics/Input/MouseSignals の動き](https://i.gyazo.com/80520e976aa83345e6ac59b98f449970.webp)
+![Basics/Input/MouseSignals の動き](https://i.gyazo.com/6def14c5545d022b7d05541f0fbd5c15.webp)
 
 ### `StoringInput`
 
 台帳は `clean` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 99.9%
 
-![Basics/Input/StoringInput](https://i.gyazo.com/da68d98c5a012c178fd0ff06382c4af9.png)
+![Basics/Input/StoringInput](https://i.gyazo.com/79bd99701dcd7751eb24ca0f10c29279.png)
 
-![Basics/Input/StoringInput の動き](https://i.gyazo.com/4821a160b81790522e90055c00cb7a77.webp)
+![Basics/Input/StoringInput の動き](https://i.gyazo.com/fe3e7d64123e2105b904df1488ccd5f7.webp)
 
 ## Basics/Lights
 
@@ -450,7 +450,7 @@
 
 ### `Mixture`
 
-台帳は `write-only` ・ その場 **83.2%** ・ 半画素 83.2% ・ 形 99.2% ・ 完全 83.2%
+台帳は `clean` ・ その場 **83.2%** ・ 半画素 83.2% ・ 形 99.2% ・ 完全 83.2%
 
 ![Basics/Lights/Mixture](https://i.gyazo.com/688af6dbde49d23fa09d730f0ad0deb5.png)
 
@@ -458,11 +458,11 @@
 
 ### `MixtureGrid`
 
-台帳は `write-only` ・ その場 **20.0%** ・ 半画素 20.1% ・ 形 100.0% ・ 完全 0.9%
+台帳は `clean` ・ その場 **20.0%** ・ 半画素 20.1% ・ 形 100.0% ・ 完全 0.9%
 
 ![Basics/Lights/MixtureGrid](https://i.gyazo.com/2e735070e91c012443448d8cd9cb4a30.png)
 
-![Basics/Lights/MixtureGrid の動き](https://i.gyazo.com/3cb8d4f50f8cf14fbf66dcc247f321a7.webp)
+![Basics/Lights/MixtureGrid の動き](https://i.gyazo.com/0f008eef29d07fb269aaa79faa161674.webp)
 
 ### `OnOff`
 
@@ -492,17 +492,17 @@
 
 台帳は `bend` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Basics/Math/AdditiveWave](https://i.gyazo.com/7635805434c6e34bc3bdd2a583e036e7.png)
+![Basics/Math/AdditiveWave](https://i.gyazo.com/19b4ee95d736fad18744b5360299f67c.png)
 
-![Basics/Math/AdditiveWave の動き](https://i.gyazo.com/ca24b4323440bef8e5f9a0f67e2a717e.webp)
+![Basics/Math/AdditiveWave の動き](https://i.gyazo.com/abc38523414d3acc22515a85db53a51d.webp)
 
 ### `Arctangent`
 
-台帳は `clean` ・ その場 **93.9%** ・ 半画素 94.1% ・ 形 100.0% ・ 完全 93.9%
+台帳は `clean` ・ その場 **93.6%** ・ 半画素 93.8% ・ 形 100.0% ・ 完全 93.5%
 
-![Basics/Math/Arctangent](https://i.gyazo.com/31ba2c6f316a815ddc9a4f807f6c5d5b.png)
+![Basics/Math/Arctangent](https://i.gyazo.com/38e1104c14914510983bc11ee3a384ba.png)
 
-![Basics/Math/Arctangent の動き](https://i.gyazo.com/4df3c2791065efe1c47a6191622a9e9f.webp)
+![Basics/Math/Arctangent の動き](https://i.gyazo.com/3e0e1db6e907016bdd109f200374c012.webp)
 
 ### `Distance1D`
 
@@ -510,23 +510,23 @@
 
 ![Basics/Math/Distance1D](https://i.gyazo.com/14ef6768271f5abecd394d473a0eae77.png)
 
-![Basics/Math/Distance1D の動き](https://i.gyazo.com/347b62ae38c6ec83169fc4f4c8b4215c.webp)
+![Basics/Math/Distance1D の動き](https://i.gyazo.com/a9c50e38edc9dd2fd14c37b80c52a4a9.webp)
 
 ### `Distance2D`
 
-台帳は `write-only` ・ その場 **97.8%** ・ 半画素 98.7% ・ 形 100.0% ・ 完全 97.8%
+台帳は `write-only` ・ その場 **96.9%** ・ 半画素 97.2% ・ 形 100.0% ・ 完全 96.7%
 
-![Basics/Math/Distance2D](https://i.gyazo.com/44dd34688e4cfe483befab1ba4c24775.png)
+![Basics/Math/Distance2D](https://i.gyazo.com/2a4b67e3575440a0a7ee97bd9f883327.png)
 
-![Basics/Math/Distance2D の動き](https://i.gyazo.com/d3c7e55bd91aa781a08d27663c59cbca.webp)
+![Basics/Math/Distance2D の動き](https://i.gyazo.com/cf4575205f332a859c19e9704d7ad145.webp)
 
 ### `DoubleRandom`
 
 台帳は `bend` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Basics/Math/DoubleRandom](https://i.gyazo.com/60c746ee5cbc88cbc167e7d8240cca57.png)
+![Basics/Math/DoubleRandom](https://i.gyazo.com/85715e1227e94bbb44bb92f9e27b26a8.png)
 
-![Basics/Math/DoubleRandom の動き](https://i.gyazo.com/022f7156ca6ba980a0d02c1e5a077b49.webp)
+![Basics/Math/DoubleRandom の動き](https://i.gyazo.com/7829ba101653b2c1d3f7e88818b4cb44.webp)
 
 ### `Graphing2DEquation`
 
@@ -548,13 +548,13 @@
 
 台帳は `write-only` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
 
-![Basics/Math/Interpolate](https://i.gyazo.com/a2100aa129b5b97d85a72b0994bdd7c6.png)
+![Basics/Math/Interpolate](https://i.gyazo.com/86cf9b4ff23f0a930c0750f3212ce5c8.png)
 
-![Basics/Math/Interpolate の動き](https://i.gyazo.com/6a2270eaa96506b115115b308ad1c6b9.webp)
+![Basics/Math/Interpolate の動き](https://i.gyazo.com/b5300e82351147ad523e6662bc946e45.webp)
 
 ### `Map`
 
-台帳は `write-only` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0% ・ 円の輪郭のアンチエイリアス
+台帳は `clean` ・ その場 **99.9%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.9% ・ 円の輪郭のアンチエイリアス
 
 ![Basics/Math/Map](https://i.gyazo.com/1d8fd4d45af7acad364580d7cd14ec2a.png)
 
@@ -564,33 +564,33 @@
 
 台帳は `clean` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Basics/Math/Noise1D](https://i.gyazo.com/66e17c9601ab09a20b74ad43c3313634.png)
+![Basics/Math/Noise1D](https://i.gyazo.com/bfed73cb271601edfdbb122cb6c818d6.png)
 
-![Basics/Math/Noise1D の動き](https://i.gyazo.com/64e18feaaa3c9441466b58412a9eb35a.webp)
+![Basics/Math/Noise1D の動き](https://i.gyazo.com/01af599481238dda8b136ba748a1b0bb.webp)
 
 ### `Noise2D`
 
 台帳は `blocked` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Basics/Math/Noise2D](https://i.gyazo.com/7625e79e3d23acda6f3401c40de6e7dc.png)
+![Basics/Math/Noise2D](https://i.gyazo.com/f0e08381039f13f920425127a6b5d9e8.png)
 
-![Basics/Math/Noise2D の動き](https://i.gyazo.com/721491c57591a00957fdba4559852fba.webp)
+![Basics/Math/Noise2D の動き](https://i.gyazo.com/8fc7a3fecd1ea8f180ac01cd71a544c2.webp)
 
 ### `Noise3D`
 
 台帳は `blocked` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Basics/Math/Noise3D](https://i.gyazo.com/0b063b7b92edcf2b5ab1458445556edc.png)
+![Basics/Math/Noise3D](https://i.gyazo.com/7f97dbf0827d71317b9b0710af8cd1ed.png)
 
-![Basics/Math/Noise3D の動き](https://i.gyazo.com/4e6873fcf120a04a57f5e57d7b86d3c3.webp)
+![Basics/Math/Noise3D の動き](https://i.gyazo.com/cea8d23ed142cb040c2fae9ec7c3691b.webp)
 
 ### `NoiseWave`
 
-台帳は `write-only` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
+台帳は `clean` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Basics/Math/NoiseWave](https://i.gyazo.com/719f4b1cbfe6b964181ab4539dbb98b6.png)
+![Basics/Math/NoiseWave](https://i.gyazo.com/061652a68c2149e42000c209d6450890.png)
 
-![Basics/Math/NoiseWave の動き](https://i.gyazo.com/5eb53355223ddb9c8aa4ff936c295bc6.webp)
+![Basics/Math/NoiseWave の動き](https://i.gyazo.com/18e790e486c8b0785a1eb7994ba265fa.webp)
 
 ### `OperatorPrecedence`
 
@@ -600,83 +600,85 @@
 
 ### `PolarToCartesian`
 
-台帳は `clean` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
+台帳は `clean` ・ その場 **99.9%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 99.9%
 
-![Basics/Math/PolarToCartesian](https://i.gyazo.com/f3db7e15cd9f0b5ebcdae31c1939cf13.png)
+![Basics/Math/PolarToCartesian](https://i.gyazo.com/a117940aad84eecddc4c8ac6da03bbfa.png)
 
-![Basics/Math/PolarToCartesian の動き](https://i.gyazo.com/b200bf68162f006dff41c78562d41859.webp)
+![Basics/Math/PolarToCartesian の動き](https://i.gyazo.com/0fcf5bad995af32e9850c55b483992b7.webp)
 
 ### `Random`
 
 台帳は `bend` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Basics/Math/Random](https://i.gyazo.com/815fffe12da1aae9cfc65a3a3fe0a587.png)
+![Basics/Math/Random](https://i.gyazo.com/74faff4f6b3e950deed983b777a640a0.png)
 
-![Basics/Math/Random の動き](https://i.gyazo.com/0171853139c5de5a993b952c510c40a9.webp)
+![Basics/Math/Random の動き](https://i.gyazo.com/1efb04926cefefd8e26aa931bfab97b8.webp)
 
 ### `RandomGaussian`
 
 台帳は `write-only` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Basics/Math/RandomGaussian](https://i.gyazo.com/79ab46fe36e4b3ad5a77f234d67b095e.png)
+![Basics/Math/RandomGaussian](https://i.gyazo.com/131549e2d7b8e187d84eea588c8d026f.png)
 
-![Basics/Math/RandomGaussian の動き](https://i.gyazo.com/817e98c9b489048847783e9bcc307b10.webp)
+![Basics/Math/RandomGaussian の動き](https://i.gyazo.com/29376036d49795efb517aa15c5002bbe.webp)
 
 ### `Sine`
 
-台帳は `clean` ・ その場 **99.4%** ・ 半画素 99.6% ・ 形 100.0% ・ 完全 43.9%
+台帳は `clean` ・ その場 **99.1%** ・ 半画素 99.1% ・ 形 100.0% ・ 完全 43.7%
 
-![Basics/Math/Sine](https://i.gyazo.com/ed5b37ada9113af9524d9640aa73525b.png)
+![Basics/Math/Sine](https://i.gyazo.com/27b2d3cde14f749ccacbb86549d7b9b0.png)
 
-![Basics/Math/Sine の動き](https://i.gyazo.com/b3ac49f853d9c6acbdf9c6a693856392.webp)
+![Basics/Math/Sine の動き](https://i.gyazo.com/4ea1c92e0bc128a5573c28fe37f49f59.webp)
 
 ### `SineCosine`
 
-台帳は `write-only` ・ その場 **99.7%** ・ 半画素 99.8% ・ 形 100.0% ・ 完全 93.2%
+台帳は `clean` ・ その場 **99.5%** ・ 半画素 99.6% ・ 形 100.0% ・ 完全 93.1%
 
-![Basics/Math/SineCosine](https://i.gyazo.com/e58011f59782aca1df86f0a3ffdfc618.png)
+![Basics/Math/SineCosine](https://i.gyazo.com/db4880069987c3346ebcc519878d8fd1.png)
 
-![Basics/Math/SineCosine の動き](https://i.gyazo.com/8904e9712bf730c877271f3f3d4112fa.webp)
+![Basics/Math/SineCosine の動き](https://i.gyazo.com/d5c675dbb09f10d89c3bea0d6fd2d1d8.webp)
 
 ### `SineWave`
 
-台帳は `clean` ・ その場 **99.2%** ・ 半画素 99.6% ・ 形 100.0% ・ 完全 99.2%
+台帳は `clean` ・ その場 **98.9%** ・ 半画素 99.0% ・ 形 100.0% ・ 完全 98.9%
 
-![Basics/Math/SineWave](https://i.gyazo.com/44a1f011488d4cb7fcb09d0db15e9d7c.png)
+![Basics/Math/SineWave](https://i.gyazo.com/55dccb035e190126399d71af2c236e06.png)
 
-![Basics/Math/SineWave の動き](https://i.gyazo.com/ef68fe222205cc77642c018d265e134b.webp)
+![Basics/Math/SineWave の動き](https://i.gyazo.com/82a3fa68c693a52d969a58aca5e6472c.webp)
 
 ## Basics/Objects
 
 ### `CompositeObjects`
 
-台帳は `clean` ・ その場 **97.2%** ・ 半画素 97.3% ・ 形 99.5% ・ 完全 97.2%
+台帳は `clean` ・ その場 **97.3%** ・ 半画素 97.3% ・ 形 99.5% ・ 完全 97.2%
 
-![Basics/Objects/CompositeObjects](https://i.gyazo.com/98697f827466458d045b8363da6f531d.png)
+![Basics/Objects/CompositeObjects](https://i.gyazo.com/ead6d27a24f6419cdcb77d522e1cce40.png)
 
-![Basics/Objects/CompositeObjects の動き](https://i.gyazo.com/294d85c03cb83d1499e17cbc811c1133.webp)
+![Basics/Objects/CompositeObjects の動き](https://i.gyazo.com/25e5b4786d1432ec7876472595f852ec.webp)
 
 ### `Inheritance`
 
-台帳は `clean` ・ その場 **99.7%** ・ 半画素 99.8% ・ 形 100.0% ・ 完全 99.7%
+台帳は `clean` ・ その場 **99.7%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.6%
 
-![Basics/Objects/Inheritance](https://i.gyazo.com/1c96fec66dd8053d64deb71a369c4b55.png)
+![Basics/Objects/Inheritance](https://i.gyazo.com/5dd2f0583f6b8379952ddb04d7455c37.png)
 
-![Basics/Objects/Inheritance の動き](https://i.gyazo.com/e43d322feb893190f7fbd1fd16707059.webp)
+![Basics/Objects/Inheritance の動き](https://i.gyazo.com/dafdd93cca177400fe64f34082a5c74e.webp)
 
 ### `MultipleConstructors`
 
-台帳は `blocked` ・ その場 **99.3%** ・ 半画素 99.3% ・ 形 99.9% ・ 完全 99.3%
+台帳は `blocked` ・ その場 **99.2%** ・ 半画素 99.2% ・ 形 99.9% ・ 完全 99.1%
 
-![Basics/Objects/MultipleConstructors](https://i.gyazo.com/93e12afc3ae2feba1f49567ec6d3cb7d.png)
+![Basics/Objects/MultipleConstructors](https://i.gyazo.com/8ed28415aa022054188801b046a60045.png)
+
+![Basics/Objects/MultipleConstructors の動き](https://i.gyazo.com/09b797766596806e41af906260e1b0f1.webp)
 
 ### `Objects`
 
 台帳は `clean` ・ その場 **90.7%** ・ 半画素 90.7% ・ 形 100.0% ・ 完全 90.2%
 
-![Basics/Objects/Objects](https://i.gyazo.com/e5e7ae01e616831e488b6d0854b016f6.png)
+![Basics/Objects/Objects](https://i.gyazo.com/c67753b29747fdab9d35d47203506291.png)
 
-![Basics/Objects/Objects の動き](https://i.gyazo.com/2426c3bc59a973f1f0f8dc0fcdd10dc4.webp)
+![Basics/Objects/Objects の動き](https://i.gyazo.com/39d0f89191f48dfe4ebcbd53b5768cea.webp)
 
 ## Basics/Shape
 
@@ -686,7 +688,7 @@
 
 ![Basics/Shape/LoadDisplayOBJ](https://i.gyazo.com/a9ea8c8aa5cdaa56d79aaa93407881ca.png)
 
-![Basics/Shape/LoadDisplayOBJ の動き](https://i.gyazo.com/83702721071317cd7c2c257d9ef3887d.webp)
+![Basics/Shape/LoadDisplayOBJ の動き](https://i.gyazo.com/8d92e4aca2c13b0bfaf64e3febb27745.webp)
 
 ## Basics/Structure
 
@@ -700,15 +702,17 @@
 
 台帳は `clean` ・ その場 **99.6%** ・ 半画素 99.6% ・ 形 99.6% ・ 完全 99.6%
 
-![Basics/Structure/CreateGraphics](https://i.gyazo.com/e3696d2bf27f0546d405d95319c6d05d.png)
+![Basics/Structure/CreateGraphics](https://i.gyazo.com/9c012c30bdc2fbffbe24d785dc620b76.png)
 
-![Basics/Structure/CreateGraphics の動き](https://i.gyazo.com/bdd55db1a5eed25771b0b892b4fdc06b.webp)
+![Basics/Structure/CreateGraphics の動き](https://i.gyazo.com/f0c8b3de5f30c75b1039cfcc59be0f9f.webp)
 
 ### `Functions`
 
-台帳は `blocked` ・ その場 **97.7%** ・ 半画素 99.1% ・ 形 100.0% ・ 完全 66.3%
+台帳は `blocked` ・ その場 **97.5%** ・ 半画素 99.5% ・ 形 99.9% ・ 完全 66.0%
 
-![Basics/Structure/Functions](https://i.gyazo.com/7848fe08390a6fa1bfc62153a0c38d75.png)
+![Basics/Structure/Functions](https://i.gyazo.com/a87790221bb574b3986dc9a00738967e.png)
+
+![Basics/Structure/Functions の動き](https://i.gyazo.com/f7c20d5e8695ce3dfdfe30c37fa838b8.webp)
 
 ### `Loop`
 
@@ -716,7 +720,7 @@
 
 ![Basics/Structure/Loop](https://i.gyazo.com/ad85028b34242961979c6f7e61f7e03e.png)
 
-![Basics/Structure/Loop の動き](https://i.gyazo.com/872f9738003c81eac3a77cfce226d662.webp)
+![Basics/Structure/Loop の動き](https://i.gyazo.com/6be09b3760dcd39da3de39da13f76801.webp)
 
 ### `NoLoop`
 
@@ -728,9 +732,11 @@
 
 ### `Recursion`
 
-台帳は `blocked` ・ その場 **96.8%** ・ 半画素 98.7% ・ 形 99.9% ・ 完全 61.4%
+台帳は `blocked` ・ その場 **96.7%** ・ 半画素 98.6% ・ 形 99.9% ・ 完全 60.8%
 
-![Basics/Structure/Recursion](https://i.gyazo.com/caca61179c6a64736235f9ed995360d2.png)
+![Basics/Structure/Recursion](https://i.gyazo.com/3ba54fb22cd32fe667cb93590f038870.png)
+
+![Basics/Structure/Recursion の動き](https://i.gyazo.com/b1b606f4f0ca2dcd5f55b9a8c411682a.webp)
 
 ### `Redraw`
 
@@ -738,7 +744,7 @@
 
 ![Basics/Structure/Redraw](https://i.gyazo.com/212b1bb0fdf3b9a2718208e6ddcd26ee.png)
 
-![Basics/Structure/Redraw の動き](https://i.gyazo.com/9eee3f16305ed3d7d79f3692f3b2da0d.webp)
+![Basics/Structure/Redraw の動き](https://i.gyazo.com/94db59fbc9a6b3ff34350a4ae497432b.webp)
 
 ### `SetupDraw`
 
@@ -746,7 +752,7 @@
 
 ![Basics/Structure/SetupDraw](https://i.gyazo.com/2252844d4dd9a1f28c2141e735b195fd.png)
 
-![Basics/Structure/SetupDraw の動き](https://i.gyazo.com/6713d04d1ef7eb37cef7893d5fb8510c.webp)
+![Basics/Structure/SetupDraw の動き](https://i.gyazo.com/670a056f2539382d2bcef125d67c10d0.webp)
 
 ### `StatementsComments`
 
@@ -764,51 +770,51 @@
 
 ### `Arm`
 
-台帳は `clean` ・ その場 **97.1%** ・ 半画素 97.1% ・ 形 99.9% ・ 完全 97.1%
+台帳は `clean` ・ その場 **97.1%** ・ 半画素 97.1% ・ 形 100.0% ・ 完全 97.0%
 
-![Basics/Transform/Arm](https://i.gyazo.com/83ef8c6862e27f59264ee96f0c0d1437.png)
+![Basics/Transform/Arm](https://i.gyazo.com/4d7437bed669cdc8d38a4f5e8a3d1d22.png)
 
-![Basics/Transform/Arm の動き](https://i.gyazo.com/ebf3260d74a030416ec51f04646e3441.webp)
+![Basics/Transform/Arm の動き](https://i.gyazo.com/bf3d89076926e859b7bad181294312a6.webp)
 
 ### `Rotate`
 
 台帳は `blocked` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Basics/Transform/Rotate](https://i.gyazo.com/0f272a67aeda15a63f1c1d830571620c.png)
+![Basics/Transform/Rotate](https://i.gyazo.com/b817f67b533d8a1fd85d379b0428285c.png)
 
-![Basics/Transform/Rotate の動き](https://i.gyazo.com/3e8ba3ad9557cb9ffdc7d863f7e0fecf.webp)
+![Basics/Transform/Rotate の動き](https://i.gyazo.com/7c8bb0b8d634b48a48548d98dbc69450.webp)
 
 ### `RotatePushPop`
 
-台帳は `write-only` ・ その場 **57.3%** ・ 半画素 57.5% ・ 形 93.2% ・ 完全 0.3%
+台帳は `clean` ・ その場 **57.3%** ・ 半画素 57.5% ・ 形 93.2% ・ 完全 0.3%
 
 ![Basics/Transform/RotatePushPop](https://i.gyazo.com/a46b0925b21d63fc86d6fd6a21e6a495.png)
 
-![Basics/Transform/RotatePushPop の動き](https://i.gyazo.com/e0da4da553f51688dee2f120395e89bb.webp)
+![Basics/Transform/RotatePushPop の動き](https://i.gyazo.com/a03bb6ae23bff8d9449ee1bc7593c97f.webp)
 
 ### `RotateXY`
 
-台帳は `clean` ・ その場 **89.9%** ・ 半画素 89.9% ・ 形 99.8% ・ 完全 89.9%
+台帳は `clean` ・ その場 **89.8%** ・ 半画素 89.8% ・ 形 99.8% ・ 完全 89.8%
 
-![Basics/Transform/RotateXY](https://i.gyazo.com/396721625a7672486ab2b9da01297f47.png)
+![Basics/Transform/RotateXY](https://i.gyazo.com/808a5fa6ea2937fb7752c4c8cb7c198f.png)
 
-![Basics/Transform/RotateXY の動き](https://i.gyazo.com/9da5157a4e695cdb809824b09d8567ed.webp)
+![Basics/Transform/RotateXY の動き](https://i.gyazo.com/cbfaad7c5dd35207d6051090e342709b.webp)
 
 ### `Scale`
 
-台帳は `bend` ・ その場 **99.6%** ・ 半画素 99.6% ・ 形 100.0% ・ 完全 99.5%
+台帳は `bend` ・ その場 **99.7%** ・ 半画素 99.7% ・ 形 100.0% ・ 完全 99.5%
 
-![Basics/Transform/Scale](https://i.gyazo.com/1d98f52d051cd051c23934d295fde365.png)
+![Basics/Transform/Scale](https://i.gyazo.com/fbe0f75dfde7f5f824e12368908b4bef.png)
 
-![Basics/Transform/Scale の動き](https://i.gyazo.com/4ef08fb5443064f3719b5f9bea1f38dd.webp)
+![Basics/Transform/Scale の動き](https://i.gyazo.com/2d6bcf0425ceb0ae3e8eedd10f3e90f1.webp)
 
 ### `Translate`
 
 台帳は `clean` ・ その場 **99.9%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.9%
 
-![Basics/Transform/Translate](https://i.gyazo.com/c0b0851d7fcba0185ccbf1c52d795dee.png)
+![Basics/Transform/Translate](https://i.gyazo.com/342586fd2f7122c57acaab8bcc786043.png)
 
-![Basics/Transform/Translate の動き](https://i.gyazo.com/44ea59ebc563ffbe53fbc91d1aa7b37d.webp)
+![Basics/Transform/Translate の動き](https://i.gyazo.com/023185a551269db49d03978cf78f5739.webp)
 
 ## Basics/Typography
 
@@ -822,9 +828,9 @@
 
 台帳は `blocked` ・ **測らない** — 字を組む。原典はブラウザの、mokume は macOS の書体で字形が違う
 
-![Basics/Typography/TextRotation](https://i.gyazo.com/f0cd0452787c7500024c1c80c89da7c9.png)
+![Basics/Typography/TextRotation](https://i.gyazo.com/48a8fd4a5a3445e08d044ae59a95b6df.png)
 
-![Basics/Typography/TextRotation の動き](https://i.gyazo.com/ac13fc4eeae34c7b38bc4a1c10f02fca.webp)
+![Basics/Typography/TextRotation の動き](https://i.gyazo.com/ad20eeca427c0d216de501d2e1751d24.webp)
 
 ### `Words`
 
@@ -838,9 +844,9 @@
 
 台帳は `out-of-scope` ・ その場 **99.4%** ・ 半画素 99.4% ・ 形 99.7% ・ 完全 99.4%
 
-![Basics/Web/EmbeddedLinks](https://i.gyazo.com/05b11dfce2c6a9c88605d06dee88778e.png)
+![Basics/Web/EmbeddedLinks](https://i.gyazo.com/36db0eb5bb435ac952f4c9ff585cf49f.png)
 
-![Basics/Web/EmbeddedLinks の動き](https://i.gyazo.com/e8d301d5c309e1e7045fecdbf6c82d9c.webp)
+![Basics/Web/EmbeddedLinks の動き](https://i.gyazo.com/c9394f2fbc11cff69431889b6733c6b1.webp)
 
 ### `LoadingImages`
 
@@ -854,33 +860,33 @@
 
 台帳は `out-of-scope` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
 
-![Topics/Advanced Data/ArrayListClass](https://i.gyazo.com/247f78fe783541a93c6635a6bb4d7f4e.png)
+![Topics/Advanced Data/ArrayListClass](https://i.gyazo.com/82211eb9fd188c4a4e6c5a46f9d6ebe4.png)
 
-![Topics/Advanced Data/ArrayListClass の動き](https://i.gyazo.com/98422d472591031ba96c60aaeb1f28ff.webp)
+![Topics/Advanced Data/ArrayListClass の動き](https://i.gyazo.com/dac1fcfe99c56ad22553952242dc036a.webp)
 
 ### `IntListLottery`
 
 台帳は `out-of-scope` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Topics/Advanced Data/IntListLottery](https://i.gyazo.com/eb7c7d9525154d5ff100a0903355a67e.png)
+![Topics/Advanced Data/IntListLottery](https://i.gyazo.com/ac0f46a7c11a35730abf308cb11dd09c.png)
 
-![Topics/Advanced Data/IntListLottery の動き](https://i.gyazo.com/e63f94302c07507b60748e051cd81b40.webp)
+![Topics/Advanced Data/IntListLottery の動き](https://i.gyazo.com/af70409cb35f83841838d002179e37d0.webp)
 
 ### `LoadSaveJSON`
 
 台帳は `out-of-scope` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Topics/Advanced Data/LoadSaveJSON](https://i.gyazo.com/f6a8f5f3ea2ad364b7873fe4551684ac.png)
+![Topics/Advanced Data/LoadSaveJSON](https://i.gyazo.com/0dafb7785377019867395c42ab635f5b.png)
 
-![Topics/Advanced Data/LoadSaveJSON の動き](https://i.gyazo.com/1c851b6aa5aa5175989172a615c3a1e8.webp)
+![Topics/Advanced Data/LoadSaveJSON の動き](https://i.gyazo.com/c55287c16743912fcb96ec08187a877a.webp)
 
 ### `LoadSaveTable`
 
 台帳は `out-of-scope` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Topics/Advanced Data/LoadSaveTable](https://i.gyazo.com/c02b2720359f5cd6e48ecd9880b6099c.png)
+![Topics/Advanced Data/LoadSaveTable](https://i.gyazo.com/0bb424f2b6527046cb828e156dd1c745.png)
 
-![Topics/Advanced Data/LoadSaveTable の動き](https://i.gyazo.com/aba9bfba249d4bf5b79867d63b9334e8.webp)
+![Topics/Advanced Data/LoadSaveTable の動き](https://i.gyazo.com/870c4447c5847c0c2d27735828d7b007.webp)
 
 ## Topics/Animation
 
@@ -890,7 +896,7 @@
 
 ![Topics/Animation/AnimatedSprite](https://i.gyazo.com/6300271c404eb47b374d604d7ff831cf.png)
 
-![Topics/Animation/AnimatedSprite の動き](https://i.gyazo.com/bd85fb253ac98342a45ac2301b2332ef.webp)
+![Topics/Animation/AnimatedSprite の動き](https://i.gyazo.com/0c918d85e4489a68349424fa9703bc36.webp)
 
 ### `Sequential`
 
@@ -898,7 +904,7 @@
 
 ![Topics/Animation/Sequential](https://i.gyazo.com/02a16c251c6db6872f5e90d4b946ce4a.png)
 
-![Topics/Animation/Sequential の動き](https://i.gyazo.com/8810caec1c8c61c6440490ff7a9d3b2d.webp)
+![Topics/Animation/Sequential の動き](https://i.gyazo.com/cb94d88b0dd1e2d6786ea6eda693ae41.webp)
 
 ## Topics/Cellular Automata
 
@@ -906,17 +912,17 @@
 
 台帳は `blocked` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Topics/Cellular Automata/GameOfLife](https://i.gyazo.com/dfad46d62f4a7bc6752dff014baae554.png)
+![Topics/Cellular Automata/GameOfLife](https://i.gyazo.com/d9ab71ab515ef2fef9cc755332e9f2e0.png)
 
-![Topics/Cellular Automata/GameOfLife の動き](https://i.gyazo.com/1e5bb5e820c73998c2605749e1812b10.webp)
+![Topics/Cellular Automata/GameOfLife の動き](https://i.gyazo.com/6a92f39a58a20cdd22979e6dc8d83a9a.webp)
 
 ### `Wolfram`
 
-台帳は `bend` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
+台帳は `clean` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
 ![Topics/Cellular Automata/Wolfram](https://i.gyazo.com/f91db95541ab09c0ddca0ba97a6a8f49.png)
 
-![Topics/Cellular Automata/Wolfram の動き](https://i.gyazo.com/fcef7a3f0cc86e2efd635fe7027d9e9d.webp)
+![Topics/Cellular Automata/Wolfram の動き](https://i.gyazo.com/64db9da838bb44ecec0b205dcd36cc81.webp)
 
 ## Topics/Drawing
 
@@ -934,15 +940,15 @@
 
 ![Topics/Drawing/Pattern](https://i.gyazo.com/00a4ba7fc82c81c6c6b16ebafa201fdd.png)
 
-![Topics/Drawing/Pattern の動き](https://i.gyazo.com/8d84ae71ac43f1e9cc91ec174ace6304.webp)
+![Topics/Drawing/Pattern の動き](https://i.gyazo.com/2b43f6f10873a1fc4fceaf7ce5512827.webp)
 
 ### `Pulses`
 
-台帳は `write-only` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
+台帳は `clean` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
 
 ![Topics/Drawing/Pulses](https://i.gyazo.com/c5f499cf25cdcf1d2c4cc034922ab32a.png)
 
-![Topics/Drawing/Pulses の動き](https://i.gyazo.com/41f9cddcc7e56533c8dbcf6de0137b56.webp)
+![Topics/Drawing/Pulses の動き](https://i.gyazo.com/da60491a37115b0bf7ce4bca9221fab3.webp)
 
 ## Topics/File IO
 
@@ -952,7 +958,7 @@
 
 ![Topics/File IO/LoadFile1](https://i.gyazo.com/2cb70dd9ea06e230f8bf91242a54c6fb.png)
 
-![Topics/File IO/LoadFile1 の動き](https://i.gyazo.com/28f024d3168185d39a272db1e8965e38.webp)
+![Topics/File IO/LoadFile1 の動き](https://i.gyazo.com/a0d2694b20c981ecd93a9931fed9bdfe.webp)
 
 ### `LoadFile2`
 
@@ -960,13 +966,15 @@
 
 ![Topics/File IO/LoadFile2](https://i.gyazo.com/6f8a2067c014832fcb1be9dbe3f3f65b.png)
 
+![Topics/File IO/LoadFile2 の動き](https://i.gyazo.com/d890ae7224785309f2ca87b6e7fbd9fc.webp)
+
 ### `SaveOneImage`
 
 台帳は `out-of-scope` ・ その場 **99.6%** ・ 半画素 99.6% ・ 形 100.0% ・ 完全 99.6%
 
 ![Topics/File IO/SaveOneImage](https://i.gyazo.com/d86fcf06a8f2a13480c810b83f19b7ae.png)
 
-![Topics/File IO/SaveOneImage の動き](https://i.gyazo.com/db506d21f76649d108d29ceec260da65.webp)
+![Topics/File IO/SaveOneImage の動き](https://i.gyazo.com/7102f5137e74dcc944d69a0e56eec51c.webp)
 
 ## Topics/Fractals and L-Systems
 
@@ -976,7 +984,7 @@
 
 ![Topics/Fractals and L-Systems/Koch](https://i.gyazo.com/b80b55036feede07fa1333649ba38654.png)
 
-![Topics/Fractals and L-Systems/Koch の動き](https://i.gyazo.com/b0f64bc006b1b2d15f9ab9f6e4dc01b7.webp)
+![Topics/Fractals and L-Systems/Koch の動き](https://i.gyazo.com/f5566873264a3f96f66e39be95bd51c3.webp)
 
 ### `Mandelbrot`
 
@@ -986,49 +994,49 @@
 
 ### `PenroseSnowflake`
 
-台帳は `write-only` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
+台帳は `clean` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
 
 ![Topics/Fractals and L-Systems/PenroseSnowflake](https://i.gyazo.com/34504e4e767521b10c92a6057907e2bb.png)
 
-![Topics/Fractals and L-Systems/PenroseSnowflake の動き](https://i.gyazo.com/2f1ec8b2ebe20e640430e8aaafd9eabc.webp)
+![Topics/Fractals and L-Systems/PenroseSnowflake の動き](https://i.gyazo.com/5091a762cb50ef454adbff0dcae65acc.webp)
 
 ### `PenroseTile`
 
-台帳は `write-only` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 99.9%
+台帳は `clean` ・ その場 **99.9%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.9%
 
-![Topics/Fractals and L-Systems/PenroseTile](https://i.gyazo.com/9fb55fa95b8b9246faa6c1346bb84c3c.png)
+![Topics/Fractals and L-Systems/PenroseTile](https://i.gyazo.com/87acfb675afffc406cdeb4b1d7fe211c.png)
 
-![Topics/Fractals and L-Systems/PenroseTile の動き](https://i.gyazo.com/163387bd58f114a76e54c48ce2d4e875.webp)
+![Topics/Fractals and L-Systems/PenroseTile の動き](https://i.gyazo.com/1333de6111ed30e10e5341772b111011.webp)
 
 ### `Pentigree`
 
-台帳は `write-only` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
+台帳は `clean` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
 
-![Topics/Fractals and L-Systems/Pentigree](https://i.gyazo.com/7f8fa226c7e30f1ca8c5cf8c86bdf4eb.png)
+![Topics/Fractals and L-Systems/Pentigree](https://i.gyazo.com/c5750606585593e5ace507d4e3eb49f6.png)
 
-![Topics/Fractals and L-Systems/Pentigree の動き](https://i.gyazo.com/e567c853cfaeaae7ac0bc11c3dc156c6.webp)
+![Topics/Fractals and L-Systems/Pentigree の動き](https://i.gyazo.com/766fd15830ab32a92c7d66aa02b48124.webp)
 
 ### `Tree`
 
 台帳は `bend` ・ その場 **99.7%** ・ 半画素 99.8% ・ 形 100.0% ・ 完全 99.7%
 
-![Topics/Fractals and L-Systems/Tree](https://i.gyazo.com/ed9c70a707136a475ab0f43af7b75d18.png)
+![Topics/Fractals and L-Systems/Tree](https://i.gyazo.com/86b8ee6cae1ad2661334df34f4eb2d11.png)
 
-![Topics/Fractals and L-Systems/Tree の動き](https://i.gyazo.com/7810ee5360ccc327ae41fc5e408480fa.webp)
+![Topics/Fractals and L-Systems/Tree の動き](https://i.gyazo.com/a3d3563375406a025e08bf423900e852.webp)
 
 ## Topics/GUI
 
 ### `Button`
 
-台帳は `bend` ・ その場 **99.5%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.5%
+台帳は `write-only` ・ その場 **99.4%** ・ 半画素 99.8% ・ 形 100.0% ・ 完全 99.4%
 
-![Topics/GUI/Button](https://i.gyazo.com/6c47909fbbe0aed7aef7de99e02e8217.png)
+![Topics/GUI/Button](https://i.gyazo.com/aea607aa66103e48897de6fa9382a27a.png)
 
-![Topics/GUI/Button の動き](https://i.gyazo.com/e675a465d6f653763f3d86c833fd91e8.webp)
+![Topics/GUI/Button の動き](https://i.gyazo.com/f09e97773708b46a4229e489ddb26efd.webp)
 
 ### `Handles`
 
-台帳は `bend` ・ その場 **98.1%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 98.1%
+台帳は `clean` ・ その場 **98.1%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 98.1%
 
 ![Topics/GUI/Handles](https://i.gyazo.com/c0947a26f468cb6e86436a274c2713e0.png)
 
@@ -1036,15 +1044,15 @@
 
 ### `Rollover`
 
-台帳は `write-only` ・ その場 **99.5%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.5%
+台帳は `write-only` ・ その場 **99.4%** ・ 半画素 99.8% ・ 形 100.0% ・ 完全 99.4%
 
-![Topics/GUI/Rollover](https://i.gyazo.com/fc69ac0ca4ef40c3d84f4e76d32e9322.png)
+![Topics/GUI/Rollover](https://i.gyazo.com/9535984ffdc2f1b891bb20853dd6bc8d.png)
 
-![Topics/GUI/Rollover の動き](https://i.gyazo.com/79c3e6a0cf77c8ef7c088b5e7b5914da.webp)
+![Topics/GUI/Rollover の動き](https://i.gyazo.com/9eb03167ae9a5a612c1144a9534c6243.webp)
 
 ### `Scrollbar`
 
-台帳は `bend` ・ その場 **99.4%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 84.7%
+台帳は `clean` ・ その場 **99.4%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 84.7%
 
 ![Topics/GUI/Scrollbar](https://i.gyazo.com/aa7d94f306179cfab96b489d46f9878e.png)
 
@@ -1072,6 +1080,8 @@
 
 ![Topics/Image Processing/Convolution](https://i.gyazo.com/459184944f159dab06fd90ac322276bf.png)
 
+![Topics/Image Processing/Convolution の動き](https://i.gyazo.com/2bc975a9bd4ffa40da30bc3274561a17.webp)
+
 ### `EdgeDetection`
 
 台帳は `blocked` ・ その場 **63.0%** ・ 半画素 64.2% ・ 形 99.7% ・ 完全 58.2%
@@ -1080,9 +1090,9 @@
 
 ### `Histogram`
 
-台帳は `blocked` ・ その場 **79.1%** ・ 半画素 90.8% ・ 形 97.0% ・ 完全 55.5%
+台帳は `clean` ・ その場 **79.1%** ・ 半画素 90.8% ・ 形 97.0% ・ 完全 55.5%
 
-![Topics/Image Processing/Histogram](https://i.gyazo.com/b3eb891db98e3dc0409091fc83c5491a.png)
+![Topics/Image Processing/Histogram](https://i.gyazo.com/c46979c3f875228b95e8c51030a5a492.png)
 
 ### `PixelArray`
 
@@ -1090,57 +1100,57 @@
 
 ![Topics/Image Processing/PixelArray](https://i.gyazo.com/13df204b2785ce30b4ca4d5af1066a96.png)
 
-![Topics/Image Processing/PixelArray の動き](https://i.gyazo.com/2bc4ee6c3e761901a5d030dfce097d20.webp)
+![Topics/Image Processing/PixelArray の動き](https://i.gyazo.com/8db3c16565d80082410e8eb8b2127bc2.webp)
 
 ## Topics/Interaction
 
 ### `Follow1`
 
-台帳は `clean` ・ その場 **99.3%** ・ 半画素 99.3% ・ 形 99.9% ・ 完全 99.3%
+台帳は `clean` ・ その場 **99.3%** ・ 半画素 99.3% ・ 形 100.0% ・ 完全 99.3%
 
-![Topics/Interaction/Follow1](https://i.gyazo.com/7bc9ab77600b418c180a8c7245e8e8af.png)
+![Topics/Interaction/Follow1](https://i.gyazo.com/8c3f7c611915c756030c12639d8efa3f.png)
 
-![Topics/Interaction/Follow1 の動き](https://i.gyazo.com/ad2703be354dc29304465fea68fcbbcb.webp)
+![Topics/Interaction/Follow1 の動き](https://i.gyazo.com/c56d9ab4b4d846ce8578098a4abb69ed.webp)
 
 ### `Follow2`
 
 台帳は `clean` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
 
-![Topics/Interaction/Follow2](https://i.gyazo.com/04a0c7f94509be285521f1a252897f08.png)
+![Topics/Interaction/Follow2](https://i.gyazo.com/acfcdf33b327e8d3ff7a59ad541cc741.png)
 
-![Topics/Interaction/Follow2 の動き](https://i.gyazo.com/880f24556c03c268df239f223458096f.webp)
+![Topics/Interaction/Follow2 の動き](https://i.gyazo.com/1c23ac842335a0f6f6e08fba59e3834a.webp)
 
 ### `Follow3`
 
 台帳は `clean` ・ その場 **99.9%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.9%
 
-![Topics/Interaction/Follow3](https://i.gyazo.com/61e7c0834f567295c4533435dd9d3b5e.png)
+![Topics/Interaction/Follow3](https://i.gyazo.com/aebaa72b37f93ea04a3806a97fc65525.png)
 
-![Topics/Interaction/Follow3 の動き](https://i.gyazo.com/20d65a658f530c25afb9df35cc4e5b02.webp)
+![Topics/Interaction/Follow3 の動き](https://i.gyazo.com/46a81ccca54dad65b51cbe9b11742f65.webp)
 
 ### `Reach1`
 
 台帳は `clean` ・ その場 **98.4%** ・ 半画素 98.4% ・ 形 100.0% ・ 完全 98.4%
 
-![Topics/Interaction/Reach1](https://i.gyazo.com/71cebb3c5dd670ef49a0da6d4b8a4b15.png)
+![Topics/Interaction/Reach1](https://i.gyazo.com/0086570b205d8817e652daee5e541ff9.png)
 
-![Topics/Interaction/Reach1 の動き](https://i.gyazo.com/d5d668b01e1234a05a11894db5136fe2.webp)
+![Topics/Interaction/Reach1 の動き](https://i.gyazo.com/97e92f22fd6b49e46d6678bf4105c3b1.webp)
 
 ### `Reach2`
 
 台帳は `clean` ・ その場 **99.1%** ・ 半画素 99.1% ・ 形 99.7% ・ 完全 99.1%
 
-![Topics/Interaction/Reach2](https://i.gyazo.com/e5999de1b48e4712e570a6ee73f33d17.png)
+![Topics/Interaction/Reach2](https://i.gyazo.com/e20f496da887cf5c756e2c6ca2a67a84.png)
 
-![Topics/Interaction/Reach2 の動き](https://i.gyazo.com/c8dd6b0641b63fce92b185aebabcd931.webp)
+![Topics/Interaction/Reach2 の動き](https://i.gyazo.com/e5131a14ed84f440fcaf8eb049f7eea6.webp)
 
 ### `Reach3`
 
-台帳は `clean` ・ その場 **98.9%** ・ 半画素 98.9% ・ 形 99.9% ・ 完全 98.8%
+台帳は `clean` ・ その場 **99.0%** ・ 半画素 99.0% ・ 形 100.0% ・ 完全 98.9%
 
-![Topics/Interaction/Reach3](https://i.gyazo.com/b31dd45584e71dd96590571eef9cc321.png)
+![Topics/Interaction/Reach3](https://i.gyazo.com/e891324b16e79a4bfcf2a20f15814cac.png)
 
-![Topics/Interaction/Reach3 の動き](https://i.gyazo.com/45843696d93077e0424d4674355f92f1.webp)
+![Topics/Interaction/Reach3 の動き](https://i.gyazo.com/09427affd964bf41644a2498935d0c16.webp)
 
 ### `Tickle`
 
@@ -1148,41 +1158,41 @@
 
 ![Topics/Interaction/Tickle](https://i.gyazo.com/90ac909037b677c599a64d58de6e33ef.png)
 
-![Topics/Interaction/Tickle の動き](https://i.gyazo.com/23dc7942924a0d7fa3d484f8e11fc588.webp)
+![Topics/Interaction/Tickle の動き](https://i.gyazo.com/0fa7371415aed79afd22522ca91c4e3a.webp)
 
 ## Topics/Motion
 
 ### `Bounce`
 
-台帳は `bend` ・ その場 **99.9%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.9%
+台帳は `bend` ・ その場 **99.8%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.8%
 
-![Topics/Motion/Bounce](https://i.gyazo.com/68bb8149176c6ee11267abaec5874a29.png)
+![Topics/Motion/Bounce](https://i.gyazo.com/89c171b281b9f6490202e0ca5c8a8724.png)
 
-![Topics/Motion/Bounce の動き](https://i.gyazo.com/17491ac693f95fbfd51c5c6204a14fa7.webp)
+![Topics/Motion/Bounce の動き](https://i.gyazo.com/15411cf3c0e916ce9f24f0ab7d7a5f1d.webp)
 
 ### `BouncyBubbles`
 
 台帳は `clean` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Topics/Motion/BouncyBubbles](https://i.gyazo.com/88529c49e1f654307addd776e4e91556.png)
+![Topics/Motion/BouncyBubbles](https://i.gyazo.com/992601e255539d3b54883996f1045b53.png)
 
-![Topics/Motion/BouncyBubbles の動き](https://i.gyazo.com/96e253a21236adb1c7a9c2f29f76473c.webp)
+![Topics/Motion/BouncyBubbles の動き](https://i.gyazo.com/c950ff3767520cc5380041d2d85fdf56.webp)
 
 ### `Brownian`
 
 台帳は `bend` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Topics/Motion/Brownian](https://i.gyazo.com/cc324d8358046a87339ab53bf013d661.png)
+![Topics/Motion/Brownian](https://i.gyazo.com/d179ead0583e52893972e67c25bbab55.png)
 
-![Topics/Motion/Brownian の動き](https://i.gyazo.com/8285be984ab1ccb8a959f2130b7bad96.webp)
+![Topics/Motion/Brownian の動き](https://i.gyazo.com/915ef7f339c8d9f47fe15f07c4d85ade.webp)
 
 ### `CircleCollision`
 
 台帳は `bend` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
 
-![Topics/Motion/CircleCollision](https://i.gyazo.com/2fa1646eaa9ab20cbddee4f4a1c8a936.png)
+![Topics/Motion/CircleCollision](https://i.gyazo.com/404ea17729a8d762b2fd25b804bf8d99.png)
 
-![Topics/Motion/CircleCollision の動き](https://i.gyazo.com/e8b505b5b5b42efc267672b8a471b7f5.webp)
+![Topics/Motion/CircleCollision の動き](https://i.gyazo.com/ada18987d57a24132fb1044053eb8838.webp)
 
 ### `Linear`
 
@@ -1190,7 +1200,7 @@
 
 ![Topics/Motion/Linear](https://i.gyazo.com/4dc7af28ac9e912128fab20a1f0e80dc.png)
 
-![Topics/Motion/Linear の動き](https://i.gyazo.com/548141d75166a2f32515ba447374c8b0.webp)
+![Topics/Motion/Linear の動き](https://i.gyazo.com/843df4e968ef659d7a87a74efad19b11.webp)
 
 ### `Morph`
 
@@ -1198,31 +1208,31 @@
 
 ![Topics/Motion/Morph](https://i.gyazo.com/ed945b6ab28870bbe98767f84e158183.png)
 
-![Topics/Motion/Morph の動き](https://i.gyazo.com/c8c2d8273e304de271fde6aa74f9db0d.webp)
+![Topics/Motion/Morph の動き](https://i.gyazo.com/03dfea02b881128b19c75a7aa27fbd56.webp)
 
 ### `MovingOnCurves`
 
-台帳は `bend` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
+台帳は `clean` ・ その場 **100.0%** ・ 半画素 100.0% ・ 形 100.0% ・ 完全 100.0%
 
-![Topics/Motion/MovingOnCurves](https://i.gyazo.com/4f04884d4ae65aa7b2d552ff6d4bd46f.png)
+![Topics/Motion/MovingOnCurves](https://i.gyazo.com/b1b0d88f7adc817b1a65a24dd909e9ba.png)
 
-![Topics/Motion/MovingOnCurves の動き](https://i.gyazo.com/60ae100df67e6c0d61c13e23b1c55c94.webp)
+![Topics/Motion/MovingOnCurves の動き](https://i.gyazo.com/87f0fdbec721e9d5c0e300ba2e404968.webp)
 
 ### `Reflection1`
 
 台帳は `bend` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Topics/Motion/Reflection1](https://i.gyazo.com/92425e42b3fe29b257b7d82d76ef9cdc.png)
+![Topics/Motion/Reflection1](https://i.gyazo.com/6111121e81acd8f897391d84c3624e2a.png)
 
-![Topics/Motion/Reflection1 の動き](https://i.gyazo.com/3ba2ab0cb9b80ed4777872ab48a019c1.webp)
+![Topics/Motion/Reflection1 の動き](https://i.gyazo.com/28c4be9b83d5dee78ff402e7a990d6d7.webp)
 
 ### `Reflection2`
 
 台帳は `bend` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Topics/Motion/Reflection2](https://i.gyazo.com/5b8679b6b491ccb1e1de82c189a29007.png)
+![Topics/Motion/Reflection2](https://i.gyazo.com/01cc533c7a2f5f9059a9d13a7ac03c68.png)
 
-![Topics/Motion/Reflection2 の動き](https://i.gyazo.com/961b9bd026589f3ed148bbc67064997b.webp)
+![Topics/Motion/Reflection2 の動き](https://i.gyazo.com/a0127d88fa63e05545d811e166257c5e.webp)
 
 ## Topics/Simulate
 
@@ -1230,17 +1240,17 @@
 
 台帳は `bend` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Topics/Simulate/Flocking](https://i.gyazo.com/19587a41b47c708d1247828ec6810300.png)
+![Topics/Simulate/Flocking](https://i.gyazo.com/851dabdf70f29de78aa543c3b842ef11.png)
 
-![Topics/Simulate/Flocking の動き](https://i.gyazo.com/3dbffc047f04f8c0dbc5fe6b224bd24c.webp)
+![Topics/Simulate/Flocking の動き](https://i.gyazo.com/08a3519abf4a5e4261a92ce8a7dee1d8.webp)
 
 ### `ForcesWithVectors`
 
 台帳は `bend` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Topics/Simulate/ForcesWithVectors](https://i.gyazo.com/719e659b7ac6770de242b6ae8b96a4fb.png)
+![Topics/Simulate/ForcesWithVectors](https://i.gyazo.com/5072dbc6abeab333acc695bb1a70af39.png)
 
-![Topics/Simulate/ForcesWithVectors の動き](https://i.gyazo.com/08df833f37f9442b44499369da2d9ce0.webp)
+![Topics/Simulate/ForcesWithVectors の動き](https://i.gyazo.com/03bf64eb54391652bbc9fb79976e2649.webp)
 
 ### `MultipleParticleSystems`
 
@@ -1248,45 +1258,47 @@
 
 ![Topics/Simulate/MultipleParticleSystems](https://i.gyazo.com/31957217dff78e7f38a67dc8747c1b7a.png)
 
+![Topics/Simulate/MultipleParticleSystems の動き](https://i.gyazo.com/a5c326ceedc07131b9c49b1a9ec7e37e.webp)
+
 ### `SimpleParticleSystem`
 
 台帳は `bend` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Topics/Simulate/SimpleParticleSystem](https://i.gyazo.com/45b74108377e3b99a3ab98eaa0affa6f.png)
+![Topics/Simulate/SimpleParticleSystem](https://i.gyazo.com/d8510f7694144634d3827b5041ab97df.png)
 
-![Topics/Simulate/SimpleParticleSystem の動き](https://i.gyazo.com/b6bf5a6c0c9f07c688e890cdbce4099f.webp)
+![Topics/Simulate/SimpleParticleSystem の動き](https://i.gyazo.com/e6a3ad34e3ae788d40d41fe1b14bc08d.webp)
 
 ### `SmokeParticleSystem`
 
 台帳は `bend` ・ **測らない** — 乱数・雑音・時計を使う。原典と列が違うので一致率に意味が無い
 
-![Topics/Simulate/SmokeParticleSystem](https://i.gyazo.com/d269ef55c922f27fa19c5773808354a1.png)
+![Topics/Simulate/SmokeParticleSystem](https://i.gyazo.com/bde877f65cc0f6d90d45db16dec5e7fd.png)
 
-![Topics/Simulate/SmokeParticleSystem の動き](https://i.gyazo.com/8935bd0fb6e13bb88de7d747e71efb63.webp)
+![Topics/Simulate/SmokeParticleSystem の動き](https://i.gyazo.com/cf825a75a6f91a877e7fb72d98bc1bdd.webp)
 
 ## Topics/Vectors
 
 ### `AccelerationWithVectors`
 
-台帳は `bend` ・ その場 **99.9%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.9%
+台帳は `bend` ・ その場 **99.8%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.8%
 
-![Topics/Vectors/AccelerationWithVectors](https://i.gyazo.com/c4485f62ca3f6230bff15854cc7b3130.png)
+![Topics/Vectors/AccelerationWithVectors](https://i.gyazo.com/5c51cdfd686dc946bcde4e9a4060635f.png)
 
-![Topics/Vectors/AccelerationWithVectors の動き](https://i.gyazo.com/388d65ae5cf3eec4e314f6f8e961e45e.webp)
+![Topics/Vectors/AccelerationWithVectors の動き](https://i.gyazo.com/a210cfcf001ecf8a14219b5fe47c4022.webp)
 
 ### `BouncingBall`
 
-台帳は `bend` ・ その場 **99.9%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.9%
+台帳は `bend` ・ その場 **99.8%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.8%
 
-![Topics/Vectors/BouncingBall](https://i.gyazo.com/633b74aafc6759a16b4d7a6fdd11de6a.png)
+![Topics/Vectors/BouncingBall](https://i.gyazo.com/258602205f8bf8e0bed29d91fb4c79e6.png)
 
-![Topics/Vectors/BouncingBall の動き](https://i.gyazo.com/96674b6a538672ea5a0fe6094a507b11.webp)
+![Topics/Vectors/BouncingBall の動き](https://i.gyazo.com/9b29fa97ac753120aa5e5af6a193e856.webp)
 
 ### `VectorMath`
 
-台帳は `bend` ・ その場 **99.9%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.9%
+台帳は `bend` ・ その場 **99.9%** ・ 半画素 99.9% ・ 形 100.0% ・ 完全 99.8%
 
-![Topics/Vectors/VectorMath](https://i.gyazo.com/32f0ecf364ba3084d861b5acea73746e.png)
+![Topics/Vectors/VectorMath](https://i.gyazo.com/ddf35d02947f15ae9c6d277463a9b8f5.png)
 
-![Topics/Vectors/VectorMath の動き](https://i.gyazo.com/3b61ac0ef12868d1727cd88e7c09948e.webp)
+![Topics/Vectors/VectorMath の動き](https://i.gyazo.com/dab7ed12890e12f6f345ae443cb4766d.webp)
 

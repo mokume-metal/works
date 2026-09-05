@@ -7,7 +7,7 @@ final class LogicalOperators: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Logical Operators")
 
     func setup() {
-        background(gray(126))
+        background(126)
 
         var test = false
 
@@ -15,14 +15,14 @@ final class LogicalOperators: Sketch {
             let y = Float(i)
 
             // 論理積
-            stroke(gray(0))
+            stroke(0)
             if i > 35 && i < 100 {
                 line(width / 4, y, width / 2, y)
                 test = false
             }
 
             // 論理和
-            stroke(gray(76))
+            stroke(76)
             if i <= 35 || i >= 100 {
                 line(width / 2, y, width, y)
                 test = true
@@ -30,13 +30,13 @@ final class LogicalOperators: Sketch {
 
             // 真かどうかを試す。`if (test)` は `if (test == true)` と同じ
             if test {
-                stroke(gray(0))
+                stroke(0)
                 point(width / 3, y)
             }
 
             // 偽かどうかを試す。`if (!test)` は `if (test == false)` と同じ
             if !test {
-                stroke(gray(255))
+                stroke(255)
                 point(width / 4, y)
             }
         }

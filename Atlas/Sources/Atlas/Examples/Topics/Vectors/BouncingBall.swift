@@ -13,7 +13,7 @@ final class BouncingBall: Sketch {
     private let gravity = SIMD2<Float>(0, 0.2)      // 重さ。加速として効く
 
     func draw() {
-        background(gray(0))
+        background(0)
 
         // 位置に速さを足す (原典は `location.add(velocity)`)
         location += velocity
@@ -29,9 +29,9 @@ final class BouncingBall: Sketch {
             velocity.y = velocity.y * -0.95
             location.y = height
         }
-        stroke(gray(255))
+        stroke(255)
         strokeWeight(2)
-        fill(gray(127))
+        fill(127)
         ellipse(location.x, location.y, 48, 48)
     }
 }

@@ -2,14 +2,13 @@ import mokume
 
 /// Processing の [Keyboard](https://processing.org/examples/keyboard/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `bend` と言った。実際にはここで止まっている。**
+/// **台帳は `bend` と言い、`v0.5.0` ではここで止まっていた。`v0.6.0` で動く。**
 /// 原典は `draw()` を空にしておき、**中身をすべて `keyPressed()` に書く**例である。
-/// mokume にキーの出来事を受ける口が無く ([#723](https://github.com/mokume-metal/mokume/issues/723))、
-/// あるのは `isKeyDown(_ code: Int)` のポーリングだけなので、
-/// 「押した瞬間に 1 度描く」が「押している間ずっと描く」に変わってしまう。
+/// キーの出来事を受ける口が無かったので ([#723](https://github.com/mokume-metal/mokume/issues/723))、
+/// 面は背景の黒のまま残していた。`v0.6.0` が同じ綴りの `keyPressed()` を入れたので、
+/// 原典の形のまま移せるようになった。
 ///
-/// **動くように書き替えていない** — 原典の形のまま、`draw()` は空で置く。
-/// 面は背景の黒のままになる。それが「止まった」ということである。
+/// 押しっぱなしのキーは、原典と同じく連射する。
 final class Keyboard: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Keyboard")
 
@@ -17,7 +16,7 @@ final class Keyboard: Sketch {
 
     func setup() {
         noStroke()
-        background(gray(0))
+        background(0)
         rectWidth = width / 4
     }
 
@@ -25,7 +24,28 @@ final class Keyboard: Sketch {
         // 原典もここは空。キーを待つあいだ回し続けるためだけに置かれている
     }
 
-    // 原典はここに `void keyPressed()` を持ち、押された文字で矩形を塗る。
-    // **受ける口が無い**ので、この例の中身そのものが移せない。
-    // `millis() % 255` で色を決める行も、面に壁時計が無い
+    /// 原典の `void keyPressed()`。**綴りも中身も原典と同じ。**
+    func keyPressed() {
+        // 原典の `key >= 'A' && key <= 'Z'`。**`key` は文字 1 つではなく `String`** なので、
+        // 先頭のスカラを取ってから比べる (押されていなければ空になる)
+        var keyIndex = -1
+        if let scalar = key.unicodeScalars.first {
+            switch scalar {
+            case "A"..."Z": keyIndex = Int(scalar.value - UnicodeScalar("A").value)
+            case "a"..."z": keyIndex = Int(scalar.value - UnicodeScalar("a").value)
+            default: break
+            }
+        }
+
+        if keyIndex == -1 {
+            // 文字のキーでなければ面を消す
+            background(0)
+        } else {
+            // 文字のキーなら矩形を 1 つ塗る。
+            // **壁時計は面に無い**ので `millis()` は面の外に書いてある (`Support/Processing.swift`)
+            fill(millis().truncatingRemainder(dividingBy: 255))
+            let x = map(Float(keyIndex), 0, 25, 0, width - rectWidth)
+            rect(x, 0, rectWidth, height)
+        }
+    }
 }

@@ -29,7 +29,7 @@ final class BrightnessPixels: Sketch {
                 let adjustbrightness = 255 * (maxdist - d) / maxdist
                 r += adjustbrightness
                 r = constrain(r, 0, 255)
-                pixels[x, y] = gray(r)
+                pixels[x, y] = color(r)
             }
         }
         // 原典はここで `updatePixels()` を呼ぶ。**書けない**

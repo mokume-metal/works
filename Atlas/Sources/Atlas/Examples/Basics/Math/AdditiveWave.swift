@@ -38,7 +38,7 @@ final class AdditiveWave: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         calcWave()
         renderWave()
     }
@@ -62,7 +62,7 @@ final class AdditiveWave: Sketch {
     private func renderWave() {
         noStroke()
         // 原典の `fill(255, 50)`。**透かしの上限が 100 になっている**ので、50 は半分
-        fill(gray(255, 255 * 50 / 100))
+        fill(255, 255 * 50 / 100)
         ellipseMode(.center)
         for x in yvalues.indices {
             ellipse(Float(x) * xspacing, height / 2 + yvalues[x], 16, 16)

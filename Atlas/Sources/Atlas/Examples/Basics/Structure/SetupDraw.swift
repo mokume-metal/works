@@ -11,13 +11,13 @@ final class SetupDraw: Sketch {
 
     // setup の中身は、はじめに 1 度だけ走る
     func setup() {
-        stroke(gray(255))
+        stroke(255)
     }
 
     // draw の中身は止めるまで走り続ける。上から下へ順に読まれ、最後まで来たら
     // また 1 行目へ戻る
     func draw() {
-        background(gray(0))
+        background(0)
         line(0, y, width, y)
         y = y - 1
         if y < 0 { y = height }

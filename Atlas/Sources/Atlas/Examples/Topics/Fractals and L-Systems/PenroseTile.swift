@@ -59,7 +59,7 @@ final class PenroseTile: Sketch {
             for step in production.prefix(steps) {
                 switch step {
                 case "F":
-                    sketch.stroke(gray(255, 60))
+                    sketch.stroke(255, 60)
                     for _ in 0..<repeats {
                         sketch.line(0, 0, 0, -drawLength)
                         sketch.noFill()
@@ -97,7 +97,7 @@ final class PenroseTile: Sketch {
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         ds.render(on: self)
     }
 }

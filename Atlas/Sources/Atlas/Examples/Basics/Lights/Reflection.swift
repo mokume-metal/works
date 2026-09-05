@@ -15,14 +15,14 @@ final class Reflection: Sketch {
     func setup() {
         noStroke()
         // 原典はここで `colorMode(RGB, 1)` を呼ぶ。**書けない**ので 0.4 を 255 段へ畳む
-        fill(gray(0.4 * 255))
+        fill(0.4 * 255)
     }
 
     func draw() {
-        background(gray(0))
+        background(0)
         translate(width / 2, height / 2)
         // 原典はここで `lightSpecular(1, 1, 1)` を呼ぶ。**書けない** — 光に鏡の色を持たせられない
-        directionalLight(gray(0.8 * 255), 0, 0, -1)
+        directionalLight(0.8 * 255, 0.8 * 255, 0.8 * 255, 0, 0, -1)
         let s = mouseX / width
         // 原典はここで `specular(s, s, s)` を呼ぶ。**書けない** — 近いのは shininess だが別物
         _ = s
