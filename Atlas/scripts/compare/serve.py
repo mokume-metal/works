@@ -22,6 +22,7 @@
 """
 
 import base64
+import hashlib
 import json
 import pathlib
 import re
@@ -34,6 +35,9 @@ HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 WORK = ROOT / "upstream" / "compare"
 PORT = 8731
+# 動きの証跡を何枚で撮るか。**12 fps で 2 秒。** 増やすと 1 本あたりが重くなり、
+# 118 本を並べた文書が開けなくなる
+MOTION_FRAMES = 24
 
 # **画素の一致率が意味を持たない語彙。** 原典 (p5) と mokume で数列も時計も違うので、
 # 同じ絵が出るはずがない。並べた 1 枚は作るが、数字は出さずに「目で見るもの」と印を付ける。
@@ -119,6 +123,20 @@ def build_menu() -> tuple[list[dict], list[dict]]:
             "note": given.get("note"),
         })
     return menu, skipped
+
+
+def moves(slug: str) -> bool:
+    """動きの証跡が要る例か。**機械が決める** — mokume の連番に 2 種類以上の絵があるか。
+
+    「動く例」を人が選ぶと必ず取りこぼす。決まった道すじでマウスを流しながら撮った
+    連番が全部同じなら、動かして見せるものが無いということである (静止形の例と、
+    出来事の口が無くて止まっている例がここに落ちる)。
+    """
+    folder = ROOT / "out" / "motion" / slug
+    if not folder.is_dir():
+        return False
+    seen = {hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(folder.glob("*.png"))}
+    return len(seen) > 1
 
 
 def render(menu: list[dict]) -> None:
@@ -219,6 +237,10 @@ def prepare(menu: list[dict], skipped: list[dict]) -> dict[str, pathlib.Path]:
             entry["measure"] = "none"
             entry["why"] = f"面の大きさが違う (原典 {origin[0]}x{origin[1]} / mokume {entry['size'][0]}x{entry['size'][1]})"
 
+        entry["frames"] = MOTION_FRAMES
+        # 原典が p5 で配られていない例は、動きを並べようがない
+        entry["motion"] = moves(name) and entry["origin"] == "live"
+
         data = ROOT / "upstream" / "examples" / example / "data"
         if data.is_dir():
             assets[name] = data
@@ -230,6 +252,7 @@ def prepare(menu: list[dict], skipped: list[dict]) -> dict[str, pathlib.Path]:
     (WORK / "menu.json").write_text(json.dumps(
         {"compare": menu, "skipped": skipped}, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
     (WORK / "index.html").write_bytes((HERE / "index.html").read_bytes())
+    (WORK / "motion.html").write_bytes((HERE / "motion.html").read_bytes())
     Handler.roots = {name: files[0] for name, files in seen.items() if len(files) == 1}
     return assets
 
@@ -258,9 +281,26 @@ class Handler(SimpleHTTPRequestHandler):
             return str(self.assets[parts[1]] / parts[2])
         if len(parts) == 1 and parts[0] in self.roots:
             return str(self.roots[parts[0]])
+        # **mokume の連番は写さずに指す。** 157 本 x 24 枚で 135MB あり、配り場へ
+        # 複製すると倍になる
+        if len(parts) == 3 and parts[0] == "mokume-motion":
+            return str(ROOT / "out" / "motion" / parts[1] / parts[2])
         return super().translate_path(path)
 
     def do_GET(self):
+        if self.path == "/motion-todo":
+            # 動く例のうち、まだ合成していないもの
+            # **原典が静止画だけの例は動かしようがない。** site が p5 を配っていない
+            # 6 本 (Basics/Shape の SVG と Primitives3D) がここに当たる
+            rest = [m for m in self.menu if m.get("motion") and m["origin"] == "live"
+                    and not (WORK / "motion" / m["slug"]).is_dir()]
+            body = json.dumps(rest, ensure_ascii=False).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if self.path == "/todo":
             # **まだ撮っていないものだけを返す。** ページはこれが空になるまで回す
             done = {p.stem for p in (WORK / "shots").glob("*.png")}
@@ -281,7 +321,15 @@ class Handler(SimpleHTTPRequestHandler):
         size = int(self.headers.get("Content-Length", 0))
         payload = self.rfile.read(size).decode("utf-8", errors="replace")
         name, _, rest = payload.partition("|")
-        if name == "stats":
+        if name == "motion":
+            slug, _, rest2 = rest.partition("|")
+            index, _, data_url = rest2.partition("|")
+            folder = WORK / "motion" / slug
+            folder.mkdir(parents=True, exist_ok=True)
+            _, _, b64 = data_url.partition(",")
+            (folder / f"{index}.png").write_bytes(base64.b64decode(b64))
+            body = b"ok"
+        elif name == "stats":
             # **測った数と、落ちた例の記録。** 追記で持つので開き直しても消えない
             path = WORK / "stats.json"
             have = json.loads(path.read_text()) if path.exists() else {}
@@ -310,6 +358,8 @@ if __name__ == "__main__":
     render(menu)
     Handler.assets = prepare(menu, skipped)
     Handler.menu = menu
-    print(f"比べる {len(menu)} 本 / 比べない {len(skipped)} 本", file=sys.stderr)
+    print(f"比べる {len(menu)} 本 / 比べない {len(skipped)} 本"
+          f" / 動きを撮る {sum(1 for m in menu if m.get('motion'))} 本", file=sys.stderr)
     print(f"http://127.0.0.1:{PORT}/ を開くと、比較画像が {WORK.relative_to(ROOT)}/shots/ に出る", file=sys.stderr)
+    print(f"http://127.0.0.1:{PORT}/motion.html で動きの連番が {WORK.relative_to(ROOT)}/motion/ に出る", file=sys.stderr)
     HTTPServer(("127.0.0.1", PORT), Handler).serve_forever()

@@ -112,6 +112,12 @@ Processing にあって mokume に無い語彙のうち、**面の外に書け�
 
 **どれが「同じ絵」かは決めていない。** 数と並べた 1 枚を出すところまでが機械の仕事で、見て決めるのは人である。
 
+**止まった 1 枚では判断できないものには、動くものを併載してある。** 決まった道すじでマウスを流しながら 24 枚撮り、原典と並べたアニメーション WebP にしたもので、**117 本に付いている**。置き換えではない — 細かい差は静止画のほうが向いている。
+
+道すじは式で決めてある ([`Support/MousePath.swift`](Sources/Atlas/Support/MousePath.swift) と [`scripts/compare/motion.html`](scripts/compare/motion.html) に同じ式)。**揃っていないと、動きの違いなのか入力の違いなのか分からなくなる。** 原典の側では `mousePressed()` などの出来事も起こす — 本物のブラウザなら呼ばれるものなので、呼ばないと原典だけ手加減したことになる。
+
+**動きが付いていない 40 本**は、道すじを流しても絵が 1 枚も変わらなかったもの (Processing の静止形と、出来事の口が無くて止まっている例)。
+
 <!-- compare:begin -->
 | その場で一致 | 本数 |
 | --- | ---: |
@@ -250,8 +256,10 @@ mokume を横に並べた 1 枚が `upstream/compare/shots/` に出る。**献�
 移植を足せば次から比較の対象に入る (mokume の絵は足りないぶんだけ勝手に書き出される)。
 
 ```bash
-python3 scripts/compare/serve.py          # http://127.0.0.1:8731/ を開く
-python3 scripts/compare/publish.py        # Gyazo へ上げ、台帳と文書を書き戻す
+swift run -c release Atlas --motion out/motion 24   # 動きの証跡 (mokume 側の連番)
+python3 scripts/compare/serve.py            # http://127.0.0.1:8731/ と /motion.html を開く
+python3 scripts/compare/animate.py          # 連番を WebP へ畳む
+python3 scripts/compare/publish.py          # Gyazo へ上げ、台帳と文書を書き戻す
 python3 scripts/compare/publish.py --check  # 撮り直していないものを捕まえる
 ```
 

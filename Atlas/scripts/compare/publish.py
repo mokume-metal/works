@@ -41,6 +41,10 @@ TOKEN_REF = "op://Automation/Gyazo API/credential"
 # 並べた 1 枚の刷り方の版。**変えたら全部撮り直す** — 指紋に混ぜてあるので
 # --check が古い絵を捕まえ、publish が上げ直す
 SHEET = "4"
+# 動きの証跡の版。合成の仕方や枚数を変えたら上げる
+MOTION = "1"
+# 動きを撮った枚数 (scripts/compare/serve.py の MOTION_FRAMES と揃える)
+MOTION_FRAMES = 24
 
 
 def port_path(example: str) -> pathlib.Path | None:
@@ -60,6 +64,15 @@ def fingerprint(example: str, entry: dict) -> str:
     port = port_path(example)
     digest.update(port.read_bytes() if port else b"")
     digest.update(f"{entry['frame']}|{entry['measure']}|{entry['width']}x{entry['height']}|{SHEET}".encode())
+    return digest.hexdigest()
+
+
+def motion_fingerprint(example: str) -> str:
+    """動きの証跡の指紋。**静止画とは別に持つ** — 撮り方も枚数も違う。"""
+    digest = hashlib.sha256()
+    port = port_path(example)
+    digest.update(port.read_bytes() if port else b"")
+    digest.update(f"{MOTION_FRAMES}|{MOTION}".encode())
     return digest.hexdigest()
 
 
@@ -144,6 +157,22 @@ def publish(force: bool) -> int:
         print(f"  {example} → {result['url']}", file=sys.stderr)
         # 1 枚ごとに書く。**まとめて最後に書くと、途中で落ちたときに上げたのに
         # URL を失った絵が Gyazo に残る**
+        save(book)
+
+    # 動きの証跡。**静止画の置き換えではなく併載**なので、別に持って別に上げる
+    for example, entry in sorted(book["shots"].items()):
+        webp = WORK / "webp" / f"{entry['slug']}.webp"
+        if not webp.exists():
+            entry.pop("motion", None)
+            continue
+        mark = motion_fingerprint(example)
+        if not force and entry.get("motion", {}).get("url") and entry["motion"].get("source") == mark:
+            continue
+        result = upload(webp, f"{example} — 動き (原典と mokume)")
+        entry["motion"] = {"url": result["url"], "source": mark,
+                           "sha256": hashlib.sha256(webp.read_bytes()).hexdigest()}
+        uploaded += 1
+        print(f"  {example} (動き) → {result['url']}", file=sys.stderr)
         save(book)
     save(book)
     write_renders(book)
@@ -234,6 +263,25 @@ def write_gallery(book: dict) -> None:
         "",
         f"道具は mokume v{book['tool']['mokume']} / p5.js {book['tool']['p5']}。",
         "",
+        "## 動きの証跡について",
+        "",
+        f"**静止画の下に動くものが付いている例が {sum(1 for _, e in rows(book) if e.get('motion'))} 本ある。**"
+        " 止まった 1 枚では正しいかどうか判断できないもの (動く例・マウスが要る例) には、"
+        "アニメーション WebP を併載してある。**置き換えではない** — 細かい差は静止画の"
+        "ほうが向いている。",
+        "",
+        "- **撮影範囲**: スケッチの面だけ (窓の縁も他のアプリも入らない)。左が原典・右が mokume",
+        f"- **何を撮ったか**: 12 fps で {MOTION_FRAMES} 枚 = 2 秒。半分の大きさ",
+        "- **マウスは決まった道すじで動かす**。横に 1 往復・縦に 2 往復し、**真ん中の"
+        " 3 分の 1 だけ押す**。原典と mokume で式が同じでないと、動きの違いなのか入力の"
+        "違いなのか分からなくなるので、[`Support/MousePath.swift`](../Sources/Atlas/Support/MousePath.swift) と"
+        " [`scripts/compare/motion.html`](../scripts/compare/motion.html) に同じ式を置いている",
+        "- **原典の側では出来事も起こす** (`mousePressed()` / `mouseDragged()` など)。"
+        "本物のブラウザなら呼ばれるものなので、呼ばないと原典だけ手加減したことになる。"
+        "mokume にその口が無いことは差として出てよい",
+        "- **動きが付いていない例**は、決まった道すじで動かしても絵が 1 枚も変わらなかったもの"
+        " (静止形の例と、出来事の口が無くて止まっている例)",
+        "",
         "| 群 | 本数 | 測った | その場で一致の中央値 |",
         "| --- | ---: | ---: | ---: |",
     ]
@@ -259,6 +307,8 @@ def write_gallery(book: dict) -> None:
             out += [f"### `{leaf}`", "",
                     f"台帳は `{entry['class']}`{frame} ・ {score}{note}", "",
                     f"![{example}]({entry['url']})", ""]
+            if entry.get("motion", {}).get("url"):
+                out += [f"![{example} の動き]({entry['motion']['url']})", ""]
     GALLERY.write_text("\n".join(out) + "\n")
 
 
@@ -324,6 +374,11 @@ def check() -> int:
             problems.append(f"{example}: 測れないと言った例に数字が付いている")
         if entry.get("url") and entry["url"] not in GALLERY.read_text():
             problems.append(f"{example}: 台帳にある絵が comparison.md に出ていない")
+        motion = entry.get("motion")
+        if motion and motion.get("source") != motion_fingerprint(example):
+            problems.append(f"{example}: 移植を変えたのに動きを撮り直していない")
+        if motion and motion.get("url") not in GALLERY.read_text():
+            problems.append(f"{example}: 台帳にある動きが comparison.md に出ていない")
     readme = (ROOT / "README.md").read_text()
     for example in re.findall(r"<!-- compare:image (.+?) -->", readme):
         entry = book["shots"].get(example.strip())

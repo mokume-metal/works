@@ -9,6 +9,8 @@ import mokume
 //   Atlas --render <置き場> <数> [例名]     1 枚だけ書き出す
 //   Atlas --frames <置き場> <数> [例名]     連番で書き出す (動きの証跡を作るため)
 //   Atlas --render-all <置き場> <数> [例名…]  まとめて書き出す (例名を省くと全部)
+//   Atlas --motion <置き場> <数> [例名…]      動きの証跡。決まったマウスの道すじを流しながら
+//                                            <置き場>/<綴り>/frame-%04d.png へ連番で出す
 //
 // **`--render-all` があるのは、版を上げたときに全部のハッシュを一度に取り直すため。**
 // 既存 4 作品は 1 本ずつ手で確かめており、版上げのたびに同じ手順を作品の数だけ踏む。
@@ -69,6 +71,42 @@ case "--render", "--frames":
         let url = directory.appendingPathComponent("\(slug(name))-\(count).png")
         try runtime.target.writePNG(to: url)
         print(url.path)
+    }
+
+case "--motion":
+    // **動きの証跡は、入力を入れないと撮れない。** 静止画は「マウスを動かさない」で
+    // 条件を揃えているが、それだとマウスが要る例は何も描かれないままになる。
+    // 道すじは `Support/MousePath.swift` が決め、原典側 (index.html) も同じ式を使う
+    let directory = URL(fileURLWithPath: arguments.count > 1 ? arguments[1] : "motion")
+    let count = arguments.count > 2 ? Int(arguments[2]) ?? 24 : 24
+    let wanted = Set(arguments.dropFirst(3))
+    let targets = wanted.isEmpty ? catalogue : catalogue.filter {
+        wanted.contains($0.name) || wanted.contains($0.name.split(separator: "/").last.map(String.init) ?? "")
+    }
+
+    let gpu = try RenderDevice()
+    for entry in targets {
+        let sketch = entry.make()
+        let runtime = try SketchRuntime(sketch: sketch, gpu: gpu)
+        let folder = directory.appendingPathComponent(slug(entry.name), isDirectory: true)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        var wasPressed = false
+        for frame in 0..<count {
+            let step = mousePath(frame, of: count,
+                                 width: Float(sketch.settings.width),
+                                 height: Float(sketch.settings.height))
+            runtime.input.enqueue(.mouseMoved(x: step.x, y: step.y))
+            if step.pressed && !wasPressed {
+                runtime.input.enqueue(.mouseDown(x: step.x, y: step.y, button: 0))
+            }
+            if !step.pressed && wasPressed {
+                runtime.input.enqueue(.mouseUp(x: step.x, y: step.y, button: 0))
+            }
+            wasPressed = step.pressed
+            try runtime.advance()
+            try runtime.target.writePNG(to: folder.appendingPathComponent(String(format: "frame-%04d.png", frame)))
+        }
+        print(folder.path)
     }
 
 case "--render-all":
