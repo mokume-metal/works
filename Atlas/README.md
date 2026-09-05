@@ -70,9 +70,46 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 | [`Basics/Form/Bezier`](Sources/Atlas/Examples/Bezier.swift) | `bend` | 当たり。単独の `bezier()` が無く、`beginShape` + `vertex` + `bezierVertex` の 3 行になる |
 | [`Basics/Structure/NoLoop`](Sources/Atlas/Examples/NoLoop.swift) | `blocked` | 当たり。**ここで止まっている** — `noLoop()` が無いので原典の「1 度だけ描く」が消える |
 
-![Basics/Input/Mouse2D (frame 1)](https://i.gyazo.com/d3b81bec1238e067e754d128a908377f.png)
+### 原典と同じ見た目になっているか
 
-> 撮影範囲: `swift run Atlas --render-all out 1` が書き出した**面だけ** (画面は撮っていない)。台帳が `clean` と言って外れた `Basics/Input/Mouse2D`。`mouseX` が 0 なので矩形は左端と右端にある。
+**移した 5 本を、原典と並べて画素で突き合わせた。** 原典は processing-website が例ごとに配る `liveSketch.js` (Processing 版と 1 行ずつ対応した p5.js) をブラウザで走らせたもので、**mokume と条件を揃えてある** — マウスを動かさない (`mouseX` = 0)・1 フレーム目で止める・等倍 (`pixelDensity(1)`) の 3 つ。
+
+| 例 | 画素が完全に一致 | 平均差 | 最大差 | 差はどこから出たか |
+| --- | ---: | ---: | ---: | --- |
+| `ContinuousLines` | **100.0%** | 0.00 | 0 | — (1 画素も違わない) |
+| `Map` | **100.0%** | 0.07 | 255 | 円の輪郭のアンチエイリアス |
+| `NoLoop` | 99.2% | 1.42 | 255 | 線の置き方 (下記 2) |
+| `Bezier` | 96.1% | 6.11 | 255 | 曲線の輪郭のアンチエイリアス |
+| `Mouse2D` | 92.1% | 1.41 | **18** | 半透明の合成 (下記 1) |
+
+**形と位置は合っている。** 差が出たのは輪郭の均しと、色の作り方の 2 か所だけである。
+
+![Map — 原典と mokume](https://i.gyazo.com/c113efc229aac3b6bfc57564bc387e54.png)
+
+![ContinuousLines — 原典と mokume](https://i.gyazo.com/b7df21fb981181f80893522962ab6756.png)
+
+![Bezier — 原典と mokume](https://i.gyazo.com/0427e8bc7a34a5f71f851cadec0511c7.png)
+
+#### 1. 半透明を重ねると色が変わる (`Mouse2D`)
+
+![Mouse2D — 原典と mokume](https://i.gyazo.com/2e896bfdb06b5ff5d3c6c47c9112c322.png)
+
+原典の `fill(255, 204)` — 白を 80% の濃さで、51 の背景へ重ねる 1 行。**出てくる色が違う。**
+
+| | 矩形の色 |
+| --- | --- |
+| 原典 (p5) | `214` |
+| mokume | `232` |
+
+**mokume は線形の空間で混ぜ、p5 は表示値のまま混ぜている。** `255 × 0.8 + 51 × 0.2 = 214` が p5 で、線形へ直してから混ぜて戻すと 232 になる。型の名前 (`LinearRGBA` = 「作業空間の色」) が言うとおりの振る舞いなので**これは mokume の意図**だが、**同じコードから違う絵が出る**ことは記録しておく。一致率が 92.1% まで落ちているのは、矩形が面の 7% を占めるためである (背景は 1 画素も違わない)。
+
+#### 2. 1px の線をピクセルに載せるか、またがせるか (`NoLoop`)
+
+![NoLoop — 原典と mokume](https://i.gyazo.com/c870511ab9f5ef344873076f4052cef4.png)
+
+`line(0, 180, width, 180)` の 1 本が、**p5 では 2 行に 128 ずつ・mokume では 1 行に 255** で出る。p5 は線をピクセルの境界にまたがらせて均し、mokume はピクセルに載せる。線 1 本ぶん (640 画素 = 面の 0.28%) の差なので一致率は 99.2% に留まる。
+
+**この 2 つは台帳では絶対に出ない。** 語彙の名前は当たっていて、絵だけが違う。
 
 ### 台帳が外した 2 つ
 
@@ -84,10 +121,6 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 **この 2 つは移して初めて出た。** 移す前の台帳は 254 例のうち 64 例を `clean` と言っていたが、そのうち何本が同じ理由で外れているかは、移した本数だけしか分からない。
 
 ### 止まったところ
-
-![Basics/Structure/NoLoop (frame 1)](https://i.gyazo.com/3c6645bfc9265253068fd538d2269204.png)
-
-> 1 フレーム目。原典なら**この 1 枚のまま止まる**が、mokume では線が上へ流れ続ける。
 
 [`NoLoop`](Sources/Atlas/Examples/NoLoop.swift) は完成していない。原典は `setup()` で `noLoop()` を呼んで `draw()` を 1 度だけ走らせるが、mokume に進行を止める口が無いので線が流れ続ける。**動くように書き替えていない** — ADR-0022 決定 4 の言うとおり、作ろうとして止まったこと自体が実需なので、止まった形のまま残す。
 
@@ -149,6 +182,18 @@ MOKUME_WORK_DIR="$PWD" mokume run Atlas
 python3 scripts/fetch.py && python3 scripts/ledger.py
 git diff --stat ledger/    # 差分が出なければ、同じ版から同じ台帳が組める
 ```
+
+**原典と並べた比較も作り直せる。** 立てて、出た URL をブラウザで開くと、原典 (p5) と
+mokume を横に並べた 1 枚が `upstream/compare/shots/` に出る。
+
+```bash
+swift run Atlas --render-all out 1        # 先に mokume の絵を書き出す
+python3 scripts/compare/serve.py          # http://127.0.0.1:8731/ を開く
+```
+
+比べているのが処理系の差であって撮り方の差ではないように、条件を 3 つ揃えてある
+([`scripts/compare/index.html`](scripts/compare/index.html) にその理由も書いた)。
+**揃える前は原典側だけ 30 フレーム進み、線が 1 本ぶんずれていた。**
 
 ## 台帳の作り
 
