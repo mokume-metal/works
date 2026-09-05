@@ -132,3 +132,18 @@ func hour() -> Float { Float(Calendar.current.component(.hour, from: Date())) }
 /// 経過で組む。
 private let started = Date()
 func millis() -> Float { Float(Date().timeIntervalSince(started) * 1000) }
+
+// MARK: - 資材
+
+/// 例が読む資材の道。
+///
+/// **資材はリポジトリに置けない。** 19 本の例が読む絵・書体・立体にはライセンス表記が
+/// 無く、works が再配布する理由もない (`scripts/fetch.py` と同じ判断)。SwiftPM の
+/// resource として宣言すると `Sources/` の下へコミットすることになるので、束の外 —
+/// `scripts/fetch.py` が置いた `upstream/examples/<例>/data/` — を読む。
+///
+/// mokume の `loadImage` は**作業ディレクトリからの相対パスを探し先に入れる**ので、
+/// これで届く (`ImageFile.candidates`)。
+func asset(_ example: String, _ file: String) -> String {
+    "upstream/examples/\(example)/data/\(file)"
+}
