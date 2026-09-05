@@ -16,6 +16,8 @@
   "reference": {
     "entries": 671,
     "repo": "processing/processing-website",
-    "sha": "1fce63d07182becca614b95ab76b3b1416424d8d"
+    "sha": "1fce63d07182becca614b95ab76b3b1416424d8d",
+    "site_examples": 162,
+    "site_live": 156
   }
 }

@@ -1,0 +1,169 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>動きの比較 (準備中)</title>
+<style>
+  body { font: 13px -apple-system, sans-serif; margin: 16px; background: #fff; }
+  #stage { position: absolute; left: -9999px; top: 0; }
+  #log { white-space: pre; font: 12px ui-monospace, Menlo, monospace; }
+  #head { font-weight: bold; margin-bottom: 8px; }
+</style>
+<div id="head">はじめる…</div>
+<div id="log"></div>
+<div id="stage"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+<script>
+// 動きの証跡を撮る側。静止画 (index.html) と違うのは 2 つだけ:
+//
+//   1. **マウスを動かす。** 静止画は「動かさない」で条件を揃えているが、それだと
+//      マウスが要る例は何も描かれない。動きを見せるには入力が要る
+//   2. **半分の大きさで撮る。** 細かいところは静止画のほうが向いており、こちらは
+//      「同じように動くか」を見るためのもの。等倍で 118 本ぶん並べると開けなくなる
+//
+// **道すじは式で決める。** ここと `Sources/Atlas/Support/MousePath.swift` は同じ式で、
+// 片方だけ直すと、動きの違いなのか入力の違いなのか分からなくなる。
+
+const SCALE = 0.5, GAP = 8, BAR = 24;
+const head = document.getElementById('head');
+const log = (m) => { document.getElementById('log').textContent += m + '\n'; };
+
+const loadImage = (src) => new Promise((ok, ng) => {
+  const img = new Image();
+  img.onload = () => ok(img);
+  img.onerror = () => ng(new Error(`読めない: ${src}`));
+  img.src = src;
+});
+
+let running = null;
+const failures = {};
+const blame = (e) => { if (running) failures[running] = String(e && e.message || e); };
+window.addEventListener('error', (e) => blame(e.error || e.message));
+window.addEventListener('unhandledrejection', (e) => blame(e.reason));
+
+/** `Sources/Atlas/Support/MousePath.swift` と同じ式。**片方だけ直さない。** */
+function mousePath(frame, count, width, height) {
+  const t = count > 1 ? frame / (count - 1) : 0;
+  return {
+    x: width * (0.5 - 0.42 * Math.cos(2 * Math.PI * t)),
+    y: height * (0.5 + 0.32 * Math.sin(4 * Math.PI * t)),
+    pressed: t >= 1 / 3 && t < 2 / 3,
+  };
+}
+
+async function runOriginal(item, onFrame) {
+  const source = await (await fetch(`live/${item.slug}.js`)).text();
+  const original = new Function(source + '\n; return runLiveSketch;')();
+  let started;
+  const ready = new Promise((r) => { started = r; });
+  const factory = (s) => {
+    s.noLoop = () => {};
+    original(s);
+    const userSetup = s.setup, userDraw = s.draw;
+    s.setup = () => {
+      s.pixelDensity(1);
+      try { userSetup(); } catch (e) { blame(e); }
+      started();
+    };
+    s.draw = () => { if (userDraw) userDraw(); };
+  };
+  const holder = document.createElement('div');
+  document.getElementById('stage').appendChild(holder);
+  const instance = new p5(factory, holder);
+  await Promise.race([ready, new Promise((r) => setTimeout(r, 6000))]);
+  const canvas = holder.querySelector('canvas');
+  if (!canvas) throw new Error('原典の面が作られなかった (setup が返らない)');
+
+  let wasPressed = false;
+  for (let i = 0; i < item.frames; i++) {
+    const step = mousePath(i, item.frames, instance.width, instance.height);
+    instance.pmouseX = instance.mouseX;
+    instance.pmouseY = instance.mouseY;
+    instance.mouseX = step.x;
+    instance.mouseY = step.y;
+    instance.mouseIsPressed = step.pressed;
+    // **出来事も起こす。** 原典を本物のブラウザで動かせば呼ばれるものなので、
+    // 呼ばないと原典の側だけ手加減したことになる。mokume にこの口が無いことは
+    // 差として出てよい (それがこの比較で見たいものの 1 つである)
+    try {
+      if (step.pressed && !wasPressed && instance.mousePressed) instance.mousePressed();
+      if (!step.pressed && wasPressed && instance.mouseReleased) instance.mouseReleased();
+      if (step.pressed && instance.mouseDragged) instance.mouseDragged();
+      if (!step.pressed && instance.mouseMoved) instance.mouseMoved();
+    } catch (e) { blame(e); }
+    wasPressed = step.pressed;
+    instance.redraw();
+    await onFrame(i, canvas, instance.width, instance.height);
+  }
+
+  if (item.webgl) {
+    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();
+    canvas.width = canvas.height = 0;
+  }
+  instance.remove();
+}
+
+function compose(left, right, w, h, item) {
+  const W = Math.round(w * SCALE), H = Math.round(h * SCALE);
+  const out = document.createElement('canvas');
+  out.width = W * 2 + GAP;
+  out.height = BAR + H;
+  const g = out.getContext('2d');
+  g.fillStyle = '#ffffff';
+  g.fillRect(0, 0, out.width, out.height);
+
+  g.fillStyle = '#111111';
+  g.font = 'bold 12px -apple-system, BlinkMacSystemFont, sans-serif';
+  g.fillText('Processing (p5.js)', 2, 16);
+  g.fillText('mokume', W + GAP + 2, 16);
+  g.fillStyle = '#666666';
+  g.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
+  const label = item.example;
+  g.fillText(label, out.width - g.measureText(label).width - 2, 16);
+
+  g.drawImage(left, 0, BAR, W, H);
+  g.drawImage(right, W + GAP, BAR, W, H);
+  g.strokeStyle = '#dddddd';
+  g.lineWidth = 1;
+  g.strokeRect(0.5, BAR + 0.5, W - 1, H - 1);
+  g.strokeRect(W + GAP + 0.5, BAR + 0.5, W - 1, H - 1);
+  return out;
+}
+
+async function one(item) {
+  running = item.example;
+  // mokume の連番を先に読んでおく。1 枚ずつ待つと本数ぶん往復が増える
+  const ours = [];
+  for (let i = 0; i < item.frames; i++) {
+    ours.push(await loadImage(`mokume-motion/${item.slug}/frame-${String(i).padStart(4, '0')}.png`));
+  }
+  await runOriginal(item, async (i, canvas, w, h) => {
+    const sheet = compose(canvas, ours[i], w, h, item);
+    await fetch('/save', {
+      method: 'POST',
+      body: `motion|${item.slug}|${String(i).padStart(4, '0')}|` + sheet.toDataURL('image/png'),
+    });
+  });
+  running = null;
+}
+
+(async () => {
+  const todo = await (await fetch('/motion-todo')).json();
+  head.textContent = `${todo.length} 本の動きを撮る`;
+  let done = 0;
+  for (const item of todo) {
+    try {
+      await one(item);
+      done++;
+      log(`${String(done).padStart(3)}/${todo.length} ${item.example}`);
+    } catch (e) {
+      blame(e);
+      log(`      ${item.example}  失敗 ${failures[item.example] || e}`);
+      running = null;
+    }
+    head.textContent = `${done} / ${todo.length} 本`;
+  }
+  document.title = 'done';
+  head.textContent = `おわり — ${done} / ${todo.length} 本`;
+  log('おわり');
+})();
+</script>

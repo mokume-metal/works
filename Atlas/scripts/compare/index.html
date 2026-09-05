@@ -2,96 +2,239 @@
 <meta charset="utf-8">
 <title>比較 (準備中)</title>
 <style>
-  body { font: 14px -apple-system, sans-serif; margin: 16px; background: #fff; }
+  body { font: 13px -apple-system, sans-serif; margin: 16px; background: #fff; }
   #stage { position: absolute; left: -9999px; top: 0; }
-  #log { white-space: pre; }
+  #log { white-space: pre; font: 12px ui-monospace, Menlo, monospace; }
+  #head { font-weight: bold; margin-bottom: 8px; }
 </style>
-<div id="log">はじめる…</div>
+<div id="head">はじめる…</div>
+<div id="log"></div>
 <div id="stage"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
 <script>
-const ITEMS = [
-  { slug: 'mouse2d',         title: 'Basics/Input/Mouse2D' },
-  { slug: 'map',             title: 'Basics/Math/Map' },
-  { slug: 'bezier',          title: 'Basics/Form/Bezier' },
-  { slug: 'noloop',          title: 'Basics/Structure/NoLoop' },
-  { slug: 'continuouslines', title: 'Topics/Drawing/ContinuousLines' },
-];
+// 原典 (processing-website が例ごとに配る liveSketch.js) を走らせ、mokume の書き出しと
+// 並べた 1 枚を作って送り返す。**献立はサーバが持つ** — /todo がまだ撮っていないものを
+// 返すので、ここは空になるまで回すだけでよい。100 本を超えると必ず途中で切れる
+// (面が背面へ回る・1 本が落ちる・閉じてしまう) が、開き直せば続きから走る。
 
-const W = 640, H = 360, GAP = 16, BAR = 34, PAD = 8;
-const log = (m) => { document.getElementById('log').textContent += '\n' + m; };
+const GAP = 16, BAR = 34, PAD = 8;
+const head = document.getElementById('head');
+const log = (m) => { document.getElementById('log').textContent += m + '\n'; };
 
 const loadImage = (src) => new Promise((ok, ng) => {
   const img = new Image();
   img.onload = () => ok(img);
-  img.onerror = ng;
+  img.onerror = () => ng(new Error(`読めない: ${src}`));
   img.src = src;
 });
 
-// p5 のインスタンスを 1 つ作り、数フレーム走らせてから canvas を返す。
+// いま走らせている例。**落ちたときにどれだったかを言えるようにする** — p5 の preload の
+// 中で落ちると例外が非同期で上がってきて、呼び出し元の try/catch には入らない
+let running = null;
+const failures = {};
+const blame = (e) => { if (running) failures[running] = String(e && e.message || e); };
+window.addEventListener('error', (e) => blame(e.error || e.message));
+window.addEventListener('unhandledrejection', (e) => blame(e.reason));
+
+// p5 のインスタンスを 1 つ作り、決めた枚数まで進めてから canvas を返す。
 // **マウスは一度も動かさない** ので mouseX / mouseY は 0 のまま — mokume 側の
 // 書き出し (窓を持たないので入力が来ない) と条件が揃う。
-async function runOriginal(slug) {
-  const source = await (await fetch(`live/${slug}.js`)).text();
+async function runOriginal(item) {
+  const source = await (await fetch(`live/${item.slug}.js`)).text();
   const original = new Function(source + '\n; return runLiveSketch;')();
+  let started;
+  const ready = new Promise((r) => { started = r; });
   // **setup() の中の noLoop() を無効にする。** 効かせると draw が 1 度も走らず面が
   // 黒いまま残る (rAF が回らない面では p5 の自動の 1 枚目も来ない)。比べたいのは
-  // 1 枚目の絵で、noLoop の有無は「そのあと止まるか」の違いなので、絵は変わらない。
+  // 決めた枚数までの絵で、noLoop の有無は「そのあと止まるか」の違いなので絵は変わらない。
   const factory = (s) => {
     s.noLoop = () => {};
     original(s);
     const userSetup = s.setup, userDraw = s.draw;
-    let drawn = false;
     // **等倍で描かせる。** 既定は密度 2 なので canvas が 1280x720 になり、640x360 へ
     // 縮めるときに 1px の線が 2 行へ薄く散る (NoLoop の線が 255 ではなく 128 の 2 行に
     // なっていた)。mokume の書き出しは等倍なので、こちらを合わせる。
-    s.setup = () => { s.pixelDensity(1); userSetup(); };
-    // **1 枚目で止める。** noLoop を潰すと今度は rAF が回り続け、撮るまでに 30 枚以上
-    // 進んでしまう (NoLoop の線が y=180 ではなく 148 にあった)。mokume 側は
-    // `--render out 1` の 1 枚目なので、ここも 1 枚目で固定する。
-    s.draw = () => { if (drawn) return; userDraw(); drawn = true; };
+    //
+    // **待ち時間で待たない。** 5 本のときは固定の 400ms で足りたが、本数が増えると
+    // 積み上がるうえ、面が背面へ回ると setTimeout が 1 秒へ丸められて数分になる。
+    // setup の末尾で合図を返し、資材を読む例だけが実際に待つ形にする。
+    // **落ちても合図は返す。** setup の中で投げると started() に届かず、待つ側が
+    // 永久に止まる (最初に回したときは資材の取りこぼし 1 本で残り 125 本が止まった)
+    s.setup = () => {
+      s.pixelDensity(1);
+      try { userSetup(); } catch (e) { blame(e); }
+      started();
+    };
+    // **draw() を持たない原典がある。** Processing の静止形 (setup も draw も書かず、
+    // 上から下へ 1 度だけ走る形) を写した liveSketch は setup しか持たない。
+    // 包む前に有無を見ないと、その例だけが `userDraw is not a function` で落ちる
+    s.draw = () => { if (userDraw && s.frameCount <= item.frame) userDraw(); };
   };
   const holder = document.createElement('div');
   document.getElementById('stage').appendChild(holder);
   const instance = new p5(factory, holder);
-  await new Promise((r) => setTimeout(r, 400));
-  // **draw() は自分で 1 回呼ぶ。** requestAnimationFrame は表に出ていない面では
+  // **返らない setup がある。** p5 の preload は資材を読み終えるまで setup を呼ばない
+  // ので、site が別のフォルダから読む絵 (livesketch-manual) を配り損ねると、そこで
+  // 永久に待つ。1 本の取りこぼしで残り全部が止まらないよう、期限を切って先へ進む
+  await Promise.race([ready, new Promise((r) => setTimeout(r, 6000))]);
+  if (instance.frameCount < 0) log(`  ${item.slug}: setup が返らない`);
+
+  // **枚数ではなく到達点で回す。** requestAnimationFrame は表に出ていない面では
   // 回らないことがあり、放っておくと setup() の結果だけが残る (実際、背景を setup で
-  // 塗る ContinuousLines だけが描けて、他の 4 本が真っ白になった)。
-  // mokume 側の `--render out 1` も advance() を 1 回なので、これで条件が揃う。
-  //
-  // **既に 1 枚描けているなら呼ばない。** noLoop() を setup で呼ぶ例は p5 が自動で
-  // 1 回だけ draw を走らせるので、そこへ redraw を足すと 2 枚目になり、mokume の
-  // 1 枚目と 1 フレームずれる (NoLoop の線が 1px 上にある絵になっていた)。
-  if (instance.frameCount < 1) instance.redraw();
-  if (instance.frameCount < 1) log(`  ${slug}: 1 枚も描けていない`);
-  await new Promise((r) => setTimeout(r, 120));
+  // 塗る ContinuousLines だけが描けて、他の 4 本が真っ白になった)。かといって
+  // 「N 回 redraw する」と書くと、noLoop() を setup で呼ぶ例は p5 が自動で 1 枚
+  // 描いているので N+1 枚目になる (NoLoop の線が 1px 上にある絵になっていた)。
+  // mokume 側は advance() を N 回で frameCount が N になるので、そこで揃える。
+  let guard = 0;
+  while (instance.frameCount < item.frame && guard++ < item.frame + 8) instance.redraw();
+  if (instance.frameCount < 1) log(`  ${item.slug}: 1 枚も描けていない`);
+
   const canvas = holder.querySelector('canvas');
+  // **面が作られないことがある。** setup が資材を待って返らないまま期限が来ると、
+  // canvas がまだ無い。ここで言わないと drawImage の型エラーになって理由が消える
+  if (!canvas) throw new Error('原典の面が作られなかった (setup が返らない)');
+  const [w, h] = [instance.width, instance.height];
   const frozen = document.createElement('canvas');
-  frozen.width = W; frozen.height = H;
-  frozen.getContext('2d').drawImage(canvas, 0, 0, W, H);
+  frozen.width = w; frozen.height = h;
+  frozen.getContext('2d').drawImage(canvas, 0, 0, w, h);
+
+  // **WebGL の面は明示的に手放す。** ブラウザが同時に持てるコンテキストは 8〜16 で、
+  // 超えると古いものから黙って失われる。remove() は DOM から外すだけで解放は GC 任せ
+  // なので、12 本ある WEBGL の例を続けて回すと後ろのほうが真っ黒になる。
+  if (item.webgl) {
+    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();
+    canvas.width = canvas.height = 0;
+  }
   instance.remove();
-  return frozen;
+  return { canvas: frozen, width: w, height: h };
 }
 
-// 原典と mokume の絵が、画素としてどれだけ一致しているか。
-// **色が合っているかどうかは目より数で見たほうが速い。**
-function difference(left, right) {
-  const read = (canvas) => canvas.getContext('2d').getImageData(0, 0, W, H).data;
-  const a = read(left), b = read(right);
-  let same = 0, sum = 0, max = 0, count = 0;
-  for (let i = 0; i < a.length; i += 4) {
-    const d = Math.max(
-      Math.abs(a[i] - b[i]), Math.abs(a[i + 1] - b[i + 1]), Math.abs(a[i + 2] - b[i + 2]));
+/** 原典が p5 で配られていない例。site が置く 1280x720 の静止画を、面の大きさへ縮める。 */
+async function runStill(item) {
+  const image = await loadImage(`png/${item.slug}.png`);
+  const [w, h] = item.size;
+  const frozen = document.createElement('canvas');
+  frozen.width = w; frozen.height = h;
+  frozen.getContext('2d').drawImage(image, 0, 0, w, h);
+  return { canvas: frozen, width: w, height: h };
+}
+
+// 原典と mokume の絵が、どれだけ同じ絵になっているか。
+//
+// **画素どうしの完全一致では測れない。** 実測すると、目には同じ絵なのに数字だけが
+// 落ちる原因が 3 つあった。どれも「絵が違う」ではなく「画素の作り方が違う」である:
+//
+//   1. **線が半画素ずれる** — 1px の線を、p5 は画素の境界にまたがらせ (2 列に 77+77)、
+//      mokume は画素に載せる (1 列に 153)。**濃さそのものが変わる**ので、ぼかしても
+//      1 画素ずらしても合わない。線でできた例は完全一致がほぼ 0 になる
+//   2. **量子化** — mokume は線形の空間で色を持ち、書き出すときに表示値へ戻すので、
+//      広い一様な面が 1〜5 だけずれる (Functions の灰色が 191 対 189)
+//   3. **色そのものがずれる** — mokume の書き出しは Display P3 で刻まれるので、
+//      同じ数から違う色が出る (204,153,0 が 213,150,0 になる)
+//
+// **1 と 2 は同じ絵、3 は違う絵。** その 2 つを分けるために、原因を名指しできる形で測る:
+//
+//   その場で一致    そのままの位置で色が差 8 以内 (目で見て同じ色) の割合
+//   半画素で一致    mokume を半画素ずらしてもよいとしたときの割合。**ずらすと合う**なら、
+//                  違いの正体は線の載せ方だと言い切れる (ぼかしでは言い切れない)
+//   形が一致        明るさの縁 (エッジ) だけを取り出して、1 画素の幅を許して比べた割合。
+//                  色が違っても縁は同じ場所に立つので、**形と位置だけ**を見られる
+//
+// **どれが「同じ絵」かは決めない。** 3 つの数と並べた 1 枚を出すところまでが機械の仕事で、
+// 見て決めるのは人である。数だけで線を引くと、引いた場所そのものが主張になってしまう。
+
+/** 明るさ (BT.709)。色の違いと形の違いを分けるために、まず明るさだけにする。 */
+function luminance(data, w, h) {
+  const out = new Float32Array(w * h);
+  for (let i = 0, p = 0; i < data.length; i += 4, p++) {
+    out[p] = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+  }
+  return out;
+}
+
+/** 明るさの縁。**色が違っても縁は同じ場所に立つ**ので、形だけを取り出せる。 */
+function edges(luma, w, h, threshold) {
+  const out = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      const gx = x + 1 < w ? Math.abs(luma[i + 1] - luma[i]) : 0;
+      const gy = y + 1 < h ? Math.abs(luma[i + w] - luma[i]) : 0;
+      out[i] = (gx + gy) >= threshold ? 1 : 0;
+    }
+  }
+  return out;
+}
+
+/** 2 つの縁の図が、1 画素の幅を許して重なっている割合。**片側だけ見ると見逃す**ので両側から。 */
+function overlap(a, b, w, h) {
+  const near = (map, x, y) => {
+    for (let dy = -1; dy <= 1; dy++) {
+      const yy = y + dy;
+      if (yy < 0 || yy >= h) continue;
+      for (let dx = -1; dx <= 1; dx++) {
+        const xx = x + dx;
+        if (xx >= 0 && xx < w && map[yy * w + xx]) return true;
+      }
+    }
+    return false;
+  };
+  let hit = 0;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      if (a[i] && !near(b, x, y)) continue;
+      if (b[i] && !near(a, x, y)) continue;
+      hit++;
+    }
+  }
+  return (hit / (w * h)) * 100;
+}
+
+/** 画素どうしの、いちばん大きいずれ (R/G/B のうち)。 */
+function gap(a, b, i) {
+  return Math.max(Math.abs(a[i] - b[i]), Math.abs(a[i + 1] - b[i + 1]), Math.abs(a[i + 2] - b[i + 2]));
+}
+
+function difference(originCanvas, ourCanvas, w, h) {
+  const read = (canvas) => canvas.getContext('2d').getImageData(0, 0, w, h).data;
+  const a = read(originCanvas), b = read(ourCanvas);
+
+  // **半画素ずらした mokume。** 線を画素に載せる (255 が 1 列) のか、境界にまたがらせる
+  // (128 が 2 列) のかの違いは、半画素動かすとちょうど入れ替わる。ずらして合えば、
+  // 違いの正体は線の載せ方だと**言い切れる**
+  const shifted = document.createElement('canvas');
+  shifted.width = w; shifted.height = h;
+  const sg = shifted.getContext('2d');
+  sg.drawImage(ourCanvas, -0.5, -0.5, w, h);
+  const c = read(shifted);
+
+  let same = 0, close = 0, near = 0, half = 0, sum = 0, max = 0;
+  const count = w * h;
+  for (let p = 0; p < count; p++) {
+    const i = p * 4;
+    const d = gap(a, b, i);
     if (d === 0) same++;
+    if (d <= 2) close++;
+    if (d <= 8) near++;
+    // その場で合うか、半画素ずらして合うか。**どちらかで合えば同じ絵**
+    if (d <= 8 || gap(a, c, i) <= 8) half++;
     sum += d;
     if (d > max) max = d;
-    count++;
   }
-  return { same: (same / count) * 100, mean: sum / count, max };
+
+  const la = luminance(a, w, h), lb = luminance(b, w, h);
+  const shape = overlap(edges(la, w, h, 16), edges(lb, w, h, 16), w, h);
+
+  return {
+    same: (same / count) * 100, close: (close / count) * 100, near: (near / count) * 100,
+    half: (half / count) * 100, shape, mean: sum / count, max,
+  };
 }
 
-function compose(left, right, title, diff) {
+function compose(left, right, item, diff) {
+  const [W, H] = item.size;
   const out = document.createElement('canvas');
   out.width = W * 2 + GAP;
   out.height = BAR + H + PAD + 22;
@@ -101,12 +244,12 @@ function compose(left, right, title, diff) {
 
   g.fillStyle = '#111111';
   g.font = 'bold 15px -apple-system, BlinkMacSystemFont, sans-serif';
-  g.fillText('Processing (p5.js) — 原典', 2, 22);
+  g.fillText(item.origin === 'png' ? 'Processing — 原典 (site の静止画)' : 'Processing (p5.js) — 原典', 2, 22);
   g.fillText('mokume — Atlas', W + GAP + 2, 22);
 
   g.fillStyle = '#666666';
   g.font = '13px -apple-system, BlinkMacSystemFont, sans-serif';
-  const label = title;
+  const label = item.frame > 1 ? `${item.example} — ${item.frame} 枚目` : item.example;
   g.fillText(label, out.width - g.measureText(label).width - 2, 22);
 
   g.drawImage(left, 0, BAR, W, H);
@@ -118,31 +261,66 @@ function compose(left, right, title, diff) {
   g.strokeRect(0.5, BAR + 0.5, W - 1, H - 1);
   g.strokeRect(W + GAP + 0.5, BAR + 0.5, W - 1, H - 1);
 
-  g.fillStyle = '#444444';
+  // **測れない例に数字を刷らない。** 一致率だけを見た読み手が「0% = まったく違う」と
+  // 読むのを防ぐ。絵そのものに理由が乗っていれば、URL しか見なくても誤解しない
   g.font = '12px ui-monospace, SFMono-Regular, Menlo, monospace';
-  const line = `画素が完全に一致 ${diff.same.toFixed(1)}%  ・  平均差 ${diff.mean.toFixed(2)} / 255  ・  最大差 ${diff.max} / 255`;
-  g.fillText(line, 2, BAR + H + 17);
+  if (diff) {
+    g.fillStyle = '#444444';
+    const suffix = item.measure === 'resampled' ? '  ・  原典を縮めているので参考値' : '';
+    g.fillText(`その場で一致 ${diff.near.toFixed(1)}%  ・  半画素ずらして一致 ${diff.half.toFixed(1)}%`
+      + `  ・  形が一致 ${diff.shape.toFixed(1)}%  ・  完全一致 ${diff.same.toFixed(1)}%${suffix}`, 2, BAR + H + 17);
+  } else {
+    g.fillStyle = '#8a5a00';
+    g.fillText(`画素では測れない — ${item.why || '原典と条件が揃わない'}`, 2, BAR + H + 17);
+  }
   return out;
 }
 
-(async () => {
-  for (const item of ITEMS) {
-    try {
-      const original = await runOriginal(item.slug);
-      const image = await loadImage(`mokume/${item.slug}.png`);
-      const ours = document.createElement('canvas');
-      ours.width = W; ours.height = H;
-      ours.getContext('2d').drawImage(image, 0, 0, W, H);
+async function one(item) {
+  running = item.example;
+  const origin = item.origin === 'png' ? await runStill(item) : await runOriginal(item);
+  const [W, H] = item.size;
+  const image = await loadImage(`mokume/${item.slug}.png`);
+  const ours = document.createElement('canvas');
+  ours.width = W; ours.height = H;
+  ours.getContext('2d').drawImage(image, 0, 0, W, H);
 
-      const diff = difference(original, ours);
-      const sheet = compose(original, ours, item.title, diff);
-      const res = await fetch('/save', { method: 'POST', body: item.slug + '|' + sheet.toDataURL('image/png') });
-      log(`${item.slug}: 一致 ${diff.same.toFixed(1)}% / 平均差 ${diff.mean.toFixed(2)} / 最大差 ${diff.max}  (${await res.text()})`);
+  // **引き伸ばさない。** 原典と面の大きさが違うなら、揃えた気になった数字より
+  // 「揃っていない」と言うほうが正しい (サーバ側が measure を none にしている)
+  const measurable = item.measure !== 'none' && origin.width === W && origin.height === H;
+  const diff = measurable ? difference(origin.canvas, ours, W, H) : null;
+  const sheet = compose(origin.canvas, ours, item, diff);
+  await fetch('/save', { method: 'POST', body: item.slug + '|' + sheet.toDataURL('image/png') });
+  await fetch('/save', { method: 'POST', body: 'stats|' + JSON.stringify({
+    [item.example]: { measure: item.measure, why: item.why, frame: item.frame,
+                      width: W, height: H, status: 'ok', diff },
+  }) });
+  running = null;
+  return diff;
+}
+
+(async () => {
+  const todo = await (await fetch('/todo')).json();
+  head.textContent = `${todo.length} 本を撮る`;
+  let done = 0;
+  for (const item of todo) {
+    try {
+      const diff = await one(item);
+      done++;
+      const score = diff ? `その場 ${diff.near.toFixed(1)}% / 半画素 ${diff.half.toFixed(1)}% / 形 ${diff.shape.toFixed(1)}% / 完全 ${diff.same.toFixed(1)}%` : `測らない (${item.why})`;
+      log(`${String(done).padStart(3)}/${todo.length} ${item.example}  ${score}`);
     } catch (e) {
-      log(`${item.slug}: 失敗 ${e}`);
+      blame(e);
+      log(`      ${item.example}  失敗 ${failures[item.example] || e}`);
+      await fetch('/save', { method: 'POST', body: 'stats|' + JSON.stringify({
+        [item.example]: { status: 'failed', error: String(failures[item.example] || e) },
+      }) });
+      running = null;
     }
+    head.textContent = `${done} / ${todo.length} 本`;
   }
   document.title = 'done';
+  head.textContent = `おわり — ${done} / ${todo.length} 本`;
   log('おわり');
 })();
 </script>
