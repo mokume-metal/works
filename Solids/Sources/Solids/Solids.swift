@@ -16,7 +16,7 @@ import mokume
 ///
 /// 1. 面の中央を原点にするため、`translate(width / 2, height / 2, 0)` を 1 度置く
 ///    (p5 の WEBGL は面の中央が原点。mokume に描き方のモードは無く、原点は左上)
-/// 2. 角度はラジアン (`angleMode()` が無い)
+/// 2. 角度はラジアン (`angleMode()` が無い。度は `radians()` を通して渡す)
 /// 3. `normalMaterial()` の代わりに断片を当てる (``NormalPaint``)
 /// 4. `ellipsoid()` が無いので `scale` + `sphere` で作る
 /// 5. モデルは自作のもの (原典は NASA の astronaut.obj を読む)
@@ -33,13 +33,6 @@ final class Solids: Sketch {
     /// 向きの読める小さな矢じりを自分で書いた (`assets/arrowhead.obj`)。
     private var arrowhead: Model?
 
-    /// 原典の `background(250)`。**数値 1 つの灰色は書けない**ので 3 つ書き下す。
-    private static let paper = LinearRGBA.display(
-        red: 250 / 255, green: 250 / 255, blue: 250 / 255)
-
-    /// 断片は `in.color` を掛けずに使うが、`place()` は塗りが無いと何も置かない
-    /// (`hasFill`)。白を置いておく。
-    private static let blank = LinearRGBA.display(red: 1, green: 1, blue: 1)
 
     func setup() {
         // 原典の `normalMaterial()` に当たるもの
@@ -55,12 +48,14 @@ final class Solids: Sketch {
 
     func draw() {
         // 原典の `background(250)`
-        background(Self.paper)
+        background(250)
 
         // 原典の `normalMaterial()` は setup で 1 度呼ぶだけだが、断片は掛け直す
         if let normalPaint { shader(normalPaint) }
         noStroke()
-        fill(Self.blank)
+        // 断片は `in.color` を掛けずに使うが、`place()` は塗りが無いと何も置かない
+        // (`hasFill`)。白を置いておく
+        fill(255)
 
         // **原典に無い 1 行。** p5 の WEBGL は面の中央が原点だが、mokume に描き方の
         // モードは無く、立体も面と同じ左上の原点に置かれる。以下の区画の座標を
@@ -111,7 +106,7 @@ final class Solids: Sketch {
 
         // 原典はここで `stroke(0)` を置き、動きを見せるための黒い線を出す。
         // **組み込みの立体は線を持たない** ので、置いても何も変わらない (README)
-        stroke(.display(red: 0, green: 0, blue: 0))
+        stroke(0)
         sphere(50)
         noStroke()
         pop()
@@ -145,9 +140,10 @@ final class Solids: Sketch {
     /// 原典の `rotateWithFrameCount()` — 毎フレーム 1 度ずつ 3 軸に回す。
     ///
     /// 原典は `angleMode(DEGREES)` を宣言して `rotateZ(frameCount)` と書く。
-    /// **mokume に `angleMode()` は無い**ので、度をラジアンへ直すのはこちらの仕事になる。
+    /// **mokume に `angleMode()` は無い** — 単位を切り替える状態を持たない作りなので、
+    /// 度で考えた角は `radians()` を通して渡す (`v0.6.0` から面にある)。
     private func rotateWithFrameCount() {
-        let degree = Float(frameCount) * .pi / 180
+        let degree = radians(Float(frameCount))
         rotateZ(degree)
         rotateX(degree)
         rotateY(degree)

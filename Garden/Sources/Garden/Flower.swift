@@ -29,7 +29,8 @@ struct Flower {
     var lifespan: Float
     /// 花びらの色。
     ///
-    /// 原典の `color(r, g, b)` に当たる。mokume の色は ``LinearRGBA`` 1 つで、
-    /// 0…255 ではなく **0…1 の表示値**を受け取る (`LinearRGBA.display`)。
+    /// 原典の `color(r, g, b)` に当たる。`v0.6.0` から mokume の `color(_:_:_:)` も
+    /// **0…255** を受けるので、原典の数がそのまま渡せる。型は ``LinearRGBA`` 1 つで、
+    /// 0…1 で書きたいときは `LinearRGBA.display` が残っている。
     var color: LinearRGBA
 }

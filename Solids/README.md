@@ -65,9 +65,9 @@ swift run Solids --render out 200 && shasum -a 256 out/solids-200.png
 | `frameCount` | `frameCount` | 同じ。1 から始まるのも同じ |
 | `loadModel(path)` | `loadModel(_:normalize:)` / `requestModel(_:normalize:)` | **`normalize` の既定が逆** (p5 は整えない・mokume は整える)。読むのは OBJ だけで、材質は読まない |
 | `model(geometry)` | `model(_:)` | 同じ |
-| `background(250)` | `background(.display(red:green:blue:))` | **数値 1 つの灰色が書けない**。3 つ書き下す |
+| `background(250)` | `background(250)` | **`v0.6.0` から同じ**。素の数値は 0–255 で、灰色 1 つの形もある |
 | `createCanvas(w, h, WEBGL)` | `SketchSettings(width:height:)` | **描き方のモードが無い** (立体も面も同じ面に出る)。ただし**原点は左上**なので、原典の座標を使うには中央へ寄せる 1 行が要る |
-| `angleMode(DEGREES)` | **無い** | 度をラジアンへ直すのは書く側の仕事 |
+| `angleMode(DEGREES)` | `radians(_:)` | **単位を切り替える状態は持たない**作りなので、度は呼ぶ 1 行で直す (`v0.6.0` から面にある) |
 | `ellipsoid(a, b, c)` | **無い** | `scale(a, b, c)` + `sphere(1)` で作る。→ [mokume#849](https://github.com/mokume-metal/mokume/issues/849) |
 | `normalMaterial()` | **無い** | 断片で書く。ただし**原典と同じ絵にはならない**。下記 |
 | `stroke(0)` + `sphere(50)` | **効かない** | 組み込みの立体は線を持たない。下記 |
