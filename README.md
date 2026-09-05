@@ -67,6 +67,7 @@ brew upgrade mokume                    # 古いと感じたら
 | [Solids](Solids/) | p5.js の 3D Geometries を 1 行ずつ移した立体の並び。Garden が測らなかった**立体の**語彙の物差し |
 | [Ring](Ring/) | p5.js の Triangle Strip を 1 行ずつ移した虹の輪。原形の外へ出る唯一の道である**頂点列**の物差し |
 | [Atlas](Atlas/) | Processing の Examples を全数で当てた台帳と、[公式ページ](https://processing.org/examples/)の 162 本のうち移せる 157 本の実測。**作品ではなく物差し**で、1 本ずつでは出ない「どの欠けが何本の例を止めるか」を数える |
+| [Helmet](Helmet/) | three.js の webgl_loader_gltf 相当を目標に、Khronos の DamagedHelmet を読んで PBR で見せようとした記録。**絵を 1 枚貼るところで折れている** — 語彙ではなく**資産と質感のパイプライン**を測る 1 本目 |
 
 **`Package.resolved` は作品ごとに持ち、コミットする。** 作品のコミットへ戻れば mokume も
 当時の版に戻るので、別の作品が新しい mokume を要求しても前の作品の再現は壊れない。

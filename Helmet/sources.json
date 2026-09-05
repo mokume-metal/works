@@ -1,0 +1,45 @@
+{
+  "note": "取ってきた資産の出どころ。中身は upstream/ にあり、works へはコミットしない",
+  "models": {
+    "DamagedHelmet": {
+      "repo": "KhronosGroup/glTF-Sample-Assets",
+      "sha": "9429648735279342b4c32b8745f7904196607379",
+      "path": "Models/DamagedHelmet/glTF",
+      "license": "CC BY 4.0 (2018, ctxwing) / CC BY-NC 4.0 (2016, theblueturtle_)",
+      "why": "主題。webgl_loader_gltf の初期モデルで、PBR マップの全種が揃っている",
+      "files": {
+        "DamagedHelmet.bin": 558504,
+        "DamagedHelmet.gltf": 4537,
+        "Default_AO.jpg": 361678,
+        "Default_albedo.jpg": 935629,
+        "Default_emissive.jpg": 97499,
+        "Default_metalRoughness.jpg": 1300661,
+        "Default_normal.jpg": 517757
+      }
+    },
+    "NormalTangentTest": {
+      "repo": "KhronosGroup/glTF-Sample-Assets",
+      "sha": "9429648735279342b4c32b8745f7904196607379",
+      "path": "Models/NormalTangentTest/glTF",
+      "license": "CC0 1.0 (Analytical Graphics, Inc. / Ed Mackey)",
+      "why": "接線を実行時に作れるかを測るための専用モデル。TANGENT を持たない",
+      "files": {
+        "NormalTangentTest.gltf": 4459,
+        "NormalTangentTest0.bin": 174100,
+        "NormalTangentTest_BaseColor.png": 36384,
+        "NormalTangentTest_Normal.png": 212495,
+        "NormalTangentTest_OcclusionRoughnessMetallic.png": 1371840
+      }
+    }
+  },
+  "hdris": {
+    "royal_esplanade": {
+      "source": "https://polyhaven.com/a/royal_esplanade",
+      "url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/royal_esplanade_2k.hdr",
+      "license": "CC0 1.0 (Greg Zaal / Poly Haven)",
+      "why": "環境マップ。webgl_loader_gltf が読んでいるものと同じ",
+      "bytes": 6487325,
+      "md5": "fc9d5bfc0b17c120f5988180e360f35a"
+    }
+  }
+}
