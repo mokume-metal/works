@@ -145,22 +145,24 @@ Processing にあって mokume に無い語彙のうち、**面の外に書け�
 <!-- compare:begin -->
 | その場で一致 | 本数 |
 | --- | ---: |
-| 100% | 15 |
-| 99% 以上 | 52 |
-| 95% 以上 | 18 |
+| 100% | 13 |
+| 99% 以上 | 50 |
+| 95% 以上 | 14 |
 | 90% 以上 | 6 |
-| 90% 未満 | 27 |
-| 測らない (乱数・時計・書体) | 39 |
+| 90% 未満 | 24 |
+| 数を出さない | 50 |
 
 移した 157 本ぶん。うち 1 本は原典が静止画しかなく、縮めて比べているので参考値。**どれが「同じ絵」かは決めていない** — 数と並べた 1 枚を出すところまでが機械の仕事で、見て決めるのは人である。
+
+**数を出さない理由は 1 つではない** — 乱数・雑音・時計 30 本・字を組む 7 本・原典が 2 つ食い違う 10 本・原典が 1 画素も描かない 2 本・面の大きさが違う 1 本。原典どうしが食い違う例と、原典が 1 画素も描かない例には数を出さない ([`scripts/origins.py`](scripts/origins.py) が前者を機械で探す)。
 
 **157 枚を並べたものが [`ledger/comparison.md`](ledger/comparison.md)** にある (リンクではなく埋め込んであるので、上から流し読みできる)。
 
 ![Basics/Form/Bezier — 原典と mokume](https://i.gyazo.com/6ff2bfe81e2ad2ff547000e2a668fe74.png)
 
-![Basics/Math/Map — 原典と mokume](https://i.gyazo.com/1d8fd4d45af7acad364580d7cd14ec2a.png)
+![Basics/Math/Map — 原典と mokume](https://i.gyazo.com/46af99de5c9d9aa743e8e51aed426371.png)
 
-![Topics/Drawing/ContinuousLines — 原典と mokume](https://i.gyazo.com/bf6e690209c3979939765b4c8b422662.png)
+![Topics/Drawing/ContinuousLines — 原典と mokume](https://i.gyazo.com/43f8b666348bc84787692376db7652b5.png)
 <!-- compare:end -->
 
 **形と位置はよく合っている。** 157 本のうち 68 本が「その場で一致 99% 以上」で、差が出たものも輪郭の均し・色の作り方・線の載せ方の 3 つにほぼ収まる。
@@ -182,7 +184,7 @@ Processing にあって mokume に無い語彙のうち、**面の外に書け�
 #### 2. 同じ数から違う色が出る (`StatementsComments`)
 
 <!-- compare:image Basics/Structure/StatementsComments -->
-![Basics/Structure/StatementsComments — 原典と mokume](https://i.gyazo.com/ceb34e9673b0ea3b92c5bdf068e845ce.png)
+![Basics/Structure/StatementsComments — 原典と mokume](https://i.gyazo.com/eccfb4d17f8f621dffdc23708a3865f0.png)
 
 原典は `background(204, 153, 0)` の 1 行だけの例で、**面ぜんぶが 9 ずれる。**
 
@@ -292,10 +294,23 @@ python3 scripts/compare/serve.py            # http://127.0.0.1:8731/ と /motion
 python3 scripts/compare/animate.py          # 連番を WebP へ畳む
 python3 scripts/compare/publish.py          # Gyazo へ上げ、台帳と文書を書き戻す
 python3 scripts/compare/publish.py --check  # 撮り直していないものを捕まえる
+python3 scripts/origins.py --check          # 原典どうしが食い違うのに測っていないか
 ```
 
 比べているのが処理系の差であって撮り方の差ではないように、条件を 3 つ揃えてある
 ([`scripts/compare/index.html`](scripts/compare/index.html) にその理由も書いた)。
+
+**数を出さないと決めるものが 3 種類ある。**
+
+| | 誰が決めるか |
+| --- | --- |
+| 乱数・雑音・時計を使う / 字を組む | 台帳の語彙から `serve.py` が決める |
+| **原典どうしが食い違う** (`.pde` と site の p5) | [`scripts/origins.py`](scripts/origins.py) が数値リテラルで探し、人が台帳へ書く |
+| **原典が 1 画素も描かなかった** | 撮るたびに `index.html` が数えて決める。台帳へは理由を書かず、描かれた量 (`ink`) だけ残す |
+
+最後の 1 つを台帳へ文で書かないのは、**絵が出るようになっても理由だけが残り、台帳が古い話を
+し続ける**のを避けるため。逆向きの「原典は絵を出したのに移植が 1 画素も描いていない」は
+`publish.py --check` が落とす — 157 枚を目で見張るのは回らない。
 **揃える前は原典側だけ 30 フレーム進み、線が 1 本ぶんずれていた。**
 
 **本文の画像行は手で書かない。** 撮った証跡の台帳は [`ledger/shots.json`](ledger/shots.json) で、
@@ -357,17 +372,24 @@ python3 scripts/compare/publish.py --check  # 撮り直していないものを�
 
 **語彙の判定は大きく動いたのに、原典との画素の一致はほとんど動かなかった。**
 
-| | `v0.5.0` | `v0.6.0` + 書き直し |
-| --- | ---: | ---: |
-| 測った 118 本の平均一致率 | 82.55% | **82.38%** |
-| 動かなかった | — | 95 本 |
-| 下がった | — | 21 本 |
-| 上がった | — | 2 本 |
+3 つの版すべてで数を出した 107 本で並べる (11 本は**原典どうしが食い違う**と分かって
+数を出さなくなった。[#18](https://github.com/mokume-metal/works/issues/18))。
 
-**下がったのは、塗りの縁の均しが変わったためである。** `v0.6.0` は縁が半端な画素に載るときに
-被覆どおり均すようになった ([works#22](https://github.com/mokume-metal/works/pull/22) で切り分けた) —
-**絵としては素直になったが、p5 の均し方と揃ったわけではない**ので、縁の画素を多く持つ例ほど
-差が開く (`Basics/Arrays/Array2D` が 74.0% → 63.0% でいちばん動いた)。
+| | 平均一致率 | 動かない | 下がった | 上がった |
+| --- | ---: | ---: | ---: | ---: |
+| `v0.5.0` | 88.91% | — | — | — |
+| `v0.6.0` + 書き直し | **89.80%** | 90 本 | 13 本 | 4 本 |
+| 透明も差に入れたいま | **88.80%** | 102 本 | 5 本 | 0 本 |
+
+`v0.6.0` で下がった 13 本は、**塗りの縁の均しが変わったため**である。`v0.6.0` は縁が半端な
+画素に載るときに被覆どおり均すようになった ([works#22](https://github.com/mokume-metal/works/pull/22)
+で切り分けた) — **絵としては素直になったが、p5 の均し方と揃ったわけではない**ので、
+縁の画素を多く持つ例ほど差が開く。
+
+**最後の 1% は mokume が変わったのではなく、測り方の甘さが取れたぶんである。**
+差の取り方が alpha を見ておらず、**何も塗っていない透明な面と `background(0)` の黒が
+完全一致になっていた** ([#17](https://github.com/mokume-metal/works/issues/17))。
+`Basics/Web/LoadingImages` の「100%」がそれで、いまは 0.0% と出る。
 
 **上の 4 つが閉じるまで、この数字は動かない。** 一致を止めているのは語彙ではなく、
 Display P3・線の載り方・光の強さ・線形空間での合成だからである。**台帳の判定と画素の一致は
