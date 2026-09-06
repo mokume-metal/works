@@ -185,11 +185,12 @@ final class Prism: Sketch {
         blendMode(.blend)
         noStroke()
         fill(LinearRGBA.display(red: 0.62, green: 0.66, blue: 0.74, alpha: 0.75))
-        let baseline = height - 122
-        text("drag — turn the prism", 56, baseline)
-        text("move — aim the light", 56, baseline + 33)
-        text("scroll — dispersion \(String(format: "%.4f", dispersion))", 56, baseline + 66)
-        text("space — release to the sweep", 56, baseline + 99)
+        let baseline = height - 155
+        text("動かす — 光を向ける", 56, baseline)
+        text("ドラッグ — 硝子を回す", 56, baseline + 33)
+        text("スクロール — 分散 \(String(format: "%.4f", dispersion))", 56, baseline + 66)
+        text("スペース — 往復へ返す", 56, baseline + 99)
+        text("R — はじめの置き方へ戻す", 56, baseline + 132)
         blendMode(.add)
     }
 
