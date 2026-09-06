@@ -79,8 +79,9 @@ mokume watch .    # 保存したら作り直して差し替える
 ```bash
 swift run -c release Helmet --render <置き場> <番号>       # 1 枚だけ書き出す
 swift run -c release Helmet --frames <置き場> <数>         # 連番で書き出す
-swift run -c release Helmet --measure chunked <塊の枚数>   # 組み立ての時間を測る
-swift run -c release Helmet --measure whole                # 全部 1 度に渡して測る (終わらない)
+swift run -c release Helmet --measure                      # 3 通りの渡し方を並べて測る
+swift run -c release Helmet --measure chunked <塊の枚数>   # 塊に切る (回避が要った頃の書き方)
+swift run -c release Helmet --measure whole                # 全部 1 度に展開して渡す
 ```
 
 `--render` は書き出したあと**明るさの分布**を出す。「形が出たか」を目で見る前に数で切り分けられる — 画像を読むのは高い操作なので、まず数で当たりを付ける作りにしてある。
@@ -116,6 +117,22 @@ swift run -c release Helmet --measure whole                # 全部 1 度に渡�
 素直に書けば最後の行になる。**5 分待っても終わらず、例外も進捗も出ない**ので、書いた側からは固まったように見える。三角形を 32 枚ずつに切る回避を書いた — 連続した `endShape` は同じ列に積まれるので描く回数は 1 回のままで、絵も 1 ビット変わらない。
 
 → [mokume#915](https://github.com/mokume-metal/mokume/issues/915)
+
+#### `v0.7.0` で塞がった — 回避を外し、番号で渡すようになった
+
+**2 つとも閉じた。** 二乗そのものが消え ([mokume#915](https://github.com/mokume-metal/mokume/issues/915) / [#1001](https://github.com/mokume-metal/mokume/pull/1001))、glTF の番号をそのまま渡す口が入った ([mokume#938](https://github.com/mokume-metal/mokume/issues/938) / [#996](https://github.com/mokume-metal/mokume/pull/996))。
+
+| 渡し方 | 組み立て | mokume へ渡る頂点 | 積む量 |
+| --- | ---: | ---: | ---: |
+| `indexed` (いまの既定) | 20.5 ms | **14,556** | **1.40 MB** |
+| `chunked` (塊 32 枚・回避が要った頃) | 19.4 ms | 46,356 | 4.45 MB |
+| `whole` (全部 1 度に展開) | 19.2 ms | 46,356 | 4.45 MB |
+
+**`whole` が 300 秒超から 19 ms になった。** 回避を書く理由が無くなったので、塊に切る既定をやめた。
+
+**`indexed` の値打ちは時間ではなく量である。** 組み立ての時間は 3 通りともほぼ同じ (点を 14,556 回置いて番号を 46,356 回積むのと、点を 46,356 回置くのとで、仕事の量が近い) が、mokume が持ち歩く頂点は **3.2 分の 1** になる。glTF は面と点を別々に持つ形式なので、`indexed` が**読んだものをそのまま渡す**書き方でもある。
+
+**絵は 1 ビットも変わらない** — `--render out 1` / `out 200` のハッシュが 3 通りとも一致する。glTF の番号は「位置 + 法線 + 読み取り位置」の組を指すので、共有しても角ごとの値は変わらない。
 
 ### 段 1 — 形は出る
 
@@ -220,6 +237,7 @@ NormalTangentTest と HDRI は取得スクリプトが取ってくるが、ま�
 | 踏んだもの | | 状態 |
 | --- | --- | --- |
 | 絵を貼った保持した形を、次のフレームで置くと消える | [mokume#914](https://github.com/mokume-metal/mokume/issues/914) | **閉じた** ([mokume#917](https://github.com/mokume-metal/mokume/pull/917))。`v0.6.0` から効く — この作品はその版を引いている |
-| 頂点を並べて作る形が、1 度に渡す三角形の数に比例して遅くなる | [mokume#915](https://github.com/mokume-metal/mokume/issues/915) | open。塊に切る回避を書いたまま |
+| 頂点を並べて作る形が、1 度に渡す三角形の数に比例して遅くなる | [mokume#915](https://github.com/mokume-metal/mokume/issues/915) | **閉じた** ([mokume#1001](https://github.com/mokume-metal/mokume/pull/1001))。`v0.7.0` から効く — **塊に切る回避を外した** |
+| 頂点に番号 (添字) を渡す口が無く、14,556 点が 46,356 点に展開される | [mokume#938](https://github.com/mokume-metal/mokume/issues/938) | **閉じた** ([mokume#996](https://github.com/mokume-metal/mokume/pull/996))。`v0.7.0` から効く — `index(_:)` で glTF の番号をそのまま渡すようにした |
 
 段 3 以降で踏むものは、踏んだそのときに戻す。

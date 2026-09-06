@@ -17,14 +17,20 @@ final class Helmet: Sketch {
 
     /// 頂点の渡し方。**段 0 の測定で切り替える。**
     ///
-    /// `whole` が素直な書き方 (三角形を全部 1 回の `beginShape` / `endShape` に渡す) で、
-    /// `chunked` が回避策である。回避が要ることは README の「踏んだもの」が持つ。
+    /// `indexed` が既定で、glTF が持つ番号をそのまま `index(_:)` へ流す — **点は 1 度ずつ
+    /// しか置かない**ので、mokume へ渡る頂点も glTF の頂点数のままである (`v0.7.0`)。
+    ///
+    /// `whole` と `chunked` は**回避が要った頃の書き方**で、比較のために残してある。
+    /// `whole` が素直な展開 (三角形を全部 1 回の `beginShape` / `endShape` に渡す)、
+    /// `chunked` がその回避策で、どちらも角ごとに点を書き出す。何が起きていたかは
+    /// README の「段 0」が持つ。
     enum Build: String {
+        case indexed
         case whole
         case chunked
     }
 
-    static var build = Build.chunked
+    static var build = Build.indexed
     /// 塊 1 つに入れる三角形の数。
     static var chunk = 32
     static var modelPath = "upstream/models/DamagedHelmet/DamagedHelmet.gltf"
@@ -279,9 +285,44 @@ final class Helmet: Sketch {
             matrix.columns.0.xyz, matrix.columns.1.xyz, matrix.columns.2.xyz)
         let forNormals = simd_transpose(simd_inverse(rotation))
 
+        /// 点を 1 つ置く。**glTF の番号 1 つが、mokume の点 1 つに対応する。**
+        func place(_ number: Int) {
+            // **法線は頂点ごとに呼ぶ。** `beginShape` で消えるうえ、
+            // 書き換えるまで効き続けるので、1 度でも抜けると隣の面の向きが漏れる
+            if number < piece.normals.count {
+                let n = simd_normalize(forNormals * piece.normals[number])
+                normal(n.x, n.y, n.z)
+            }
+
+            let placed = (matrix * SIMD4(piece.positions[number], 1)).xyz
+            if number < piece.uvs.count, let albedo, !bare {
+                // **UV は画像の画素で書く** (mokume は 0…1 を取らない)
+                // **読み取り位置は 0…1 の外へ出る。** glTF は繰り返しを
+                // 前提にするので (DamagedHelmet の v は 1.26 まで行く)、
+                // mokume の読み取り方 (端で留める) とは意味が違う
+                let uv = piece.uvs[number]
+                vertex(
+                    placed.x, placed.y, placed.z, uv.x * Float(albedo.width),
+                    uv.y * Float(albedo.height))
+            } else {
+                vertex(placed.x, placed.y, placed.z)
+            }
+        }
+
+        if Self.build == .indexed {
+            // **glTF の形をそのまま渡す。** 点を 1 度ずつ置いて、面は番号で張る。
+            // 番号は glTF が持っているものをそのまま流せばよく、置いていない番号を
+            // 含む面は mokume が面ごと落とす (mokume#938)
+            beginShape(.triangles)
+            for number in piece.positions.indices { place(number) }
+            for number in piece.indices { index(number) }
+            endShape()
+            return
+        }
+
+        // 以下は**回避が要った頃の書き方**で、比較のために残してある。角ごとに点を
+        // 書き出すので、置く点は面の数 × 3 に膨らむ
         let triangles = piece.triangleCount
-        // **whole は素直な書き方。** mokume の `endShape` が原始形ごとに全頂点を
-        // 走るので、ここで渡す三角形の数がそのまま二次で効く
         let step = Self.build == .whole ? max(triangles, 1) : Self.chunk
 
         var first = 0
@@ -290,29 +331,9 @@ final class Helmet: Sketch {
             beginShape(.triangles)
             for triangle in first..<last {
                 for corner in 0..<3 {
-                    let index = piece.indices[triangle * 3 + corner]
-                    guard index < piece.positions.count else { continue }
-
-                    // **法線は頂点ごとに呼ぶ。** `beginShape` で消えるうえ、
-                    // 書き換えるまで効き続けるので、1 度でも抜けると隣の面の向きが漏れる
-                    if index < piece.normals.count {
-                        let n = simd_normalize(forNormals * piece.normals[index])
-                        normal(n.x, n.y, n.z)
-                    }
-
-                    let placed = (matrix * SIMD4(piece.positions[index], 1)).xyz
-                    if index < piece.uvs.count, let albedo, !bare {
-                        // **UV は画像の画素で書く** (mokume は 0…1 を取らない)
-                        // **読み取り位置は 0…1 の外へ出る。** glTF は繰り返しを
-                        // 前提にするので (DamagedHelmet の v は 1.26 まで行く)、
-                        // mokume の読み取り方 (端で留める) とは意味が違う
-                        let uv = piece.uvs[index]
-                        vertex(
-                            placed.x, placed.y, placed.z, uv.x * Float(albedo.width),
-                            uv.y * Float(albedo.height))
-                    } else {
-                        vertex(placed.x, placed.y, placed.z)
-                    }
+                    let number = piece.indices[triangle * 3 + corner]
+                    guard number < piece.positions.count else { continue }
+                    place(number)
                 }
             }
             endShape()
