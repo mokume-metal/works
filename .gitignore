@@ -15,3 +15,9 @@ line.png
 
 # scripts/ を import すると出る (publish.py の集計をなぞって確かめるとき)
 __pycache__/
+
+# **例パッケージが解決した版。** Atlas は例 1 本ずつが SwiftPM パッケージなので
+# `Package.resolved` も 157 枚できるが、**再現の正本は `Atlas/Package.resolved`
+# 1 枚**である。例の側は `exact` で釘を打ってあり、版は
+# `python3 Atlas/scripts/examples.py` が正本から流し込む (ずれは `--check` が捕まえる)。
+Atlas/Examples/**/Package.resolved

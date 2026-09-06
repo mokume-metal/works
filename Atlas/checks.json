@@ -1,6 +1,9 @@
 {
   "mokume": "0.7.0",
   "revision": "86b6fa147e6bd38b24768fbc5890c0ee5031298c",
+  "prepare": [
+    "python3 scripts/examples.py --check"
+  ],
   "renders": [],
   "origin": "processing/processing-examples"
 }
