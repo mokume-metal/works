@@ -4,9 +4,10 @@
     python3 scripts/status.py           # 一覧
     python3 scripts/status.py --check   # 追随が要るなら終了コード 1 (CI が見る)
 
-**版は 3 か所にある。** `Package.swift` の `from:` は記録 (留め金ではない)、
-`Package.resolved` が実際に固定している版、`checks.json` はその期待ハッシュを測った
-ときの版。3 つが揃っていないと、どれかの作業が途中で止まっている。
+**版は 2 か所か 3 か所にある。** `Package.swift` の `from:` は記録 (留め金ではない)、
+`Package.resolved` が実際に固定している版。**台帳 (`checks.json`) を持つ物差しでは**
+さらにその期待ハッシュを測ったときの版が載る。揃っていないと、どれかの作業が途中で
+止まっている。台帳を持たない作品では「測った版」は `—` になる。
 """
 
 import subprocess
@@ -33,17 +34,20 @@ def main(argv: list[str]) -> int:
     rows = []
     for path in pieces.pieces():
         pin = pieces.pinned(path)
-        checks = pieces.load_checks(path)
+        # 台帳を持つのは物差しの側だけなので、測った版が無い作品がある
+        checks = pieces.load_checks(path) if pieces.has_checks(path) else None
         rows.append({
             "piece": path.name,
             "declared": pieces.declared(path),
             "resolved": pin["version"],
-            "measured": checks["mokume"],
+            "measured": checks["mokume"] if checks else None,
             "behind": pin["version"] != latest["version"],
         })
 
     behind = [r for r in rows if r["behind"]]
-    ragged = [r for r in rows if not (r["declared"] == r["resolved"] == r["measured"])]
+    ragged = [r for r in rows
+              if r["declared"] != r["resolved"]
+              or (r["measured"] is not None and r["measured"] != r["resolved"])]
 
     if check:
         if behind:
@@ -57,7 +61,8 @@ def main(argv: list[str]) -> int:
     print("| --- | --- | --- | --- | --- |")
     for r in rows:
         mark = "**追随していない**" if r["behind"] else ("**揃っていない**" if r in ragged else "追随済み")
-        print(f"| {r['piece']} | `{r['declared']}` | `{r['resolved']}` | `{r['measured']}` | {mark} |")
+        measured = f"`{r['measured']}`" if r["measured"] else "—"
+        print(f"| {r['piece']} | `{r['declared']}` | `{r['resolved']}` | {measured} | {mark} |")
 
     if behind:
         print(f"\n**{len(behind)} 作品が `v{latest['version']}` を引いていない。**"

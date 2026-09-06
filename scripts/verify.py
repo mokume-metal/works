@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-"""作品を書き出し直し、記録どおりの絵が出るかを測る。
+"""台帳を持つものを書き出し直し、記録どおりの絵が出るかを測る。
 
-    python3 scripts/verify.py                  # 全作品
-    python3 scripts/verify.py Garden Ring      # 名指し
+**台帳 (`checks.json`) を持つのは物差しの側だけである** (ルート README の「並べ方」)。
+作品は普通に作った例として置いてあり、絵のハッシュを持たないので、名指ししても飛ばす。
+版を上げて絵が動いたかは、窓を開けて目で見る。
+
+    python3 scripts/verify.py                  # 台帳を持つもの全部
+    python3 scripts/verify.py Atlas            # 名指し
     python3 scripts/verify.py --check          # 走らせず、台帳と Package.resolved の版だけ見る
     python3 scripts/verify.py --update         # 実測を新しい記録として受け入れる (版上げの後)
     python3 scripts/verify.py --write-readme   # README の生成区間を台帳から書き戻す
@@ -203,6 +207,16 @@ def main(argv: list[str]) -> int:
 
     if unknown := flags - {"--check", "--update", "--write-readme"}:
         raise SystemExit(f"知らない指定: {', '.join(sorted(unknown))}\n{__doc__}")
+
+    # **台帳を持たない作品は歩かない。** 作品は普通に作った例として置いてあり、
+    # 絵のハッシュで再現を測るのは物差しの側だけである (ルート README の「並べ方」)
+    if skipped := [p.name for p in targets if not pieces.has_checks(p)]:
+        if named:
+            print(f"台帳を持たないので飛ばす: {', '.join(skipped)}")
+        targets = [p for p in targets if pieces.has_checks(p)]
+    if not targets:
+        print("台帳を持つ作品が無い。")
+        return 0
 
     if "--write-readme" in flags:
         dirty = False

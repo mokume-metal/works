@@ -1,6 +1,6 @@
 ---
 name: mokume-bump
-description: "mokume の新しい版に works の作品を追随させるときに読む。版上げ・再現の測り直し・新しい語彙での書き直し・証跡の撮り直し・mokume への起票までの順序と、版上げでだけ踏む落とし穴。Use when mokume releases a new version, when a mokume watch issue is filed, when running scripts/bump.py or scripts/verify.py, or when a work's Package.resolved is behind."
+description: "mokume の新しい版に works を追随させるときに読む。版上げ・新しい語彙での書き直し・Atlas の台帳の測り直しと証跡の撮り直し・mokume への起票までの順序と、版上げでだけ踏む落とし穴。Use when mokume releases a new version, when a mokume watch issue is filed, when running scripts/bump.py or scripts/verify.py, or when a work's Package.resolved is behind."
 ---
 
 # mokume の版上げに追随する
@@ -29,7 +29,7 @@ mokume の口を名指しで持っている。[#21](https://github.com/mokume-me
 
 | | PR | なぜ分けるか |
 | --- | --- | --- |
-| ① | `build:` 版だけ上げる。**中身は 1 行も変えない** | ここで取った基準線があるから、②で絵が動いたときに「版差か書き直しか」を言い切れる |
+| ① | `build:` 版だけ上げる。**中身は 1 行も変えない** | Atlas の台帳がここで基準線を取るから、②で絵が動いたときに「版差か書き直しか」を言い切れる。**作品は指紋を持たないので目で見る比較になり**、なおさら混ぜられない |
 | ② | `refactor:` 埋まった穴を使って書き直す | |
 | ③ | `feat(atlas):` 台帳の再判定と証跡の撮り直し | 版を上げた瞬間に証跡が全件 stale になる。版上げと撮り直しが構造的に一続き |
 
@@ -37,21 +37,24 @@ mokume の口を名指しで持っている。[#21](https://github.com/mokume-me
 混ぜない**」。①と②を混ぜると、この切り分けができなくなる。
 
 ```bash
-python3 scripts/bump.py 0.7.0            # ① Package.swift と Package.resolved
-python3 scripts/verify.py --jobs=4       # 測る。動いた絵の理由を README の散文へ書く
-python3 scripts/verify.py --update       # 書いてから記録を進める
-python3 scripts/verify.py --write-readme # 生成区間へ送る
+python3 scripts/bump.py 0.7.0      # ① Package.swift と Package.resolved (全作品)
+python3 scripts/verify.py --check  # 台帳の版がずれていないか (台帳を持つ Atlas だけ)
 ```
+
+**作品 (Grain / Garden / Solids / Ring / Helmet) は窓を開けて目で見る。** 絵のハッシュも
+書き出しの口も持たないので、動いたかどうかを機械は言わない — 気付いたことは各 README の
+散文へ書く。Atlas の測り直しは ③ で `publish.py` が回す。
 
 ## 作品ごとに並行させる
 
 作品はフォルダで分かれているので、**同じ worktree のままサブエージェントを作品ごとに
 立ててよい**。ただし:
 
-- **git を触るのはメインだけ。** サブエージェントには測定と README の散文だけを任せる
-- **Atlas は輪から外す。** 別 PR で、単独で進める
-- `verify.py --jobs=N` は作品ごとに並行する。**動いた絵が出たら他を止めて 1 本ずつ測り
-  直す**ようになっている — mokume には待ち切れないときに黙って古い写しを返す経路が
+- **git を触るのはメインだけ。** サブエージェントには確認と README の散文だけを任せる
+- **Atlas は輪から外す。** 別 PR で、単独で進める — 台帳と証跡を持つのはあちらだけで、
+  手順がまるごと違う
+- `verify.py --jobs=N` は台帳を持つものを並行させる。**動いた絵が出たら他を止めて 1 本ずつ
+  測り直す**ようになっている — mokume には待ち切れないときに黙って古い写しを返す経路が
   あり (面の画素を読む・画像を面へ送る・字形を焼く)、混むと効く
 
 ## 版上げでだけ踏む落とし穴
@@ -77,7 +80,8 @@ python3 scripts/verify.py --write-readme # 生成区間へ送る
   両方残しているのがその形。書き換えると、他の作品から張られたアンカーも切れる
   (`Ring` と `Solids` が `Garden` の見出しを指している)
 - **`<!-- verify:pins -->` と `<!-- verify:renders -->` の中は手で書かない。**
-  `verify.py --write-readme` が書く。散文はその外に書く
+  `verify.py --write-readme` が書く。散文はその外に書く。**この印を持つのは Atlas だけ**で、
+  作品の README は「どの mokume で描いたか」を手書きで 1 行持つ
 
 ### 絵の貼り替え
 
@@ -85,12 +89,12 @@ python3 scripts/verify.py --write-readme # 生成区間へ送る
 
 | | 版上げで |
 | --- | --- |
-| **いまの絵** (各 README の先頭) | ハッシュが動いたら貼り替える |
+| **いまの絵** (各 README の先頭) | 絵が動いたら貼り替える |
 | **歴史の証跡** (「以前はこうだった」) | **貼り替えてはいけない** |
 
-`Grain` が「貼ってあったのは 2 版ぶん古い絵だった」と記録している。判断が人の目に
-委ねられている箇所なので、**ハッシュが動いた作品は必ず先頭の絵を見る**。撮り方は
-repo-standards の `gyazo-capture` スキル。
+`Grain` が「貼ってあったのは 2 版ぶん古い絵だった」と記録している。**作品では動いたことを
+機械が言わない**ので (指紋を持つのは Atlas だけ)、版を上げたら必ず窓を開けて先頭の絵と
+見比べる。撮り方は repo-standards の `gyazo-capture` スキル。
 
 ### 撮影が副作用を持つ
 

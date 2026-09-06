@@ -14,7 +14,7 @@ Garden が測ったのは p5 の **2D の入門語彙だけ**だった (`ellipse
 
 ![回しても面の色が動かない](https://i.gyazo.com/e1c41c62db30204953b3830be5603d2d.webp)
 
-> 撮影範囲: 書き出した連番 PNG (`--frames`) から作ったもので、画面は撮っていない。120 フレーム (6 秒・20fps)、形は 120 度回っている。**回っているのに、面ごとの色が 1 度も入れ替わらない**ところを見てほしい — 原典では回すたびに色が泳ぐ。理由は[下記](#踏んだもの)。
+> 撮影範囲: 当時の書き出しの口 (`--frames`) が出した連番 PNG から作ったもので、画面は撮っていない。120 フレーム (6 秒・20fps)、形は 120 度回っている。**回っているのに、面ごとの色が 1 度も入れ替わらない**ところを見てほしい — 原典では回すたびに色が泳ぐ。理由は[下記](#踏んだもの)。
 
 ## 走らせる
 
@@ -24,35 +24,11 @@ mokume watch .    # 保存したら作り直して差し替える
 mokume mcp .      # 走っているスケッチを外から観測する
 ```
 
-書き出しは実行ファイルへ直に渡す (CLI は引数を通さないため)。
+## どの mokume で描いたか
 
-```bash
-swift run Solids --render <置き場> <番号>   # 1 枚だけ書き出す
-swift run Solids --frames <置き場> <数>     # 連番で書き出す
-```
+**`Package.resolved` が固定している版がそのまま答えで、コミットしてある。** この作品のコミットを checkout すれば mokume も当時の版に戻る。
 
-## 検証する
-
-**同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。下のハッシュが食い違ったら、変えたつもりのないところが変わっている。
-
-このスケッチは乱数も揺らぎも使わないので、姿勢はフレーム番号だけで決まる (原典と同じく `frameCount` から角度を作る)。
-
-<!-- verify:pins -->
-| | |
-| --- | --- |
-| works | [#22](https://github.com/mokume-metal/works/pull/22) の merge コミット (`Package.resolved` が同じツリーにある) |
-| mokume | `v0.7.0` / `86b6fa147e6bd38b24768fbc5890c0ee5031298c` (`Package.resolved` が固定している) |
-<!-- verify:end -->
-
-<!-- verify:renders -->
-```bash
-swift run Solids --render out 1 && shasum -a 256 out/solids-1.png
-# 3c3dcaa190679f9d8829653c473a5d211405ea21f0301ebc0fc9fec415f5a211
-
-swift run Solids --render out 200 && shasum -a 256 out/solids-200.png
-# 2f1ecdf61dc7af538640d5bf8500884113791e48a5af88adb5c965340578cef0
-```
-<!-- verify:end -->
+**同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。このスケッチは乱数も揺らぎも使わないので、姿勢はフレーム番号だけで決まる (原典と同じく `frameCount` から角度を作る)。
 
 **`v0.5.0` → `v0.6.0` で、この絵は 1 ビットも動かなかった。** 同じ版上げで Garden の円の縁と Grain の重ね塗りは動いている ([Garden](../Garden/README.md#v060-で動いたもの) / [Grain](../Grain/README.md)) — 動いたのは**塗りの縁が半端な画素に載るとき**の被覆の置き方で、この作品が置くのは原形の立体だけなので当たらない。
 
@@ -137,11 +113,11 @@ Swift 側には `LinearRGBA.display(red:green:blue:)` があるので、**同じ
 
 差の 33 行のうち **19 行は `normalMaterial()` の代わりの断片**である。残りは中央へ寄せる 1 行・度をラジアンへ直す 1 行・`ellipsoid` を作る 1 行・色を 3 つ書き下すぶん・`Model` と `Shader` を持つ格納プロパティと `try?` の受け。**移植で「別の書き方に組み替えた」箇所は 1 つだけ** (`ellipsoid` → `scale` + `sphere`)。
 
-### 書き出しの口を写すのは、これで 3 度目
+### 書き出しの口を写すのは、これで 3 度目だった
 
-[`main.swift`](Sources/Solids/main.swift) の `--render` / `--frames` は Garden から写した。Garden は Grain から写している。**3 つを diff すると、違うのはコメントと 3 行の識別子だけ**で、残りは 1 文字も変わらない。
+[`main.swift`](Sources/Solids/main.swift) が持っていた `--render` / `--frames` は Garden から写したもので、Garden は Grain から写していた。**3 つを diff すると、違うのはコメントと 3 行の識別子だけ**で、残りは 1 文字も変わらなかった。
 
-作品ではないので mokume の Issue にはしていないが、**絵を書き出す口が道具の側に無い**ことの現れではある (`mokume run` は引数を通さないので、書き出しは実行ファイルへ直に渡すしかない)。
+作品ではないので mokume の Issue にはしていないが、**絵を書き出す口が道具の側に無い**ことの現れではある (`mokume run` は引数を通さないので、書き出しは実行ファイルへ直に渡すしかなかった)。**この口は作品から外した** — works に置くのは普通に作品を作った例なので、道具を測る仕掛けは持たせない。
 
 ## mokume へ戻したもの
 

@@ -14,7 +14,7 @@ Garden が測ったのは 2D の入門語彙、Solids が測ったのは立体�
 
 ![外から送ったマウス位置で頂点数が 6 から 60 へ変わる](https://i.gyazo.com/29b005c57f5bac10e449b1a07e8bafe1.webp)
 
-> 撮影範囲: 走っているスケッチの面だけ (`.mokume/observe` が書き出した絵で、画面は撮っていない)。60 枚・4 秒。**外から `mouseMoved` を送っては 1 枚撮る**を往復して、頂点数が 6 → 60 → 6 と変わるところを見てほしい。頂点数はマウスの位置からしか決まらないので、**窓を持たない書き出し (`--render`) では 6 のまま動かない**。
+> 撮影範囲: 走っているスケッチの面だけ (`.mokume/observe` が書き出した絵で、画面は撮っていない)。60 枚・4 秒。**外から `mouseMoved` を送っては 1 枚撮る**を往復して、頂点数が 6 → 60 → 6 と変わるところを見てほしい。頂点数はマウスの位置からしか決まらないので、**窓を持たずに描くと 6 のまま動かない**。
 
 ## 走らせる
 
@@ -24,35 +24,11 @@ mokume watch .    # 保存したら作り直して差し替える
 mokume mcp .      # 走っているスケッチを外から観測する
 ```
 
-書き出しは実行ファイルへ直に渡す (CLI は引数を通さないため)。
+## どの mokume で描いたか
 
-```bash
-swift run Ring --render <置き場> <番号>   # 1 枚だけ書き出す
-swift run Ring --frames <置き場> <数>     # 連番で書き出す
-```
+**`Package.resolved` が固定している版がそのまま答えで、コミットしてある。** この作品のコミットを checkout すれば mokume も当時の版に戻る。
 
-## 検証する
-
-**同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。下のハッシュが食い違ったら、変えたつもりのないところが変わっている。
-
-このスケッチは時刻も乱数も使わない。姿勢を決めるのは `mouseX` だけなので、**書き出した絵はフレーム番号によらず同じ**になる (下の 2 つのハッシュが一致しているのはそのため)。
-
-<!-- verify:pins -->
-| | |
-| --- | --- |
-| works | [#22](https://github.com/mokume-metal/works/pull/22) の merge コミット (`Package.resolved` が同じツリーにある) |
-| mokume | `v0.7.0` / `86b6fa147e6bd38b24768fbc5890c0ee5031298c` (`Package.resolved` が固定している) |
-<!-- verify:end -->
-
-<!-- verify:renders -->
-```bash
-swift run Ring --render out 1 && shasum -a 256 out/ring-1.png
-# 78af752be63c53976014bfdb28eb8e1d86f4d7635247d9eec676c914677785d5
-
-swift run Ring --render out 200 && shasum -a 256 out/ring-200.png
-# 78af752be63c53976014bfdb28eb8e1d86f4d7635247d9eec676c914677785d5
-```
-<!-- verify:end -->
+**同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。このスケッチは時刻も乱数も使わず、姿勢を決めるのは `mouseX` だけなので、**窓を持たずに描いた絵はフレーム番号によらず同じ**になる。
 
 **`v0.5.0` → `v0.6.0` で、この絵は 1 ビットも動かなかった。** 同じ版上げで Garden の円の縁と Grain の重ね塗りは動いている ([Garden](../Garden/README.md#v060-で動いたもの) / [Grain](../Grain/README.md)) — 動いたのは**塗りの縁が半端な画素に載るとき**の被覆の置き方で、この作品が置く帯は頂点をそのまま並べたものなので当たらない。
 
@@ -189,11 +165,11 @@ fill(color(hue: angle, saturation: 100, brightness: 100))
 
 原典が持っていて落としたのは `describe()` と、ラベルを出す DOM の 3 行 (`createP` / `style` / `position`) — 後者は `expose()` 1 行に置き換わっている。
 
-### 書き出しの口を写すのは、これで 4 度目
+### 書き出しの口を写すのは、これで 4 度目だった
 
-[`main.swift`](Sources/Ring/main.swift) の `--render` / `--frames` は Solids から写した。Solids は Garden から、Garden は Grain から写している。**4 つを diff すると、違うのはコメントと 3 行の識別子だけ**である。
+[`main.swift`](Sources/Ring/main.swift) が持っていた `--render` / `--frames` は Solids から写したもので、Solids は Garden から、Garden は Grain から写していた。**4 つを diff すると、違うのはコメントと 3 行の識別子だけ**だった。
 
-作品ではないので mokume の Issue にはしていないが、**絵を書き出す口が道具の側に無い**ことの現れではある (`mokume run` は引数を通さないので、書き出しは実行ファイルへ直に渡すしかない)。mokume 側には `save(_:)` と `beginRecord(_:)` があるが、どちらもスケッチの中から呼ぶ口なので、**外から「何枚書き出せ」と言う経路にはならない**。
+作品ではないので mokume の Issue にはしていないが、**絵を書き出す口が道具の側に無い**ことの現れではある (`mokume run` は引数を通さないので、書き出しは実行ファイルへ直に渡すしかなかった)。**この口は作品から外した** — works に置くのは普通に作品を作った例なので、道具を測る仕掛けは持たせない。mokume 側には `save(_:)` と `beginRecord(_:)` があるが、どちらもスケッチの中から呼ぶ口なので、**外から「何枚書き出せ」と言う経路にはならない**。
 
 ## mokume へ戻したもの
 

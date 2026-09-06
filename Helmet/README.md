@@ -42,49 +42,26 @@ python3 scripts/fetch.py
 
 NormalTangentTest と HDRI は段 3 以降で使うもので、**まだ 1 度も読んでいない**。
 
-## 検証する
+## どの mokume で描いたか
 
-**同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。下のハッシュが食い違ったら、変えたつもりのないところが変わっている。
+**`Package.resolved` が固定している版がそのまま答えで、コミットしてある。** この作品のコミットを checkout すれば mokume も当時の版に戻る。
 
-このスケッチは乱数も揺らぎも使わないので、姿勢はフレーム番号だけで決まる。
-
-<!-- verify:pins -->
-| | |
-| --- | --- |
-| works | この作品のコミット (`Package.resolved` が同じツリーにある) |
-| mokume | `v0.7.0` / `86b6fa147e6bd38b24768fbc5890c0ee5031298c` (`Package.resolved` が固定している) |
-<!-- verify:end -->
-
-**先に資産を取る** (`python3 scripts/fetch.py`)。取っていないと形が出ず、ハッシュも合わない。
-
-<!-- verify:renders -->
-```bash
-swift run -c release Helmet --render out 1 && shasum -a 256 out/helmet-1.png
-# 37a2a10c61ea42af185704d756b3334de67a31e1016ac13260a24be71436a7ba
-
-swift run -c release Helmet --render out 200 && shasum -a 256 out/helmet-200.png
-# 0308b3ca9e167dce37521f7723558a33bd1b032867a57160c24885d3875f91a2
-```
-<!-- verify:end -->
+**同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。このスケッチは乱数も揺らぎも使わないので、姿勢はフレーム番号だけで決まる。
 
 ## 走らせる
+
+**先に資産を取る** (`python3 scripts/fetch.py`)。取っていないと形が出ない。
 
 ```bash
 mokume run .      # 作って走らせる
 mokume watch .    # 保存したら作り直して差し替える
 ```
 
-書き出しと測定は実行ファイルへ直に渡す (CLI は引数を通さないため)。
+**この作品は release で走らせる。** 46,356 頂点を組むので debug では待たされる。
 
 ```bash
-swift run -c release Helmet --render <置き場> <番号>       # 1 枚だけ書き出す
-swift run -c release Helmet --frames <置き場> <数>         # 連番で書き出す
-swift run -c release Helmet --measure                      # 3 通りの渡し方を並べて測る
-swift run -c release Helmet --measure chunked <塊の枚数>   # 塊に切る (回避が要った頃の書き方)
-swift run -c release Helmet --measure whole                # 全部 1 度に展開して渡す
+swift run -c release Helmet
 ```
-
-`--render` は書き出したあと**明るさの分布**を出す。「形が出たか」を目で見る前に数で切り分けられる — 画像を読むのは高い操作なので、まず数で当たりを付ける作りにしてある。
 
 絵が出ないときの切り分けは環境変数で段ごとに潰せる。**この作品では実際に 4 段目で折れた。**
 
@@ -94,7 +71,6 @@ swift run -c release Helmet --measure whole                # 全部 1 度に展�
 | `HELMET_PROBE=triangle` | 三角形 1 枚をその場で描く (頂点の経路が通るか) |
 | `HELMET_PROBE=retained` | 同じ三角形を保持した形として置く |
 | `HELMET_PROBE=textured` | 三角形 1 枚に絵を貼って保持した形として置く |
-| `HELMET_NOTEXTURE=1` | 兜を絵なしで組む |
 | `HELMET_TEXTURE=small` | 貼る絵を 64x64 の焼いたものへ差し替える |
 | `HELMET_REBUILD=1` | `setup()` ではなく `draw()` で組み直して置く |
 
@@ -118,6 +94,8 @@ swift run -c release Helmet --measure whole                # 全部 1 度に展�
 
 → [mokume#915](https://github.com/mokume-metal/mokume/issues/915)
 
+> この表は当時の `--measure` が出した数字である。**測る口も、頂点の渡し方を切り替える口も作品から外した** — works に置くのは普通に作品を作った例なので、道具を測る仕掛けは持たせない。いまのコードは `indexed` の 1 本だけである。
+
 #### `v0.7.0` で塞がった — 回避を外し、番号で渡すようになった
 
 **2 つとも閉じた。** 二乗そのものが消え ([mokume#915](https://github.com/mokume-metal/mokume/issues/915) / [#1001](https://github.com/mokume-metal/mokume/pull/1001))、glTF の番号をそのまま渡す口が入った ([mokume#938](https://github.com/mokume-metal/mokume/issues/938) / [#996](https://github.com/mokume-metal/mokume/pull/996))。
@@ -132,7 +110,7 @@ swift run -c release Helmet --measure whole                # 全部 1 度に展�
 
 **`indexed` の値打ちは時間ではなく量である。** 組み立ての時間は 3 通りともほぼ同じ (点を 14,556 回置いて番号を 46,356 回積むのと、点を 46,356 回置くのとで、仕事の量が近い) が、mokume が持ち歩く頂点は **3.2 分の 1** になる。glTF は面と点を別々に持つ形式なので、`indexed` が**読んだものをそのまま渡す**書き方でもある。
 
-**絵は 1 ビットも変わらない** — `--render out 1` / `out 200` のハッシュが 3 通りとも一致する。glTF の番号は「位置 + 法線 + 読み取り位置」の組を指すので、共有しても角ごとの値は変わらない。
+**絵は 1 ビットも変わらなかった** — 当時の `--render out 1` / `out 200` のハッシュが 3 通りとも一致した。glTF の番号は「位置 + 法線 + 読み取り位置」の組を指すので、共有しても角ごとの値は変わらない。
 
 ### 段 1 — 形は出る
 
@@ -144,6 +122,8 @@ swift run -c release Helmet --measure whole                # 全部 1 度に展�
 | 読み飛ばした要素 | **0** |
 | Shape を組む (塊 32 枚) | 153.1 ms |
 | 描画の回数 | 1 |
+
+> この表も当時の測定である。組み立ての記録を標準出力へ流す仕掛けは作品から外した。
 
 **添字を渡す口が無いので、頂点が 3.2 倍になる。** glTF は 14,556 頂点を 46,356 の添字で参照するが、mokume の頂点の口は `vertex()` だけなので CPU で展開することになる。`SolidVertex` は 96 バイトなので 4.45 MB を積む。
 
@@ -161,13 +141,13 @@ swift run -c release Helmet --measure whole                # 全部 1 度に展�
 | --- | --- |
 | <img src="https://i.gyazo.com/a454b151e3be7de058645f6cb40906c3.png" width="440"> | <img src="https://i.gyazo.com/9d3f8cff737613fcd913b77e053cedf1.png" width="440"> |
 
-> 撮影範囲: `--render out 200` が書き出した**スケッチの面だけ** (画面は撮っていない)。frame 200・960x540。同じフレーム番号・同じ視点で、**コードは 1 文字も違わない** — 違うのは引いている mokume の版だけである。
+> 撮影範囲: 当時の `--render out 200` が書き出した**スケッチの面だけ** (画面は撮っていない)。frame 200・960x540。同じフレーム番号・同じ視点で、**コードは 1 文字も違わない** — 違うのは引いている mokume の版だけである。
 
 `v0.5.0` では `setup()` で組んだ絵つきの形を `draw()` で置くと **1 画素も描かれなかった**。46,356 頂点・描画 1 回で組めていることは数で確認できるのに、絵にならず、警告も出ない。
 
 **`v0.6.0` の絵は、`v0.5.0` で `draw()` の中で組み直したときの絵とバイト単位で同一である** (同じ画像を Gyazo へ上げたら既存の URL が返った)。つまり直しは「消えていたものが出るようになった」だけで、絵を変えていない。
 
-参考用に、絵を貼らない姿も残す (形が出ていることの確認に使う):
+参考用に、絵を貼らない姿も残す (これを出していた `HELMET_NOTEXTURE` も作品から外したので、いま撮り直す手段は無い):
 
 <img src="https://i.gyazo.com/74b2111cc233ffa5176952f501d39786.png" width="440">
 
@@ -223,12 +203,12 @@ NormalTangentTest と HDRI は取得スクリプトが取ってくるが、ま�
 | --- | ---: | ---: |
 | [`GLTF.swift`](Sources/Helmet/GLTF.swift) (glTF を読む) | 351 | 438 |
 | [`Helmet.swift`](Sources/Helmet/Helmet.swift) (スケッチ) | 268 | 356 |
-| [`main.swift`](Sources/Helmet/main.swift) (書き出しと測定の口) | 52 | 80 |
+| [`main.swift`](Sources/Helmet/main.swift) (スケッチを起動する) | 2 | 3 |
 | [`scripts/fetch.py`](scripts/fetch.py) (資産を取る) | 123 | 168 |
 
 **`GLTF.swift` の 351 行が、そのまま「mokume に glTF リーダーが無い」ことの大きさである。** mokume の OBJ パーサ (`ModelFile.swift`) が 213 行なので、その 1.6 倍を作品側に書いたことになる。ただし読めるのは最小のサブセット (POSITION / NORMAL / TEXCOORD_0 / 添字 / TRIANGLES / node の階層 / 材質の参照) だけで、GLB の容器・sparse accessor・拡張・アニメーションは読まない。
 
-**書き出しの口を写すのは、これで 5 度目である。** `main.swift` の `--render` / `--frames` は Ring から写した。Ring は Solids から、Solids は Garden から、Garden は Grain から写している。
+**書き出しの口を写すのは、これで 5 度目だった。** `main.swift` が持っていた `--render` / `--frames` は Ring から写したもので、Ring は Solids から、Solids は Garden から、Garden は Grain から写していた。**5 本とも作品から外した** — 上の表の `main.swift` が 3 行なのはそのためである。
 
 ## mokume へ戻したもの
 

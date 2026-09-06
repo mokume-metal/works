@@ -14,36 +14,17 @@ mokume watch .    # 保存したら作り直して差し替える
 mokume mcp .      # 走っているスケッチを外から観測する
 ```
 
-書き出しは実行ファイルへ直に渡す (CLI は引数を通さないため)。
+2 本目は実行ファイルへ直に渡す (CLI は引数を通さないため)。
 
 ```bash
-swift run Grain slab                       # 板を立体にして回す (未完成 — 下記)
-swift run Grain --render <置き場> <番号>     # 1 枚だけ書き出す
-swift run Grain --frames <置き場> <数> slab  # 連番で書き出す
+swift run Grain slab   # 板を立体にして回す (未完成 — 下記)
 ```
 
-## 検証する
+## どの mokume で描いたか
 
-**同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。上の絵と下の記録が食い違ったら、変えたつもりのないところが変わっている。
+**`Package.resolved` が固定している版がそのまま答えで、コミットしてある。** この作品のコミットを checkout すれば mokume も当時の版に戻るので、別の作品が新しい mokume を要求してピンが動いても、ここの再現は壊れない。
 
-<!-- verify:pins -->
-| | |
-| --- | --- |
-| works | [#22](https://github.com/mokume-metal/works/pull/22) の merge コミット (`Package.resolved` が同じツリーにある) |
-| mokume | `v0.7.0` / `86b6fa147e6bd38b24768fbc5890c0ee5031298c` (`Package.resolved` が固定している) |
-<!-- verify:end -->
-
-<!-- verify:renders -->
-```bash
-swift run Grain --render out 312 && shasum -a 256 out/grain-312.png
-# 27b5541bfae17bd861a910ad86e70ce9870862e1ed5a98f28fb91053ca12f68f
-
-swift run Grain --frames out-slab 60 slab && shasum -a 256 out-slab/frame-0055.png
-# 8e77f65eac5854b38f7318c34ab8e72a9c1299d0ece809179030d2ef45caa52d
-```
-<!-- verify:end -->
-
-**`Package.resolved` はコミットしてある**ので、上の works のコミットを checkout すれば mokume も当時の版に戻る。別の作品が新しい mokume を要求してピンが動いても、この作品の再現は壊れない。
+**同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。だから版を上げて絵が動いたなら、変えたつもりのないところが変わっている。下はそれを見つけたときの記録である — **絵のハッシュはもう持っていない**ので、いま動きに気付くのは窓を開けて目で見たときになる。
 
 ### 版を上げたときに動いたもの — `v0.1.0` 相当 → `v0.5.0`
 
@@ -58,11 +39,11 @@ swift run Grain --frames out-slab 60 slab && shasum -a 256 out-slab/frame-0055.p
 
 **旧版は右端で線が濃くなりすぎていた** — 左隣より暗い。新版は左隣と揃う。線の中心 (y=120 など) は 1 ビットも動いていない。上の絵は貼り替えていない (10 画素は目で見て分からない)。
 
-**立体 (`slab`) の絵は完全に一致する。** 動いたのは平面の線の終端だけだと言える (上の `slab` のハッシュはその後の書き直しで別の値になっているが、この版上げでは 1 ビットも動いていない)。
+**立体 (`slab`) の絵は完全に一致する。** 動いたのは平面の線の終端だけだと言える (`slab` の絵はその後の書き直しで別のものになったが、この版上げでは 1 ビットも動いていない)。
 
 ### 版を上げたときに動いたもの — `v0.5.0` → `v0.6.0`
 
-**平面の絵はほぼ全面が動き、立体 (`slab`) はまた 1 ビットも動かなかった** (上の `slab` のハッシュが `a0a1d3e1…` から動いているのは、この版上げではなく[下記の書き直し](#止まっていたところ--v060-で動いた)による)。1280x720 のうち差のある画素は 290048 (31.5%)、うち 3 以上が 14.3%・10 以上が 7.8%。全体の明るさは +0.19%。
+**平面の絵はほぼ全面が動き、立体 (`slab`) はまた 1 ビットも動かなかった** (`slab` の絵が当時の `a0a1d3e1…` から動いたのは、この版上げではなく[下記の書き直し](#止まっていたところ--v060-で動いた)による)。1280x720 のうち差のある画素は 290048 (31.5%)、うち 3 以上が 14.3%・10 以上が 7.8%。全体の明るさは +0.19%。
 
 **動きの大きさは面の下ほど大きい。**
 
@@ -103,7 +84,7 @@ swift run Grain --frames out-slab 60 slab && shasum -a 256 out-slab/frame-0055.p
 
 ![木目が板に留まって回る](https://i.gyazo.com/15707b4cf79588cdc1874c07736972b0.webp)
 
-> 撮影範囲: 書き出した連番 PNG (`--frames out-slab 60 slab`) から作ったもので、画面は撮っていない。60 フレーム (5 秒・12fps)、板は 41 度回っている。**木目が板と一緒に流れる**ところを見てほしい。
+> 撮影範囲: 当時の書き出しの口 (`--frames out-slab 60 slab`) が出した連番 PNG から作ったもので、画面は撮っていない。60 フレーム (5 秒・12fps)、板は 41 度回っている。**木目が板と一緒に流れる**ところを見てほしい。
 
 **留まったことは画素でも測れる。** 板の内側に画面固定の窓 (80x40) を置き、frame 0 と比べる:
 

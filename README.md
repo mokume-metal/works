@@ -22,6 +22,10 @@
 実行ファイルの名前を `products` から取る。1 つのパッケージに作品を並べると、
 **最初の product が黙って起動する**。
 
+**作品は普通に作った例として置く。** 絵を書き出す口も、組み立てを測る口も持たない —
+道具を測る仕掛けは、作品を読もうとした人が最初に出会うものではないからである。原典 157 本と
+突き合わせて数える Atlas だけが、その仕掛けを持つ**物差し**として例外になる。
+
 **縛っているのは product が 1 つであることで、スケッチの数ではない。** Grain は
 `Grain slab` で 2 本目を持ち、Atlas は移した例を何本も持つ。どちらも product は 1 つ
 なので `mokume run` の側からは同じに見え、選ぶのは**実行ファイルへ直に渡した引数**である
@@ -57,7 +61,7 @@ brew upgrade mokume                    # 古いと感じたら
 ([mokume#633](https://github.com/mokume-metal/mokume/issues/633))。
 
 フォルダの `README.md` はその作品の記録を持つ — 何を作ったか・走らせ方・**再現の手がかり**
-(works と mokume のコミット、書き出した絵のハッシュ)・止まったところ・mokume へ戻したもの。
+(works と mokume のコミット、どの版で描いたか)・止まったところ・mokume へ戻したもの。
 後から検証するときはそのフォルダだけ読めばよい。
 
 | | |
@@ -80,7 +84,9 @@ brew upgrade mokume                    # 古いと感じたら
 | `fill(255, 255 * 50 / 100)` が 127.5 から 127 になる (リテラルが `Int` へ倒れ整数除算になる) | [mokume#1018](https://github.com/mokume-metal/mokume/issues/1018) | **黙る。** Atlas の `additivewave-1.png` が動いて初めて気付いた |
 
 後者は**指紋を持っていたから見つかった**。絵のハッシュを版ごとに記録していなければ、
-「そういう絵だった」で通り過ぎていた。
+「そういう絵だった」で通り過ぎていた。**いま指紋を持つのは Atlas だけである** — 作品からは
+計測も検証も外したので、同じことが Grain や Ring で起きたら通り過ぎる。**版を上げたら窓を
+開けて目で見る**、が作品側の担保である。承知のうえで、works に置くのは作品の例だと決めた。
 
 **`Package.resolved` は作品ごとに持ち、コミットする。** 作品のコミットへ戻れば mokume も
 当時の版に戻るので、別の作品が新しい mokume を要求しても前の作品の再現は壊れない。
@@ -107,7 +113,7 @@ mokume は週に 1 度 (月曜 00:00 UTC) 版を出す。**追随は works の�
 python3 scripts/status.py      # いま何を引いていて、mokume はどこまで行っているか
 python3 scripts/api-diff.py    # 版の間で増えた口・消えた口
 python3 scripts/bump.py 0.7.0  # 引く版を上げる (中身は変えない)
-python3 scripts/verify.py      # 記録どおりの絵が出るか測る
+python3 scripts/verify.py      # 記録どおりの絵が出るか測る (台帳を持つ Atlas だけ)
 python3 scripts/upstream.py    # 戻した Issue がいまどうなっているか
 ```
 
@@ -122,10 +128,13 @@ python3 scripts/upstream.py    # 戻した Issue がいまどうなっている�
 *見に行けなかった* ときだけである。手順の正典は
 [`.claude/skills/mokume-bump/`](.claude/skills/mokume-bump/SKILL.md)。
 
-**再現の正本は作品ごとの `checks.json`。** 書き出しのコマンドと期待ハッシュを持ち、
-各 README の「検証する」節は印 (`<!-- verify:pins -->` / `<!-- verify:renders -->`)
-で囲った区間だけが生成物である。**手で書いた数字は腐る** — 囲いの外の散文は手書きの
-ままなので、何が動いたのかはそこへ書く。
+**再現の正本は `checks.json` で、持っているのは Atlas だけ。** 書き出しのコマンドと
+期待ハッシュを持ち、その README の「検証する」節は印 (`<!-- verify:pins -->` /
+`<!-- verify:renders -->`) で囲った区間だけが生成物である。**手で書いた数字は腐る** —
+囲いの外の散文は手書きのままなので、何が動いたのかはそこへ書く。
+
+**作品には台帳が無いので、版上げで動くのは `Package.swift` と `Package.resolved` だけ**
+である。絵が動いたかどうかは走らせて見て、気付いたことは各 README の散文へ書く。
 
 ## 規約
 
