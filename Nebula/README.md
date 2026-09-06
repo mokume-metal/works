@@ -36,7 +36,7 @@ swift run -c release Nebula --frames <置き場> <数>     # 連番で書き出�
 <!-- verify:pins -->
 | | |
 | --- | --- |
-| works | この作品のコミット (`Package.resolved` が同じツリーにある) |
+| works | [#42](https://github.com/mokume-metal/works/pull/42) の merge コミット (`Package.resolved` が同じツリーにある) |
 | mokume | `v0.7.0` / `86b6fa147e6bd38b24768fbc5890c0ee5031298c` (`Package.resolved` が固定している) |
 <!-- verify:end -->
 
