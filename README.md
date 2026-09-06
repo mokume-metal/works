@@ -86,8 +86,9 @@ brew upgrade mokume                    # 古いと感じたら
 | [Ring](Ring/) | p5.js の Triangle Strip を 1 行ずつ移した虹の輪。原形の外へ出る唯一の道である**頂点列**の物差し |
 | [Atlas](Atlas/) | Processing の Examples を全数で当てた台帳と、[公式ページ](https://processing.org/examples/)の 162 本のうち移せる 157 本の実測。**作品ではなく物差し**で、1 本ずつでは出ない「どの欠けが何本の例を止めるか」を数える。**mokume `v0.6.0` で 26 本が `clean` へ移り、台帳が重いと数えた欠けから順に埋まった** |
 | [Helmet](Helmet/) | three.js の webgl_loader_gltf 相当を目標に、Khronos の DamagedHelmet を読んで PBR で見せようとした記録。語彙ではなく**資産と質感のパイプライン**を測る 1 本目。**絵を 1 枚貼るところで折れ**、その原因は mokume `v0.6.0` で直った |
+| [Nebula](Nebula/) | 4K の面に 100 万粒を撒き、3 次元の渦に巻いて瞬かせる星雲。**粒 (`makeParticles`) を使う 1 本目**で、mokume 自身が描いたことのない規模 (上流の参照スケッチは最大 24,000 粒) を測る物差しでもある。**確保も 60fps も通り、足りなかったのは「動く粒をキラキラさせる語彙」のほう** |
 
-**全 6 作品が mokume `v0.7.0` を引いている** ([#21](https://github.com/mokume-metal/works/issues/21))。
+**全 7 作品が mokume `v0.7.0` を引いている** ([#21](https://github.com/mokume-metal/works/issues/21))。
 
 **`v0.7.0` への追随で 2 つ踏んだ。** どちらも #983 が描画の受け口を `Float` から
 `some ScalarConvertible` へ広げた副作用で、**総称の引数では型推論の既定が変わる**ことによる:
