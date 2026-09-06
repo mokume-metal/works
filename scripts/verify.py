@@ -40,7 +40,9 @@ def warnings(stderr: str) -> list[str]:
 
     mokume は診断の出口を 1 つに絞り、**必ず `mokume: ` を前置きして標準エラーへ**
     書く。絵は出ているのに中身が違うとき、理由はここにしか出ない
-    ([works#19](https://github.com/mokume-metal/works/issues/19))。
+    ([works#19](https://github.com/mokume-metal/works/issues/19))。**Atlas は同じ一言を
+    台帳にも残す** (`scripts/compare/diagnostics.py`) — あちらは例ごとにプロセスを分けて
+    全数で集めるもので、こちらは検証を走らせたついでに拾う。
 
     **絵を待ち切れなかったときも黙って進む口がある。** 面の画素を読む・画像を面へ
     送る・字形を焼く経路は 5 秒で諦めて古い写しのまま返す (書き出しそのものは
