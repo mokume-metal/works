@@ -5,6 +5,7 @@ shots/
 out/
 out-*/
 upstream/
+__pycache__/
 
 # **スケッチが自分で書き出したもの。** `Topics/File IO/SaveOneImage` は押されたら
 # `save("line.png")` を呼ぶ作りで、`Atlas --motion` が道すじの途中でマウスを押すため

@@ -37,11 +37,14 @@ swift run Ring --frames <置き場> <数>     # 連番で書き出す
 
 このスケッチは時刻も乱数も使わない。姿勢を決めるのは `mouseX` だけなので、**書き出した絵はフレーム番号によらず同じ**になる (下の 2 つのハッシュが一致しているのはそのため)。
 
+<!-- verify:pins -->
 | | |
 | --- | --- |
 | works | [#22](https://github.com/mokume-metal/works/pull/22) の merge コミット (`Package.resolved` が同じツリーにある) |
 | mokume | `v0.6.0` / `d153f982435b775101772d904153c8d2b6711fd6` (`Package.resolved` が固定している) |
+<!-- verify:end -->
 
+<!-- verify:renders -->
 ```bash
 swift run Ring --render out 1 && shasum -a 256 out/ring-1.png
 # 78af752be63c53976014bfdb28eb8e1d86f4d7635247d9eec676c914677785d5
@@ -49,6 +52,7 @@ swift run Ring --render out 1 && shasum -a 256 out/ring-1.png
 swift run Ring --render out 200 && shasum -a 256 out/ring-200.png
 # 78af752be63c53976014bfdb28eb8e1d86f4d7635247d9eec676c914677785d5
 ```
+<!-- verify:end -->
 
 **`v0.5.0` → `v0.6.0` で、この絵は 1 ビットも動かなかった。** 同じ版上げで Garden の円の縁と Grain の重ね塗りは動いている ([Garden](../Garden/README.md#v060-で動いたもの) / [Grain](../Grain/README.md)) — 動いたのは**塗りの縁が半端な画素に載るとき**の被覆の置き方で、この作品が置く帯は頂点をそのまま並べたものなので当たらない。
 

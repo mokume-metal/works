@@ -26,11 +26,14 @@ swift run Grain --frames <置き場> <数> slab  # 連番で書き出す
 
 **同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。上の絵と下の記録が食い違ったら、変えたつもりのないところが変わっている。
 
+<!-- verify:pins -->
 | | |
 | --- | --- |
 | works | [#22](https://github.com/mokume-metal/works/pull/22) の merge コミット (`Package.resolved` が同じツリーにある) |
 | mokume | `v0.6.0` / `d153f982435b775101772d904153c8d2b6711fd6` (`Package.resolved` が固定している) |
+<!-- verify:end -->
 
+<!-- verify:renders -->
 ```bash
 swift run Grain --render out 312 && shasum -a 256 out/grain-312.png
 # 27b5541bfae17bd861a910ad86e70ce9870862e1ed5a98f28fb91053ca12f68f
@@ -38,6 +41,7 @@ swift run Grain --render out 312 && shasum -a 256 out/grain-312.png
 swift run Grain --frames out-slab 60 slab && shasum -a 256 out-slab/frame-0055.png
 # 8e77f65eac5854b38f7318c34ab8e72a9c1299d0ece809179030d2ef45caa52d
 ```
+<!-- verify:end -->
 
 **`Package.resolved` はコミットしてある**ので、上の works のコミットを checkout すれば mokume も当時の版に戻る。別の作品が新しい mokume を要求してピンが動いても、この作品の再現は壊れない。
 

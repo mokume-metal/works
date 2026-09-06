@@ -1,0 +1,17 @@
+{
+  "mokume": "0.6.0",
+  "revision": "d153f982435b775101772d904153c8d2b6711fd6",
+  "works": 22,
+  "renders": [
+    {
+      "args": "--render out 1",
+      "out": "out/ring-1.png",
+      "sha256": "78af752be63c53976014bfdb28eb8e1d86f4d7635247d9eec676c914677785d5"
+    },
+    {
+      "args": "--render out 200",
+      "out": "out/ring-200.png",
+      "sha256": "78af752be63c53976014bfdb28eb8e1d86f4d7635247d9eec676c914677785d5"
+    }
+  ]
+}

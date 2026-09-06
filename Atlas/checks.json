@@ -1,0 +1,14 @@
+{
+  "mokume": "0.6.0",
+  "revision": "d153f982435b775101772d904153c8d2b6711fd6",
+  "release": true,
+  "ledger": {
+    "args": "--render-all out 1",
+    "path": "ledger/renders.txt",
+    "skip": [
+      "clock-1.png",
+      "intlistlottery-1.png"
+    ]
+  },
+  "origin": "processing/processing-examples"
+}

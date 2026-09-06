@@ -37,11 +37,14 @@ swift run Solids --frames <置き場> <数>     # 連番で書き出す
 
 このスケッチは乱数も揺らぎも使わないので、姿勢はフレーム番号だけで決まる (原典と同じく `frameCount` から角度を作る)。
 
+<!-- verify:pins -->
 | | |
 | --- | --- |
 | works | [#22](https://github.com/mokume-metal/works/pull/22) の merge コミット (`Package.resolved` が同じツリーにある) |
 | mokume | `v0.6.0` / `d153f982435b775101772d904153c8d2b6711fd6` (`Package.resolved` が固定している) |
+<!-- verify:end -->
 
+<!-- verify:renders -->
 ```bash
 swift run Solids --render out 1 && shasum -a 256 out/solids-1.png
 # 3c3dcaa190679f9d8829653c473a5d211405ea21f0301ebc0fc9fec415f5a211
@@ -49,6 +52,7 @@ swift run Solids --render out 1 && shasum -a 256 out/solids-1.png
 swift run Solids --render out 200 && shasum -a 256 out/solids-200.png
 # 2f1ecdf61dc7af538640d5bf8500884113791e48a5af88adb5c965340578cef0
 ```
+<!-- verify:end -->
 
 **`v0.5.0` → `v0.6.0` で、この絵は 1 ビットも動かなかった。** 同じ版上げで Garden の円の縁と Grain の重ね塗りは動いている ([Garden](../Garden/README.md#v060-で動いたもの) / [Grain](../Grain/README.md)) — 動いたのは**塗りの縁が半端な画素に載るとき**の被覆の置き方で、この作品が置くのは原形の立体だけなので当たらない。
 

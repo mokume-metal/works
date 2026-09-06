@@ -1,0 +1,17 @@
+{
+  "mokume": "0.6.0",
+  "revision": "d153f982435b775101772d904153c8d2b6711fd6",
+  "works": 22,
+  "renders": [
+    {
+      "args": "--render out 312",
+      "out": "out/grain-312.png",
+      "sha256": "27b5541bfae17bd861a910ad86e70ce9870862e1ed5a98f28fb91053ca12f68f"
+    },
+    {
+      "args": "--frames out-slab 60 slab",
+      "out": "out-slab/frame-0055.png",
+      "sha256": "8e77f65eac5854b38f7318c34ab8e72a9c1299d0ece809179030d2ef45caa52d"
+    }
+  ]
+}
