@@ -44,6 +44,9 @@ import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+
+sys.path.insert(0, str(ROOT.parent / "scripts"))
+import mokume_api  # noqa: E402
 UPSTREAM = ROOT / "upstream"
 LEDGER = ROOT / "ledger"
 
@@ -111,15 +114,13 @@ def load_reference() -> set[str]:
 
 
 def load_mokume_api() -> set[str]:
-    """mokume の公開 API 一覧 (Release 資産の Markdown) から名前を起こす。"""
-    text = (UPSTREAM / "mokume-api.md").read_text()
-    names: set[str] = set(re.findall(r"^## (\w+)", text, re.M))          # 型
-    names |= set(re.findall(r"\bfunc\s+([a-zA-Z_]\w*)", text))            # 関数
-    names |= set(re.findall(r"\bvar\s+([a-zA-Z_]\w*)", text))             # 値
-    names |= set(re.findall(r"\bcase\s+([a-zA-Z_]\w*)", text))            # 列挙の枝
-    # アンブレラが名指しで通す三角関数 (Umbrella.swift)。一覧には出ないが呼べる
-    names |= {"sin", "cos", "tan", "asin", "acos", "atan", "atan2"}
-    return names
+    """mokume の公開 API 一覧 (Release 資産の Markdown) から名前を起こす。
+
+    起こし方はリポジトリ直下の `scripts/mokume_api.py` が持つ。**版上げのときに
+    「何が増えたか」を数える口と同じもの**を使う — 別々に書くと、台帳が穴と数えて
+    いるものと差分が増えたと言うものが静かにずれる。
+    """
+    return mokume_api.names((UPSTREAM / "mokume-api.md").read_text())
 
 
 def load_vocabulary() -> dict[str, dict]:

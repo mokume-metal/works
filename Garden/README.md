@@ -35,11 +35,14 @@ swift run Garden --frames <置き場> <数>     # 連番で書き出す
 
 `random()` の種も既定の 0 で固定されているので、**「でたらめな 20 本」も毎回同じ**である (p5 は起動ごとに違う庭が出る)。
 
+<!-- verify:pins -->
 | | |
 | --- | --- |
 | works | [#22](https://github.com/mokume-metal/works/pull/22) の merge コミット (`Package.resolved` が同じツリーにある) |
 | mokume | `v0.6.0` / `d153f982435b775101772d904153c8d2b6711fd6` (`Package.resolved` が固定している) |
+<!-- verify:end -->
 
+<!-- verify:renders -->
 ```bash
 swift run Garden --render out 1 && shasum -a 256 out/garden-1.png
 # 214a852fd10b92ca3673358d8b55118102ec49e44621388c1afaf8bbae5ce5b0
@@ -47,6 +50,7 @@ swift run Garden --render out 1 && shasum -a 256 out/garden-1.png
 swift run Garden --render out 200 && shasum -a 256 out/garden-200.png
 # 1e95966084e8bb86a33e1cd059f515da1213f45bcab1aeaab025d0ad7f507e0e
 ```
+<!-- verify:end -->
 
 ### v0.6.0 で動いたもの
 

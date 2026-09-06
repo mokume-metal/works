@@ -86,6 +86,30 @@ MOKUME_WORK_DIR="$PWD" mokume watch <作品>
 揃っていないと `observe` が空振りする。いまどちらの基準で走っているかは `mokume doctor` が
 「区画の基準」として出す。
 
+## 版を上げる
+
+mokume は週に 1 度 (月曜 00:00 UTC) 版を出す。**追随は works の裁量**で、あちらから
+通知は来ない — mokume の [ADR-0022](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0022-production-track.md)
+が「依存は一方向」と決めているので、こちらから見に行く形しかない。
+
+```bash
+python3 scripts/status.py      # いま何を引いていて、mokume はどこまで行っているか
+python3 scripts/api-diff.py    # 版の間で増えた口・消えた口
+python3 scripts/bump.py 0.7.0  # 引く版を上げる (中身は変えない)
+python3 scripts/verify.py      # 記録どおりの絵が出るか測る
+python3 scripts/upstream.py    # 戻した Issue がいまどうなっているか
+```
+
+**何が増えたかは、リリースノートではなく公開 API 一覧の差分で見る。** ノートの
+「新機能」は散文なのでシンボル名を取りこぼすし、閉じた Issue はそもそも載らない。
+一覧は Release 資産として版ごとに配られるので、2 版ぶん取って集合の差を見れば
+**書けるようになったものが全部出る**。
+
+**再現の正本は作品ごとの `checks.json`。** 書き出しのコマンドと期待ハッシュを持ち、
+各 README の「検証する」節は印 (`<!-- verify:pins -->` / `<!-- verify:renders -->`)
+で囲った区間だけが生成物である。**手で書いた数字は腐る** — 囲いの外の散文は手書きの
+ままなので、何が動いたのかはそこへ書く。
+
 ## 規約
 
 **このリポジトリの規約は、このリポジトリが持つ。** mokume の規約は写さない — 写すと必ず片方が古くなる。

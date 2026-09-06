@@ -32,6 +32,10 @@ PIN = {
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 UPSTREAM = ROOT / "upstream"
 
+sys.path.insert(0, str(ROOT.parent / "scripts"))
+import mokume_api  # noqa: E402
+import pieces  # noqa: E402
+
 
 def gh(*args: str) -> str:
     return subprocess.run(["gh", *args], capture_output=True, text=True, check=True).stdout
@@ -180,20 +184,13 @@ def fetch_mokume_api(into: pathlib.Path) -> tuple[str, int]:
     """mokume の公開 API 一覧。**版は Package.resolved が決める** (作品の作法)。
 
     一覧はリポジトリに置かれず Release 資産として配られる (mokume ADR-0001 原則 8)。
+    取り口はリポジトリ直下の `scripts/mokume_api.py` に置いてある — **台帳の判定と
+    版上げの `api-diff.py` が同じ一覧を見ている**ことが、こうしていないと保てない。
     """
-    resolved = json.loads((ROOT / "Package.resolved").read_text())
-    pin = next(p for p in resolved["pins"] if p["identity"] == "mokume")
-    version = pin["state"]["version"]
-    asset_name = f"mokume-api-v{version}.md"
-    assets = json.loads(gh("api", f"repos/mokume-metal/mokume/releases/tags/v{version}"))["assets"]
-    asset = next(a for a in assets if a["name"] == asset_name)
-    body = subprocess.run(
-        ["gh", "api", f"repos/mokume-metal/mokume/releases/assets/{asset['id']}",
-         "-H", "Accept: application/octet-stream"],
-        capture_output=True, check=True,
-    ).stdout
+    version = pieces.pinned(ROOT)["version"]
+    body = mokume_api.text(version)
     into.parent.mkdir(parents=True, exist_ok=True)
-    into.write_bytes(body)
+    into.write_text(body)
     return version, len(body.splitlines())
 
 

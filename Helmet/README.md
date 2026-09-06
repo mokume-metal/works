@@ -48,13 +48,16 @@ NormalTangentTest と HDRI は段 3 以降で使うもので、**まだ 1 度も
 
 このスケッチは乱数も揺らぎも使わないので、姿勢はフレーム番号だけで決まる。
 
+<!-- verify:pins -->
 | | |
 | --- | --- |
-| works | このフォルダのコミット (`Package.resolved` が同じツリーにある) |
-| mokume | `v0.6.0` / `d153f982435b` |
+| works | この作品のコミット (`Package.resolved` が同じツリーにある) |
+| mokume | `v0.6.0` / `d153f982435b775101772d904153c8d2b6711fd6` (`Package.resolved` が固定している) |
+<!-- verify:end -->
 
 **先に資産を取る** (`python3 scripts/fetch.py`)。取っていないと形が出ず、ハッシュも合わない。
 
+<!-- verify:renders -->
 ```bash
 swift run -c release Helmet --render out 1 && shasum -a 256 out/helmet-1.png
 # 37a2a10c61ea42af185704d756b3334de67a31e1016ac13260a24be71436a7ba
@@ -62,6 +65,7 @@ swift run -c release Helmet --render out 1 && shasum -a 256 out/helmet-1.png
 swift run -c release Helmet --render out 200 && shasum -a 256 out/helmet-200.png
 # 0308b3ca9e167dce37521f7723558a33bd1b032867a57160c24885d3875f91a2
 ```
+<!-- verify:end -->
 
 ## 走らせる
 

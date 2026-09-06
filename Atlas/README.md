@@ -254,18 +254,24 @@ python3 scripts/ledger.py    # ledger/ を組み直す
 
 **同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。下のハッシュが食い違ったら、変えたつもりのないところが変わっている。
 
+<!-- verify:pins -->
 | | |
 | --- | --- |
 | works | この作品のコミット (`Package.resolved` が同じツリーにある) |
-| mokume | `v0.6.0` / `d153f982435b775101772d904153c8d2b6711fd6` |
+| mokume | `v0.6.0` / `d153f982435b775101772d904153c8d2b6711fd6` (`Package.resolved` が固定している) |
 | 原典 | `processing/processing-examples` @ `b10c9e9a05a0d6c20d233ca7f30d315b5047720e` ([`ledger/sources.json`](ledger/sources.json) が刻む) |
+<!-- verify:end -->
 
+**先に上流を取る** (`python3 scripts/fetch.py`)。取っていないと**資材を読む 18 本の絵が変わる** — 画像・データ・OBJ を読む例は、資材が無いと原典と違うものを描く。
+
+<!-- verify:renders -->
 ```bash
 swift run -c release Atlas --render-all out 1
 diff <(shasum -a 256 out/*.png | sed 's|out/||' \
-        | grep -vE ' (clock|intlistlottery)-1\.png$') \
+        | grep -vE ' (clock-1\.png|intlistlottery-1\.png)$') \
      <(grep -v '^#' ledger/renders.txt)
 ```
+<!-- verify:end -->
 
 155 行の一覧は [`ledger/renders.txt`](ledger/renders.txt)。**乱数を使う例も入っている** — mokume の乱数は同じフレーム番号から同じ値を出すので (ADR-0001 原則 2)、書き出しは再現する。
 

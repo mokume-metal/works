@@ -1,0 +1,17 @@
+{
+  "mokume": "0.6.0",
+  "revision": "d153f982435b775101772d904153c8d2b6711fd6",
+  "works": 22,
+  "renders": [
+    {
+      "args": "--render out 1",
+      "out": "out/solids-1.png",
+      "sha256": "3c3dcaa190679f9d8829653c473a5d211405ea21f0301ebc0fc9fec415f5a211"
+    },
+    {
+      "args": "--render out 200",
+      "out": "out/solids-200.png",
+      "sha256": "2f1ecdf61dc7af538640d5bf8500884113791e48a5af88adb5c965340578cef0"
+    }
+  ]
+}

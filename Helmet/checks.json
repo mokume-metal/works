@@ -1,0 +1,20 @@
+{
+  "mokume": "0.6.0",
+  "revision": "d153f982435b775101772d904153c8d2b6711fd6",
+  "release": true,
+  "prepare": [
+    "python3 scripts/fetch.py"
+  ],
+  "renders": [
+    {
+      "args": "--render out 1",
+      "out": "out/helmet-1.png",
+      "sha256": "37a2a10c61ea42af185704d756b3334de67a31e1016ac13260a24be71436a7ba"
+    },
+    {
+      "args": "--render out 200",
+      "out": "out/helmet-200.png",
+      "sha256": "0308b3ca9e167dce37521f7723558a33bd1b032867a57160c24885d3875f91a2"
+    }
+  ]
+}
