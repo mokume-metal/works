@@ -15,62 +15,25 @@ import simd
 final class Helmet: Sketch {
     var settings = SketchSettings(width: 960, height: 540, title: "helmet")
 
-    /// 頂点の渡し方。**段 0 の測定で切り替える。**
-    ///
-    /// `indexed` が既定で、glTF が持つ番号をそのまま `index(_:)` へ流す — **点は 1 度ずつ
-    /// しか置かない**ので、mokume へ渡る頂点も glTF の頂点数のままである (`v0.7.0`)。
-    ///
-    /// `whole` と `chunked` は**回避が要った頃の書き方**で、比較のために残してある。
-    /// `whole` が素直な展開 (三角形を全部 1 回の `beginShape` / `endShape` に渡す)、
-    /// `chunked` がその回避策で、どちらも角ごとに点を書き出す。何が起きていたかは
-    /// README の「段 0」が持つ。
-    enum Build: String {
-        case indexed
-        case whole
-        case chunked
-    }
-
-    static var build = Build.indexed
-    /// 塊 1 つに入れる三角形の数。
-    static var chunk = 32
     static var modelPath = "upstream/models/DamagedHelmet/DamagedHelmet.gltf"
 
     private var model: GLTF?
     private var body: Shape?
     private var albedo: Image?
-    /// 組み立ての記録。`--measure` が読み、README の数字の出どころになる。
-    private(set) var notes: [String] = []
 
     func setup() {
-        let clock = ContinuousClock()
-        var mark = clock.now
-
         let model: GLTF
         do {
             model = try GLTF.load(Self.modelPath)
         } catch {
-            notes.append("glTF が読めなかった: \(error)")
-            report()
+            // **読めなかったことは画面へ出す** — `draw()` が代わりの字を描く
             return
-        }
-        notes.append("glTF を読む: \(elapsed(since: mark, clock))")
-        notes.append(
-            "  頂点 \(model.vertexCount) / 三角形 \(model.triangleCount) / 並び \(model.pieces.count)"
-        )
-        if let material = model.pieces.first?.material {
-            notes.append("  材質が指すマップ \(material.mapCount) 枚")
-        }
-        for (what, count) in model.skipped.sorted(by: { $0.key < $1.key }) {
-            notes.append("  読み飛ばした: \(what) × \(count)")
         }
         self.model = model
 
-        // baseColor だけ先に読む。**残りのマップは貼る口が無い** (段 3 で測る)
+        // baseColor だけ先に読む。**残りのマップは貼る口が無い**
         if let name = model.pieces.first?.material?.baseColor {
-            mark = clock.now
             albedo = try? loadImage(model.directory.appendingPathComponent(name).path)
-            let how = albedo == nil ? "読めなかった" : elapsed(since: mark, clock)
-            notes.append("baseColor (\(name)): \(how)")
         }
 
         // 貼る絵を焼いた小さいものへ差し替える口。**読み込んだ JPEG のせいでは
@@ -87,36 +50,9 @@ final class Helmet: Sketch {
                 }
             }
             albedo = small
-            notes.append("  貼る絵を 64x64 の焼いたものへ差し替えた (切り分け)")
         }
 
-        // 置く前の数字。**見えないときの切り分けはここから始まる**
-        let span = model.bounds.max - model.bounds.min
-        notes.append(
-            String(
-                format: "  囲みの箱 (%.2f, %.2f, %.2f)〜(%.2f, %.2f, %.2f)",
-                model.bounds.min.x, model.bounds.min.y, model.bounds.min.z,
-                model.bounds.max.x, model.bounds.max.y, model.bounds.max.z))
-        let placing = placement(for: model)
-        notes.append(
-            String(
-                format: "  差し渡し (%.2f, %.2f, %.2f) → 倍率 %.1f", span.x, span.y, span.z,
-                placing.columns.0.x))
-        let corner = placing * SIMD4(model.bounds.min, 1)
-        let opposite = placing * SIMD4(model.bounds.max, 1)
-        notes.append(
-            String(
-                format: "  置いた後の角 (%.1f, %.1f, %.1f)〜(%.1f, %.1f, %.1f)", corner.x,
-                corner.y, corner.z, opposite.x, opposite.y, opposite.z))
-
-        // **ここが段 0 の測定。** whole だと何秒かかるかを数字で残す
-        mark = clock.now
-        let built = assemble(model)
-        notes.append("Shape を組む (\(Self.build.rawValue)): \(elapsed(since: mark, clock))")
-        notes.append("  頂点 \(built.vertexCount) / 描画 \(built.drawCallCount) 回")
-        body = built
-
-        report()
+        body = assemble(model)
     }
 
     func draw() {
@@ -263,22 +199,20 @@ final class Helmet: Sketch {
     /// `guard let currentPicture`)。
     private func assemble(_ model: GLTF) -> Shape {
         let placing = placement(for: model)
-        // 切り分け用: 絵を貼らずに単色で組む (消す)
-        let bare = ProcessInfo.processInfo.environment["HELMET_NOTEXTURE"] != nil
         return createShape {
-            if let albedo, !bare { texture(albedo) }
+            if let albedo { texture(albedo) }
             // **呼び忘れると三角形 1 枚ごとに輪郭の帯が出る** (1 枚あたり約 36 頂点)
             noStroke()
             // **塗りを明示する。** `hasFill` は原始形ごとに 1 度見られるので、
             // 塗りが無い状態で並べると 1 枚も置かれない。貼る絵は塗りに掛かるので白
             fill(.linear(red: 1, green: 1, blue: 1))
             for piece in model.pieces {
-                emit(piece, placing: placing, bare: bare)
+                emit(piece, placing: placing)
             }
         }
     }
 
-    private func emit(_ piece: GLTF.Piece, placing: simd_float4x4, bare: Bool = false) {
+    private func emit(_ piece: GLTF.Piece, placing: simd_float4x4) {
         let matrix = placing * piece.transform
         // 法線は逆転置で運ぶ (倍率が一様でも、Y の裏返しが入るため素の行列では狂う)
         let rotation = simd_float3x3(
@@ -295,7 +229,7 @@ final class Helmet: Sketch {
             }
 
             let placed = (matrix * SIMD4(piece.positions[number], 1)).xyz
-            if number < piece.uvs.count, let albedo, !bare {
+            if number < piece.uvs.count, let albedo {
                 // **UV は画像の画素で書く** (mokume は 0…1 を取らない)
                 // **読み取り位置は 0…1 の外へ出る。** glTF は繰り返しを
                 // 前提にするので (DamagedHelmet の v は 1.26 まで行く)、
@@ -309,36 +243,13 @@ final class Helmet: Sketch {
             }
         }
 
-        if Self.build == .indexed {
-            // **glTF の形をそのまま渡す。** 点を 1 度ずつ置いて、面は番号で張る。
-            // 番号は glTF が持っているものをそのまま流せばよく、置いていない番号を
-            // 含む面は mokume が面ごと落とす (mokume#938)
-            beginShape(.triangles)
-            for number in piece.positions.indices { place(number) }
-            for number in piece.indices { index(number) }
-            endShape()
-            return
-        }
-
-        // 以下は**回避が要った頃の書き方**で、比較のために残してある。角ごとに点を
-        // 書き出すので、置く点は面の数 × 3 に膨らむ
-        let triangles = piece.triangleCount
-        let step = Self.build == .whole ? max(triangles, 1) : Self.chunk
-
-        var first = 0
-        while first < triangles {
-            let last = min(first + step, triangles)
-            beginShape(.triangles)
-            for triangle in first..<last {
-                for corner in 0..<3 {
-                    let number = piece.indices[triangle * 3 + corner]
-                    guard number < piece.positions.count else { continue }
-                    place(number)
-                }
-            }
-            endShape()
-            first = last
-        }
+        // **glTF の形をそのまま渡す。** 点を 1 度ずつ置いて、面は番号で張る。
+        // 番号は glTF が持っているものをそのまま流せばよく、置いていない番号を
+        // 含む面は mokume が面ごと落とす (mokume#938)
+        beginShape(.triangles)
+        for number in piece.positions.indices { place(number) }
+        for number in piece.indices { index(number) }
+        endShape()
     }
 
     /// 中心を原点へ寄せ、Y を面の向き (下向き) へ裏返し、画面に収まる倍率へ。
@@ -356,22 +267,5 @@ final class Helmet: Sketch {
                 SIMD4(-center.x, -center.y, -center.z, 1)
             ))
         return simd_float4x4(diagonal: SIMD4(scale, -scale, scale, 1)) * toOrigin
-    }
-
-    // MARK: - 記録
-
-    private func report() {
-        for note in notes { print(note) }
-        // **そのつど流す。** パイプへ溜めると、測っている途中で殺されたときに
-        // そこまでの数字ごと消える
-        fflush(stdout)
-    }
-
-    private func elapsed(since mark: ContinuousClock.Instant, _ clock: ContinuousClock) -> String {
-        let duration = clock.now - mark
-        let ms =
-            Double(duration.components.seconds) * 1000
-            + Double(duration.components.attoseconds) / 1e15
-        return ms < 1000 ? String(format: "%.1f ms", ms) : String(format: "%.2f s", ms / 1000)
     }
 }

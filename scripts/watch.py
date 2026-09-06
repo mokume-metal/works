@@ -127,7 +127,8 @@ def body(now: dict) -> str:
             "python3 scripts/status.py                 # いまの食い違い",
             f"python3 scripts/api-diff.py {oldest} {now['latest']}   # 何が変わったか",
             f"python3 scripts/bump.py {now['latest']}              # 版を上げる (中身は変えない)",
-            "python3 scripts/verify.py --jobs=4        # 記録どおりの絵が出るか",
+            "python3 scripts/verify.py --jobs=4        # 台帳を持つ物差しを測り直す",
+            "                                          # 作品は窓を開けて目で見る",
             "```", ""]
     for name in sorted(now["works"]):
         mark = "x" if name not in now["behind"] else " "

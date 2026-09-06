@@ -7,13 +7,17 @@
 
     from pieces import pieces, pinned, load_checks
 
-**版は 2 か所にある。** `Package.resolved` が「いま解決している版」、`checks.json` が
-「その期待ハッシュを測ったときの版」。食い違っていたら**道具を上げたのに測り直して
+**台帳 (`checks.json`) を持つのは Atlas だけである。** 作品は普通に作った例として
+置いてあるので、再現を機械で測る仕掛けは持たない (ルート README の「並べ方」)。
+台帳を歩く道具は `has_checks()` で先に絞る。
+
+**持っているものでは、版は 2 か所にある。** `Package.resolved` が「いま解決している版」、
+`checks.json` が「その記録を取ったときの版」。食い違っていたら**道具を上げたのに測り直して
 いない**。
 
 README の「検証する」節は 2 つの印で囲った区間だけが生成物で、**散文は手書きのまま
-残す**。囲いを 2 つに割ってあるのは、Helmet だけ版の表と書き出しの間に注意書きが
-挟まるためで、1 つで囲うとそれを飲み込む。
+残す**。囲いを 2 つに割ってあるのは、版の表と書き出しの間に手書きの注意書きが挟まる
+ためで、1 つで囲うとそれを飲み込む。
 """
 
 import json
@@ -62,6 +66,11 @@ def declared(path: pathlib.Path) -> str:
 
 def checks_path(path: pathlib.Path) -> pathlib.Path:
     return path / "checks.json"
+
+
+def has_checks(path: pathlib.Path) -> bool:
+    """再現の台帳を持っているか。**持たない作品を歩く前に、ここで絞る。**"""
+    return checks_path(path).exists()
 
 
 def load_checks(path: pathlib.Path) -> dict:

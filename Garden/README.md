@@ -22,35 +22,11 @@ mokume watch .    # 保存したら作り直して差し替える
 mokume mcp .      # 走っているスケッチを外から観測する
 ```
 
-書き出しは実行ファイルへ直に渡す (CLI は引数を通さないため)。
+## どの mokume で描いたか
 
-```bash
-swift run Garden --render <置き場> <番号>   # 1 枚だけ書き出す
-swift run Garden --frames <置き場> <数>     # 連番で書き出す
-```
+**`Package.resolved` が固定している版がそのまま答えで、コミットしてある。** この作品のコミットを checkout すれば mokume も当時の版に戻る。
 
-## 検証する
-
-**同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。下のハッシュが食い違ったら、変えたつもりのないところが変わっている。
-
-`random()` の種も既定の 0 で固定されているので、**「でたらめな 20 本」も毎回同じ**である (p5 は起動ごとに違う庭が出る)。
-
-<!-- verify:pins -->
-| | |
-| --- | --- |
-| works | [#22](https://github.com/mokume-metal/works/pull/22) の merge コミット (`Package.resolved` が同じツリーにある) |
-| mokume | `v0.7.0` / `86b6fa147e6bd38b24768fbc5890c0ee5031298c` (`Package.resolved` が固定している) |
-<!-- verify:end -->
-
-<!-- verify:renders -->
-```bash
-swift run Garden --render out 1 && shasum -a 256 out/garden-1.png
-# 214a852fd10b92ca3673358d8b55118102ec49e44621388c1afaf8bbae5ce5b0
-
-swift run Garden --render out 200 && shasum -a 256 out/garden-200.png
-# 1e95966084e8bb86a33e1cd059f515da1213f45bcab1aeaab025d0ad7f507e0e
-```
-<!-- verify:end -->
+**同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。`random()` の種も既定の 0 で固定されているので、**「でたらめな 20 本」も毎回同じ**である (p5 は起動ごとに違う庭が出る)。だから版を上げて絵が動いたなら、変えたつもりのないところが変わっている — 下はそれを見つけたときの記録である。
 
 ### v0.6.0 で動いたもの
 

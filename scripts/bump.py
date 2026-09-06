@@ -62,13 +62,18 @@ def main(argv: list[str]) -> int:
         if pin["version"] != version:
             print(f"  **解決したのは v{pin['version']}** — `from:` は上限を締めないので、"
                   "名指しの版より新しいものが降りてくることがある")
-        checks = pieces.load_checks(path)
-        checks["mokume"], checks["revision"] = pin["version"], pin["revision"]
-        pieces.save_checks(path, checks)
+        # **台帳を持つ作品だけ版を書き戻す。** 作品は絵のハッシュを持たないので、
+        # 版上げで動くのは `Package.swift` と `Package.resolved` だけである
+        if pieces.has_checks(path):
+            checks = pieces.load_checks(path)
+            checks["mokume"], checks["revision"] = pin["version"], pin["revision"]
+            pieces.save_checks(path, checks)
         print(f"  解決: `v{pin['version']}` / `{pin['revision'][:12]}`")
 
-    print("\n**期待ハッシュはまだ古いままである。** 次に `python3 scripts/verify.py` で測り、"
-          "動いた絵の理由を README へ書いてから `--update` で記録を進める。")
+    if any(pieces.has_checks(p) for p in targets):
+        print("\n**期待ハッシュはまだ古いままである。** 次に `python3 scripts/verify.py` で測り、"
+              "動いた絵の理由を README へ書いてから `--update` で記録を進める。")
+    print("\n**台帳を持たない作品は、窓を開けて目で見る。** 絵が動いたなら README の散文へ書く。")
     return 0
 
 
