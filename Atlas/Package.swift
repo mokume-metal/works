@@ -2,24 +2,36 @@
 
 import PackageDescription
 
-// 1 作品 1 パッケージ。**mokume-cli の単位がこれ** — `run` / `watch` は
-// ディレクトリの直下に Package.swift を求め、実行ファイルの名前を products から取る。
+// **Atlas は走らせるものではなくなった。** 例 1 本ずつが独立した SwiftPM パッケージ
+// を持ち (`Examples/<カテゴリ>/<群>/<例>/`)、`mokume run` / `watch` / `mcp` はその
+// 1 本を直に指す。ここに executable は無い。
 //
-// Atlas は 1 product の中に**移した例を何本も持つ**。既存 4 つと違うのはそこだけで、
-// 単位は変えていない (Grain が `Grain slab` で 2 本持っていたのを N 本へ広げたもの)。
+//     mokume watch Examples/Basics/Input/Mouse2D
+//
+// **それでもこの `Package.swift` が要る理由は 2 つある。**
+//
+// 1. **例が引く共有の面を持つ** — Processing にあって mokume に無い語彙のうち、
+//    面の外に書けば済むものを `Sources/Support/Processing.swift` へ集めてある。
+//    45 本がこれを引く。実体を 1 か所に保つと、**何本の例がそれを要求したか**が
+//    数えられる (作品ごとに書き下すと、同じ 1 行が 45 回書かれるだけで消える)
+// 2. **版の正本を持つ** — `Package.resolved` がどの mokume で描いたかを固定する。
+//    works の道具 (`scripts/pieces.py` ほか) は「直下に `Package.swift` を持つ
+//    ディレクトリ」を 1 作品として数えるので、これが無いと Atlas は版上げの監視
+//    からも検証からも外れる。例 157 枚の `exact` はここから流し込まれる
+//    (`scripts/examples.py`)
 let package = Package(
     name: "Atlas",
     platforms: [.macOS("26.0")],
-    products: [.executable(name: "Atlas", targets: ["Atlas"])],
+    products: [.library(name: "Support", targets: ["Support"])],
     dependencies: [
-        // Grain / Garden / Solids / Ring と同じ版で固定する。**どの版で描いたかは
-        // Package.resolved が持つ**ので、この作品のコミットへ戻れば当時の mokume に戻る。
-        // 台帳もこの版に対して組んである (ledger/sources.json が刻んでいる)
+        // **`from` で宣言する。** 例の側は `exact` で釘を打つが、そちらの値は
+        // `Package.resolved` から流し込まれる。こちらまで `exact` にすると、
+        // 食い違った日に解決できなくなる
         .package(url: "https://github.com/mokume-metal/mokume.git", from: "0.7.0")
     ],
     targets: [
-        .executableTarget(
-            name: "Atlas",
+        .target(
+            name: "Support",
             dependencies: [.product(name: "mokume", package: "mokume")],
             swiftSettings: [
                 // mokume と揃える。既定の隔離が main actor でないと、スケッチに

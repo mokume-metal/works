@@ -78,7 +78,7 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 
 ### 面の外に書き足したもの
 
-Processing にあって mokume に無い語彙のうち、**面の外に書けば済むもの**は [`Sources/Atlas/Support/Processing.swift`](Sources/Atlas/Support/Processing.swift) 1 つに集めてある。**このファイルの長さがそのまま「Processing の例を書くのに mokume の外へどれだけ書き足す必要があるか」の答え**になる。
+Processing にあって mokume に無い語彙のうち、**面の外に書けば済むもの**は [`Sources/Support/Processing.swift`](Sources/Support/Processing.swift) 1 つに集めてある。**このファイルの長さがそのまま「Processing の例を書くのに mokume の外へどれだけ書き足す必要があるか」の答え**になる。
 
 **`v0.6.0` で 177 行から 98 行になった。** 12 個が面へ移り、呼ぶ側の 150 ファイル・390 箇所が
 原典の字面へ近づいた。
@@ -220,18 +220,38 @@ Processing にあって mokume に無い語彙のうち、**面の外に書け�
 
 ## 走らせる
 
-```bash
-mokume run .      # 作って走らせる (台帳が並べた最初の例)
-mokume watch .    # 保存したら作り直して差し替える
-mokume mcp .      # 走っているスケッチを外から観測する
-```
-
-**`mokume run` / `watch` / `mcp` は引数を通さない**ので、窓の経路は既定の 1 本に固定される。例を選ぶときは実行ファイルへ直に渡す。
+**例 1 本ずつが、独立した mokume のスケッチである。** 見たい例を直に指す:
 
 ```bash
-swift run Atlas --list     # 移した例を並べる
-swift run Atlas Mouse2D    # その 1 本を窓で出す
+mokume run   Examples/Basics/Input/Mouse2D    # 作って走らせる
+mokume watch Examples/Basics/Input/Mouse2D    # 保存したら作り直して差し替える
+mokume mcp   Examples/Basics/Input/Mouse2D    # 走っているスケッチを外から観測する
 ```
+
+`swift` から直に叩いてもよい:
+
+```bash
+swift run --package-path Examples/Basics/Input/Mouse2D
+```
+
+**Atlas そのものは走らない。** `Package.swift` に executable が無く、持っているのは例が引く共有の面 (`Sources/Support`) と版の正本 (`Package.resolved`) だけである。
+
+移した例を並べるには:
+
+```bash
+ls -d Examples/*/*/*    # 157 本
+```
+
+**群の名前からは空白を詰めてある** (`Cellular Automata` → `CellularAutomata`)。打つパスにクォートが要らなくなるためで、**台帳の例名は原典どおり空白を保つ**。対応は [`scripts/examples.py`](scripts/examples.py) が持つ。
+
+各例の `Package.swift` と `main.swift` は**生成物**である。置き場から組み直す:
+
+```bash
+python3 scripts/examples.py          # 書き直す
+python3 scripts/examples.py --check  # 実体とずれていたら 1 で終わる (verify から呼ばれる)
+```
+
+**157 枚を手で並べない。** 足したのに書き忘れた 1 本は、`mokume watch` で開こうとするまで気付けない。
 
 台帳を組み直すときは:
 
@@ -297,11 +317,22 @@ git diff --stat ledger/    # 差分が出なければ、同じ版から同じ台
 
 `vocabulary.jsonl` に**行が無い語彙は未判定**である。番人の値 (`"unknown"`) を置いていないのは、集計側が数え忘れて静かに嘘の数字を出すのを防ぐため — 未判定を含む例は届く / 届かないのどちらにも数えない。いま未判定が 48 語あるが、どれも `out-of-scope` の例にしか出ないので区分には効いていない。
 
-### 例を 1 本選ぶ口
+### 引数で例を選ぶのをやめた
 
-**書き出しの口 (`--render` / `--frames`) は Ring から写したものだった** — Ring は Solids から、Solids は Garden から、Garden は Grain から写しており、**5 つを diff すると違うのはコメントと識別子だけ**という状態だった。いまは畳んである (「測るのをやめたもの」)。
+**もとは 1 product に例を N 本持ち、実行ファイルへ渡した引数で選んでいた** (`swift run Atlas Mouse2D`)。書き出しの口 (`--render` / `--frames`) は Ring から写したもので、Ring は Solids から、Solids は Garden から、Garden は Grain から写しており、**5 つを diff すると違うのはコメントと識別子だけ**という状態だった。
 
-残っているのは例を選ぶ口だけである。Atlas は 1 product に例を N 本持つので、Grain の `makeSketch(_:)` を広げた。Grain が `if arguments.first == "slab" { Slab.main() } else { Grain.main() }` と分岐していたのは、**`Sketch.main()` が `@MainActor static func main()` で `any Sketch` から呼べない**ためで、例が増えると分岐も増える。`SketchApplication(sketch:gpu:)` は `any Sketch` を取るので、こちらを使うと分岐が消える (`Sketch.main()` の中身と同じ経路)。
+**この形では `mokume watch` が通らない。** `run` / `watch` / `mcp` は引数を通さず、宣言順で最初の executable product を無条件に採る (mokume の `SwiftPM.swift`)。つまり**窓の経路は台帳の先頭 1 本に固定**され、手元で 1 本ずつ挙動を見ることができない。product を選ぶ口はオプションにも環境変数にも無い。
+
+**だから例 1 本ずつをパッケージにした。** 1 本が 1 つの実行単位である以上、SwiftPM 上は 157 モジュールになる。これは避けられない。
+
+組み替えで踏んだことが 2 つある:
+
+| 踏んだもの | どうしたか |
+| --- | --- |
+| **`mokume watch` は `Sources/` 配下しか見ない** — 世代印が `Package.swift` と `<パッケージ>/Sources` の `.swift` だけから作られるので (`SourceStamp.swift`)、パッケージ直下に置くと**保存しても差し替わらない** | `Sources/<型名>/` の慣例配置にした。`mokume new` が作る形と同じ |
+| **`@main` は移植の側に付けられない** — 同じモジュールにトップレベルコードがあると衝突する | エントリを生成物の `main.swift` 1 行に分けた。移植のファイルは 1 文字も触っていない |
+
+**モジュール名は例名ではなく型名にした。** `Basics/Arrays/Array` をモジュール名にすると `Swift.Array` を隠す。product 名だけ例名にすれば `mokume run` の側は変わらない。
 
 ## 版を上げたときに動いたもの — `v0.6.0` → `v0.7.0`
 
@@ -328,7 +359,7 @@ git diff --stat ledger/    # 差分が出なければ、同じ版から同じ台
 | 帯・扇・四角の並べ方が無い — `QUADS` 8 例・`QUAD_STRIP` 6 例 | [mokume#882](https://github.com/mokume-metal/mokume/issues/882) | **閉じた** (`v0.6.0`)。ただし入ったのは**帯と扇だけ**で、四角の 14 例は止まったまま |
 | 入力が出来事として届かない — `mousePressed` 18 例・`keyPressed` 11 例・`mouseDragged` 6 例 | [mokume#723](https://github.com/mokume-metal/mokume/issues/723) | **閉じた** (`v0.6.0`)。27 本が動くようになった |
 | 色空間を切り替える口が無い — `colorMode` 12 例 | [mokume#778](https://github.com/mokume-metal/mokume/issues/778) | **入った** (`v0.6.0`)。ただし**目盛りは張り替えられない**ので `colorMode` は `bend` のまま |
-| **`SketchApplication` が投げる失敗を、外から人に見せられない** — `RenderFailure.message` が internal なので、`Sketch.main()` と同じ文面が書けない ([`main.swift`](Sources/Atlas/main.swift)) | [mokume#899](https://github.com/mokume-metal/mokume/issues/899) | 開いたまま |
+| **`SketchApplication` が投げる失敗を、外から人に見せられない** — `RenderFailure.message` が internal なので、`Sketch.main()` と同じ文面が書けない | [mokume#899](https://github.com/mokume-metal/mokume/issues/899) | 開いたまま |
 | **進行を止める口が無い** — `noLoop` 18 例・`redraw`。`Basics/Structure/NoLoop` がここで止まった | [mokume#900](https://github.com/mokume-metal/mokume/issues/900) | 開いたまま。**いまいちばん重い欠け** |
 
 157 本を並べて撮って、**台帳では原理的に見えなかった差が 4 つ出た**。どれも語彙の名前は当たっていて、絵だけが違う。

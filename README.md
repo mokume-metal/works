@@ -28,9 +28,9 @@
 同じく持たない** ([#39](https://github.com/mokume-metal/works/pull/39) で畳んだ)。
 
 **縛っているのは product が 1 つであることで、スケッチの数ではない。** Grain は
-`Grain slab` で 2 本目を持ち、Atlas は移した例を何本も持つ。どちらも product は 1 つ
-なので `mokume run` の側からは同じに見え、選ぶのは**実行ファイルへ直に渡した引数**である
-(`mokume run` / `watch` / `mcp` は引数を通さないので、窓の経路は既定の 1 本に固定される)。
+`Grain slab` で 2 本目を持ち、product は 1 つなので `mokume run` の側からは同じに見える。
+選ぶのは**実行ファイルへ直に渡した引数**である (`mokume run` / `watch` / `mcp` は引数を
+通さないので、窓の経路は既定の 1 本に固定される)。
 
 ```
 <作品>/
@@ -39,6 +39,19 @@
   README.md            その作品の記録
   Sources/<作品>/       スケッチ (assets を置くならこの下・宣言も要る)
 ```
+
+**[Atlas](Atlas/) だけがこの形に収まらない。** あちらは作品ではなく物差しで、Processing の
+例 157 本を**それぞれ独立した mokume のスケッチ**として持つ — 1 フォルダの中に 157 個の
+`Package.swift` がある。**引数で例を選ぶ形をやめたのは、`mokume watch` が通らないため**で、
+1 本ずつ手元で見るには 1 本ずつがパッケージである必要があった。
+
+```bash
+mokume watch Atlas/Examples/Basics/Input/Mouse2D
+```
+
+作品を数える道具 ([`scripts/pieces.py`](scripts/pieces.py)) は**直下に `Package.swift` を
+持つディレクトリ**を 1 作品として数えるので、入れ子の 157 枚は拾わない。Atlas はいまも
+1 作品で、`Atlas/Package.swift` は例が引く共有の面と版の正本を持つ (executable は無い)。
 
 開発は CLI から:
 
