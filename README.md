@@ -105,6 +105,12 @@ python3 scripts/upstream.py    # 戻した Issue がいまどうなっている�
 一覧は Release 資産として版ごとに配られるので、2 版ぶん取って集合の差を見れば
 **書けるようになったものが全部出る**。
 
+**気付くのは CI がやる。** [`.github/workflows/mokume-watch.yml`](.github/workflows/mokume-watch.yml)
+が日次で mokume の最新版と各 `Package.resolved` を見比べ、食い違ったら追随の Issue を立てる。
+**遅れていること自体は赤にしない** — 差は情報であって故障ではないので、ジョブが落ちるのは
+*見に行けなかった* ときだけである。手順の正典は
+[`.claude/skills/mokume-bump/`](.claude/skills/mokume-bump/SKILL.md)。
+
 **再現の正本は作品ごとの `checks.json`。** 書き出しのコマンドと期待ハッシュを持ち、
 各 README の「検証する」節は印 (`<!-- verify:pins -->` / `<!-- verify:renders -->`)
 で囲った区間だけが生成物である。**手で書いた数字は腐る** — 囲いの外の散文は手書きの
