@@ -140,13 +140,21 @@ mokume の [ADR-0011](https://github.com/mokume-metal/mokume/blob/main/docs/deci
 
 **実害**: 160 本の単色光を重ねて白を作るこの作品では、芯が 1.0 に達した時点で「分かれる前」と「分かれた後」の差が消える。**白い芯を 0.52 に置き、足りない明るさを `exposure(1.35)` で足す**という形に落としたが、露出は画面全体に掛かるので暗部も一緒に持ち上がる。`BlendMode.add` の説明 ("足す。光を重ねたように明るくなる") からこの挙動は読めない。
 
-mokume へは、この PR がマージされた後に Issue として戻す。
+**mokume へは [mokume#1057](https://github.com/mokume-metal/mokume/issues/1057) として戻した。**
 
 ### 踏まなかったもの
 
 - **文字は日本語が出る** (`text()`)。works で `text()` を使うのはこの作品が初めてなので測っておいた。手引きは日本語のまま出ている
 - **`exposure` / `toneMapping` は `setup()` から効く**。画面の性質でフレームに属さないため、Nebula が粒の混ぜ方で踏んだ「`setup()` のスタイルは無視される」に当たらない
 - **`constrain` / `lerp` は無い**が、`min(max(...))` と自前の補間で足りた。実害が無いので起票しない (mokume の [ADR-0008](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0008-mechanism-needs-demonstrated-harm.md) が求めるのは実害であって不足そのものではない)
+
+## mokume へ戻したもの
+
+**閉じても消さない** — 何を踏んで、どの版で塞がったかは記録である。
+
+| 踏んだもの | 戻した先 | |
+| --- | --- | --- |
+| 加算合成が 1 描画ごとに飽和し、光を積み上げられない (ADR-0011 決定 1 と食い違う) | [mokume#1057](https://github.com/mokume-metal/mokume/issues/1057) | `fix` |
 
 ## 中身の並び
 
