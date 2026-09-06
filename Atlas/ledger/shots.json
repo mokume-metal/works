@@ -130,6 +130,9 @@
       "slug": "perspective",
       "source": "0146d923dbe4ed88af326ac6bbeaf2443965af17531109de8a2a77972da63b78",
       "url": "https://i.gyazo.com/81bf5c63510d6ce0a97721427810ff4f.png",
+      "warnings": [
+        "perspective(): 写す範囲が潰れている・数でない値が渡されたので、投影を変えませんでした"
+      ],
       "width": 640
     },
     "Basics/Color/Brightness": {

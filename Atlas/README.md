@@ -292,6 +292,7 @@ mokume を横に並べた 1 枚が `upstream/compare/shots/` に出る。**献�
 swift run -c release Atlas --motion out/motion 24   # 動きの証跡 (mokume 側の連番)
 python3 scripts/compare/serve.py            # http://127.0.0.1:8731/ と /motion.html を開く
 python3 scripts/compare/animate.py          # 連番を WebP へ畳む
+python3 scripts/compare/diagnostics.py      # mokume が「そうしなかった」と言った一言を集める
 python3 scripts/compare/publish.py          # Gyazo へ上げ、台帳と文書を書き戻す
 python3 scripts/compare/publish.py --check  # 撮り直していないものを捕まえる
 python3 scripts/origins.py --check          # 原典どうしが食い違うのに測っていないか
@@ -311,6 +312,14 @@ python3 scripts/origins.py --check          # 原典どうしが食い違うの�
 最後の 1 つを台帳へ文で書かないのは、**絵が出るようになっても理由だけが残り、台帳が古い話を
 し続ける**のを避けるため。逆向きの「原典は絵を出したのに移植が 1 画素も描いていない」は
 `publish.py --check` が落とす — 157 枚を目で見張るのは回らない。
+
+**mokume が「そうしなかった」と言ったら、数字より先にそれを読む。** 書き出しのとき mokume は
+`mokume: perspective(): 写す範囲が潰れている…投影を変えませんでした` のように標準エラーへ
+1 行出す。**言われたとおりにしなかったという申告**なので、一致率だけを見ても絵が食い違って
+いる理由には辿り着けない。`diagnostics.py` が集めて台帳へ入れ、`comparison.md` の数字の前に
+置く。**例ごとにプロセスを分けている** — mokume は同じ警告を畳むので、157 本をまとめて回すと
+どの例のものか決まらない。いま出ているのは 1 本だけ (`Basics/Camera/Perspective`) で、
+動きの書き出しでは 1 種類も出ていない。
 **揃える前は原典側だけ 30 フレーム進み、線が 1 本ぶんずれていた。**
 
 **本文の画像行は手で書かない。** 撮った証跡の台帳は [`ledger/shots.json`](ledger/shots.json) で、
