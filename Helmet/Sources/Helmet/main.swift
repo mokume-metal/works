@@ -26,7 +26,7 @@ case "--measure":
     // **塊の大きさを振れる。** 費用が塊の大きさに比例して増えるなら二次、
     // 変わらないなら線形 — 起票に要るのはこの形の数字である
     if arguments.count > 2, let size = Int(arguments[2]) { Helmet.chunk = max(1, size) }
-    for build in only.map({ [$0] }) ?? [.chunked, .whole] {
+    for build in only.map({ [$0] }) ?? [.indexed, .chunked, .whole] {
         Helmet.build = build
         print("### \(build.rawValue)" + (build == .chunked ? " (塊 \(Helmet.chunk) 枚)" : ""))
         let runtime = try SketchRuntime(sketch: Helmet(), gpu: gpu)
