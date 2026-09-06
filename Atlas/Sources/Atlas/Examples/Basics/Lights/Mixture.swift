@@ -22,10 +22,10 @@ final class Mixture: Sketch {
         // 左からの青い平行光源
         directionalLight(0, 102, 255, 1, 0, 0)
         // 手前からの黄色いスポット。**原典の最後の引数 (集中度 2) は渡せない**
-        spotLight(255, 255, 109, 0, 40, 200, 0, -0.5, -0.5, angle: .pi / 2)
+        spotLight(255, 255, 109, 0, 40, 200, 0, -0.5, -0.5, angle: Float.pi / 2)
 
-        rotateY(map(mouseX, 0, width, 0, .pi))
-        rotateX(map(mouseY, 0, height, 0, .pi))
+        rotateY(map(mouseX, 0, width, 0, Float.pi))
+        rotateX(map(mouseY, 0, height, 0, Float.pi))
         box(150)
     }
 }

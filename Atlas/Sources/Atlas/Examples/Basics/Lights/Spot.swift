@@ -21,10 +21,10 @@ final class Spot: Sketch {
         directionalLight(51, 102, 126, 0, -1, 0)
 
         // 右上からの橙のスポット。**集中度 600 は渡せない**
-        spotLight(204, 153, 0, 360, 160, 600, 0, 0, -1, angle: .pi / 2)
+        spotLight(204, 153, 0, 360, 160, 600, 0, 0, -1, angle: Float.pi / 2)
 
         // マウスを追うスポット
-        spotLight(102, 153, 204, 360, mouseY, 600, 0, 0, -1, angle: .pi / 2)
+        spotLight(102, 153, 204, 360, mouseY, 600, 0, 0, -1, angle: Float.pi / 2)
         translate(width / 2, height / 2, 0)
         sphere(120, detail: 60)
     }

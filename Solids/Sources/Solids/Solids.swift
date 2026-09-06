@@ -129,7 +129,7 @@ final class Solids: Sketch {
         // 原典の「起こすための追加の回転」に当たるもの。**`normalize: false` では
         // 縦軸を裏返さない** (裏返すのは整える側の仕事) ので、OBJ の約束どおり
         // y を上向きに書いたモデルは、この面では逆さに出る
-        rotateX(.pi)
+        rotateX(Float.pi)
         if let arrowhead { model(arrowhead) }
         pop()
 

@@ -41,7 +41,7 @@ swift run Solids --frames <置き場> <数>     # 連番で書き出す
 | | |
 | --- | --- |
 | works | [#22](https://github.com/mokume-metal/works/pull/22) の merge コミット (`Package.resolved` が同じツリーにある) |
-| mokume | `v0.6.0` / `d153f982435b775101772d904153c8d2b6711fd6` (`Package.resolved` が固定している) |
+| mokume | `v0.7.0` / `86b6fa147e6bd38b24768fbc5890c0ee5031298c` (`Package.resolved` が固定している) |
 <!-- verify:end -->
 
 <!-- verify:renders -->
@@ -150,3 +150,4 @@ Swift 側には `LinearRGBA.display(red:green:blue:)` があるので、**同じ
 | 面の向きを世界／視点の座標で受け取れず、`normalMaterial()` に当たるものが書けない | [mokume#847](https://github.com/mokume-metal/mokume/issues/847) |
 | 原形が 7 つのうち 6 つで、`ellipsoid()` が無い | [mokume#849](https://github.com/mokume-metal/mokume/issues/849) |
 | 組み込みの立体に `stroke()` が効かない | [mokume#850](https://github.com/mokume-metal/mokume/issues/850) |
+| `rotateX(.pi)` が `v0.7.0` で通らなくなった — 総称の引数では暗黙メンバ参照が解決できない。`Float.pi` へ書き換えた | [mokume#1017](https://github.com/mokume-metal/mokume/issues/1017) |

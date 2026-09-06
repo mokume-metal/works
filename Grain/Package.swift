@@ -15,7 +15,7 @@ let package = Package(
         // 一時 main を指していたが、v0.5.0 がそれを含むので追随をやめた。
         // **どの版で描いたかは Package.resolved が持つ**ので、この作品のコミットへ
         // 戻れば当時の mokume に戻る
-        .package(url: "https://github.com/mokume-metal/mokume.git", from: "0.6.0")
+        .package(url: "https://github.com/mokume-metal/mokume.git", from: "0.7.0")
     ],
     targets: [
         .executableTarget(
