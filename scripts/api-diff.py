@@ -20,7 +20,6 @@
 あって検証ではない」と書いているのと同じ限界がここにもある。
 """
 
-import re
 import subprocess
 import sys
 import pathlib
@@ -28,23 +27,6 @@ import pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import mokume_api  # noqa: E402
 import pieces  # noqa: E402
-
-# 一覧の宣言行。`## 見出し` がスコープで、型のことも自由関数のこともある
-DECL = re.compile(r"^\s*(?:@MainActor\s+)?(?:public\s+)?(?:static\s+)?"
-                  r"(?:func|var|let|init|case|subscript)\s+([a-zA-Z_]\w*)")
-
-
-def signatures(text: str) -> dict[tuple[str, str], set[str]]:
-    """(スコープ, 名前) → その名前で書ける署名の集合。"""
-    scope, out = "", {}
-    for line in text.splitlines():
-        if line.startswith("## "):
-            scope = line[3:].strip()
-            continue
-        if found := DECL.match(line):
-            out.setdefault((scope, found.group(1)), set()).add(line.strip())
-    return out
-
 
 def touched(names: set[str]) -> dict[str, list[str]]:
     """その名前に works のどこが触れているか。
@@ -92,13 +74,9 @@ def main(argv: list[str]) -> int:
         raise SystemExit(__doc__)
 
     before, after = mokume_api.text(old), mokume_api.text(new)
-    a, b = signatures(before), signatures(after)
-
-    gone = sorted(set(a) - set(b))
-    added = sorted(set(b) - set(a))
-    # 同じ名前で、旧い署名が残っていないもの。**通らなくなる** のはここ
-    broke = sorted(k for k in set(a) & set(b) if a[k] - b[k])
-    widened = sorted(k for k in set(a) & set(b) if b[k] - a[k] and not (a[k] - b[k]))
+    diff = mokume_api.compare(before, after)
+    a, b = diff["before"], diff["after"]
+    gone, broke, added, widened = diff["gone"], diff["broke"], diff["added"], diff["widened"]
 
     print(f"## mokume `v{old}` → `v{new}` の公開 API\n")
     print(f"- `v{old}` — {mokume_api.headline(before)}")

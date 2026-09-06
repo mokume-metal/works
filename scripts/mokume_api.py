@@ -62,6 +62,47 @@ def names(text: str) -> set[str]:
     return found
 
 
+# 一覧の宣言行。`## 見出し` がスコープで、型のことも自由関数のこともある
+DECL = re.compile(r"^\s*(?:@MainActor\s+)?(?:public\s+)?(?:static\s+)?"
+                  r"(?:func|var|let|init|case|subscript)\s+([a-zA-Z_]\w*)")
+
+
+def signatures(text: str) -> dict[tuple[str, str], set[str]]:
+    """(スコープ, 名前) → その名前で書ける署名の集合。
+
+    **名前だけを見ると、いちばん危ないものが見えない。** `isKeyDown` は `v0.5.0` →
+    `v0.6.0` で `Int` から `Key` へ変わったが、名前は同じなので `names()` の差では
+    「変化なし」になる。書いてあればコンパイルは必ず落ちるのに。
+    """
+    scope, out = "", {}
+    for line in text.splitlines():
+        if line.startswith("## "):
+            scope = line[3:].strip()
+            continue
+        if found := DECL.match(line):
+            out.setdefault((scope, found.group(1)), set()).add(line.strip())
+    return out
+
+
+def compare(old: str, new: str) -> dict[str, list]:
+    """2 つの版の署名を突き合わせ、4 つに分ける。
+
+        消えた         名前ごと無くなった
+        通らなくなった  同じ名前で、旧い書き方が消えた
+        増えた         新しく書けるようになった
+        口が増えた      書き方が増えたが、旧い書き方も通る
+    """
+    a, b = signatures(old), signatures(new)
+    return {
+        "gone": sorted(set(a) - set(b)),
+        "broke": sorted(k for k in set(a) & set(b) if a[k] - b[k]),
+        "added": sorted(set(b) - set(a)),
+        "widened": sorted(k for k in set(a) & set(b) if b[k] - a[k] and not (a[k] - b[k])),
+        "before": a,
+        "after": b,
+    }
+
+
 def headline(text: str) -> str:
     """一覧が冒頭で名乗る規模 (「公開シンボル 1001 個 / 型 92 個。」)。"""
     for line in text.splitlines():
