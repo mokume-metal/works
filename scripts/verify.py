@@ -11,8 +11,8 @@
 食い違ったら、変えたつもりのないところが変わっている。**版を上げた直後は動くのが普通**で、
 そのときは何が動いたかを README の散文へ書いてから `--update` で記録を進める。
 
-`--check` は**絵を出さずに**「道具を上げたのに測り直していない」だけを捕まえる
-(Atlas の `scripts/compare/publish.py:390-391` と同じ見方)。ビルドも GPU も要らない。
+`--check` は**絵を出さずに**「道具を上げたのに測り直していない」だけを捕まえる。
+ビルドも GPU も要らない。
 """
 
 import concurrent.futures
@@ -40,9 +40,7 @@ def warnings(stderr: str) -> list[str]:
 
     mokume は診断の出口を 1 つに絞り、**必ず `mokume: ` を前置きして標準エラーへ**
     書く。絵は出ているのに中身が違うとき、理由はここにしか出ない
-    ([works#19](https://github.com/mokume-metal/works/issues/19))。**Atlas は同じ一言を
-    台帳にも残す** (`scripts/compare/diagnostics.py`) — あちらは例ごとにプロセスを分けて
-    全数で集めるもので、こちらは検証を走らせたついでに拾う。
+    ([works#19](https://github.com/mokume-metal/works/issues/19))。
 
     **絵を待ち切れなかったときも黙って進む口がある。** 面の画素を読む・画像を面へ
     送る・字形を焼く経路は 5 秒で諦めて古い写しのまま返す (書き出しそのものは
@@ -68,51 +66,22 @@ def measure(path: pathlib.Path) -> dict:
         out["error"] = f"ビルドが失敗した: {done.stderr.strip()[-400:]}"
         return out
 
-    if "ledger" in checks:
-        out["rows"] = measure_ledger(path, checks)
-    else:
-        for check in checks["renders"]:
-            command = pieces.command(path, check, checks)
-            done = run(path, command)
-            wrote = path / check["out"]
-            said = warnings(done.stderr)
-            if done.returncode or not wrote.exists():
-                out["rows"].append({"what": check["args"], "want": check["sha256"],
-                                    "got": None, "said": said,
-                                    "note": done.stderr.strip()[-200:]})
-                continue
+    # **書き出しを 1 枚も宣言しない作品がある。** Atlas は例ごとに独立したスケッチを
+    # 持つ置き場で、絵の再現はもう測らない。それでも版の刻印と「ビルドが
+    # 通るか」は他の作品と同じ形で見たいので、`renders` を空にして通す
+    for check in checks["renders"]:
+        command = pieces.command(path, check, checks)
+        done = run(path, command)
+        wrote = path / check["out"]
+        said = warnings(done.stderr)
+        if done.returncode or not wrote.exists():
             out["rows"].append({"what": check["args"], "want": check["sha256"],
-                                "got": digest(wrote), "said": said})
+                                "got": None, "said": said,
+                                "note": done.stderr.strip()[-200:]})
+            continue
+        out["rows"].append({"what": check["args"], "want": check["sha256"],
+                            "got": digest(wrote), "said": said})
     return out
-
-
-def measure_ledger(path: pathlib.Path, checks: dict) -> list[dict]:
-    """Atlas は 155 枚を 1 つの台帳と突き合わせる (1 行ずつ README に刻めない)。"""
-    ledger = checks["ledger"]
-    done = run(path, ["swift", "run", "-c", "release", path.name, *ledger["args"].split()])
-    said = warnings(done.stderr)
-    if done.returncode:
-        return [{"what": ledger["args"], "want": ledger["path"], "got": None,
-                 "said": said, "note": done.stderr.strip()[-200:]}]
-
-    skip = set(ledger.get("skip", []))
-    fresh = {}
-    for png in sorted((path / "out").glob("*.png")):
-        if png.name not in skip:
-            fresh[png.name] = digest(png)
-
-    recorded = {}
-    for line in (path / ledger["path"]).read_text().splitlines():
-        if line.strip() and not line.startswith("#"):
-            want, name = line.split()
-            recorded[name] = want
-
-    moved = sorted(n for n in recorded if n in fresh and recorded[n] != fresh[n])
-    missing = sorted(set(recorded) - set(fresh))
-    added = sorted(set(fresh) - set(recorded))
-    return [{"what": ledger["args"], "want": f"{len(recorded)} 枚", "got": f"{len(fresh)} 枚",
-             "moved": moved, "missing": missing, "added": added, "said": said,
-             "same": not (moved or missing or added)}]
 
 
 def unsettled(result: dict) -> bool:
@@ -122,10 +91,7 @@ def unsettled(result: dict) -> bool:
     for row in result["rows"]:
         if row.get("said"):
             return True
-        if "same" in row:
-            if not row["same"]:
-                return True
-        elif row["got"] != row["want"]:
+        if row["got"] != row["want"]:
             return True
     return False
 
@@ -161,21 +127,19 @@ def render_pins(path: pathlib.Path, checks: dict) -> str:
 
 
 def render_renders(path: pathlib.Path, checks: dict) -> str:
-    """README の書き出しブロック。"""
+    """README の書き出しブロック。
+
+    **書き出しを 1 枚も宣言しない作品では、ブロックごと空にする。** 空の ```bash を
+    置くと「ここに手順があるはずなのに書かれていない」と読めてしまう。
+    """
+    if not checks["renders"]:
+        return ""
     lines = ["```bash"]
-    if "ledger" in checks:
-        ledger = checks["ledger"]
-        lines.append(f"swift run -c release {path.name} {ledger['args']}")
-        skip = "|".join(n.replace(".png", r"\.png") for n in ledger.get("skip", []))
-        lines += ["diff <(shasum -a 256 out/*.png | sed 's|out/||' \\",
-                  f"        | grep -vE ' ({skip})$') \\",
-                  f"     <(grep -v '^#' {ledger['path']})"]
-    else:
-        for i, check in enumerate(checks["renders"]):
-            if i:
-                lines.append("")
-            lines.append(f"{pieces.shown(path, check, checks)} && shasum -a 256 {check['out']}")
-            lines.append(f"# {check['sha256']}")
+    for i, check in enumerate(checks["renders"]):
+        if i:
+            lines.append("")
+        lines.append(f"{pieces.shown(path, check, checks)} && shasum -a 256 {check['out']}")
+        lines.append(f"# {check['sha256']}")
     lines.append("```")
     return "\n".join(lines)
 
@@ -290,18 +254,6 @@ def main(argv: list[str]) -> int:
             if result["error"]:
                 continue
             checks = pieces.load_checks(path)
-            if "ledger" in checks:
-                # **Atlas の期待値をここから書かない。** `ledger/renders.txt` を書くのは
-                # `scripts/compare/publish.py:197-220` で、正本が 2 つになる。版だけ
-                # 進めると、絵を撮り直していないのに --check が通る状態になる
-                print(f"\n**{path.name} は `--update` で進めない。**"
-                      " 期待値も版も `scripts/compare/publish.py` が書く:\n")
-                print("```bash")
-                print(f"cd {path.name} && rm -rf out upstream/compare/{{shots,motion,webp,stats.json}}")
-                print(f"swift run -c release {path.name} --render-all out 1")
-                print("python3 scripts/compare/publish.py --force   # 版上げでは --force が要る")
-                print("```")
-                continue
             for check, row in zip(checks["renders"], result["rows"]):
                 if row["got"]:
                     check["sha256"] = row["got"]
