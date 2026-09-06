@@ -288,10 +288,21 @@ def main(argv: list[str]) -> int:
             if result["error"]:
                 continue
             checks = pieces.load_checks(path)
-            if "renders" in checks:
-                for check, row in zip(checks["renders"], result["rows"]):
-                    if row["got"]:
-                        check["sha256"] = row["got"]
+            if "ledger" in checks:
+                # **Atlas の期待値をここから書かない。** `ledger/renders.txt` を書くのは
+                # `scripts/compare/publish.py:197-220` で、正本が 2 つになる。版だけ
+                # 進めると、絵を撮り直していないのに --check が通る状態になる
+                print(f"\n**{path.name} は `--update` で進めない。**"
+                      " 期待値も版も `scripts/compare/publish.py` が書く:\n")
+                print("```bash")
+                print(f"cd {path.name} && rm -rf out upstream/compare/{{shots,motion,webp,stats.json}}")
+                print(f"swift run -c release {path.name} --render-all out 1")
+                print("python3 scripts/compare/publish.py --force   # 版上げでは --force が要る")
+                print("```")
+                continue
+            for check, row in zip(checks["renders"], result["rows"]):
+                if row["got"]:
+                    check["sha256"] = row["got"]
             pin = pieces.pinned(path)
             checks["mokume"], checks["revision"] = pin["version"], pin["revision"]
             pieces.save_checks(path, checks)
