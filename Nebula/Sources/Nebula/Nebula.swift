@@ -64,8 +64,47 @@ final class Nebula: Sketch {
     /// 釣り合いの半径が動き、星雲は膨らんでは縮む — 収束しないので粒立ちも残り続ける
     private var breathing: Float { swirling * (1 + 0.18 * sin(time * 0.79)) }
 
+    /// 指先が粒を寄せる強さと、押しのける強さ。
+    ///
+    /// **抵抗が弱いので、効きは強さそのものより `強さ ÷ 抵抗` で読む** — 320 は
+    /// 5333 の速さまで加速でき、渦 (55 → 917) の 6 倍になって星雲がほどけた (実測)。
+    /// 寄せるほうは渦より弱く、押すほうは中心へ引く力 (約 934) を上回るように取る
+    private let pulling: Float = 80
+    private let pushing: Float = 450
+
+    /// 一度でも触られたか。**触られるまで指先の力を積まない。**
+    ///
+    /// `mouseX` / `mouseY` の初期値は 0 なので、そのまま読むと**面の左上へ引く力が
+    /// 常時かかる**。ポインタが窓の外にあるときも同じ値が返るので、位置そのものからは
+    /// 見分けられない — 出来事が届いたかどうかで見る
+    private var touched = false
+
+    /// 視点の距離の倍率。ホイールで動かす。
+    private var zoom: Float = 1
+
+    /// 視点の揺れに使う時計。**押している間は進めない。**
+    ///
+    /// 画面の位置から空間の点を逆に求める道 (`spacePosition`) は**視点に依存する**ので、
+    /// マウスを止めていても視点が揺れれば指先の点は空間を移動する。粒はその履歴に
+    /// 押しのけられ、印は現在の点に出るので、**押しのけた跡と印がずれて見える**。
+    /// 触れている間だけ視点を止めると、両者が揃う
+    private var swaying: Float = 0
+
     func setup() {
         randomSeed(20_260_907)
+    }
+
+    // 触られたことだけを受ける。**位置は `mouseX` / `mouseY` から毎フレーム読む**ので、
+    // ここで覚えておくものは無い
+    func mouseMoved() { touched = true }
+    func mousePressed() { touched = true }
+    func mouseDragged(deltaX: Float, deltaY: Float) { touched = true }
+
+    /// ホイールで寄る・引く。**締めておく** — 近づきすぎると粒の板が画面を覆い、
+    /// 離れすぎると星雲が点になる
+    func mouseWheel(deltaX: Float, deltaY: Float) {
+        touched = true
+        zoom = min(max(zoom - deltaY * 0.001, 0.75), 1.5)
     }
 
     func draw() {
@@ -87,6 +126,10 @@ final class Nebula: Sketch {
 
         if seeded < capacity { scatter(dust) }
 
+        // **視点を先に置く。** 指先の位置は「いまの視点」から逆に求めるので
+        // (`screenZ` → `spacePosition`)、視点を置く前に読むと 1 フレーム前の答えが返る
+        look()
+
         // **積んだぶんがまとめて効く。** 渦と抵抗が速さの上限を、引く力が輪の半径を
         // 決める。奥行きは弱い重力がゆっくり片側へ流し、揺らぎが厚みを与える
         force(
@@ -97,11 +140,60 @@ final class Nebula: Sketch {
             .wander(strength: 55),
             .gravity(0, 0, 14))
 
-        look()
+        // 指先。**積むのは触られてから**で、それまではこれまでどおり自分で回る。
+        // 力は積み足せるので、6 つ目としてここで乗る (1 回に効くのは 8 つまで)
+        if touched {
+            let touch = pointer()
+            force(
+                dust,
+                isMousePressed
+                    ? .repel(touch.x, touch.y, touch.z, strength: pushing)
+                    : .attract(touch.x, touch.y, touch.z, strength: pulling))
+        }
+
         particles(dust)
+        mark()
+
+        // 押している間は視点を止める (上の `swaying`)
+        if !(touched && isMousePressed) { swaying += deltaTime }
 
         expose("particles", seeded)
-        expose("seeding", seeded < capacity)
+        expose("touched", touched)
+        expose("pressing", touched && isMousePressed)
+        expose("zoom", zoom)
+    }
+
+    /// マウスが指している点。**星雲の中心と同じ奥行きの面の上へ戻す。**
+    ///
+    /// 面 1 枚ぶんの位置からは空間の 1 点が決まらないので、戻し先の奥行きを渡す側が
+    /// 選ぶ (mokume の `spacePosition(screenX:screenY:depth:)`)。掴む物の `screenZ` を
+    /// 渡すのが道具側の想定した使い方で、ここで掴んでいるのは星雲そのものである。
+    private func pointer() -> SIMD3<Float> {
+        let depth = screenZ(center.x, center.y, center.z)
+        return spacePosition(screenX: mouseX, screenY: mouseY, depth: depth)
+    }
+
+    /// 押している場所へ輪を置く。
+    ///
+    /// **押しのけている中心が見えないと、粒が何に反応しているのか 1 枚では読めない**
+    /// (mokume の `SparksAndForces` が渦の目に円を置いているのと同じ理由)。
+    /// 混ぜ方は名指しする — 粒と違って、この輪は加算で重ねると背景に沈む。
+    ///
+    /// **2 次元の図形は視点の変換を通らない。** `circle` は面の座標へそのまま描かれるので、
+    /// 指先の 3 次元の点を `translate` して置くと**画面の中心から離れるほどマウスと
+    /// ずれる** (面の四隅へ円を描くと、視点を動かしても四隅のまま出ることで確かめた)。
+    /// 力が効く点と印を画面の上で揃えるには、**印は面の座標のまま置く**のが正しい —
+    /// 3 次元の点が投影される先は `screenX` / `screenY` で、それはこの面の座標である
+    private func mark() {
+        guard touched, isMousePressed else { return }
+        blendMode(.blend)
+        noFill()
+        stroke(150, 200, 255, 220)
+        strokeWeight(14)
+        // **面の座標へそのまま置く。** 2 次元の図形は視点の変換を通らないので、
+        // 指先の 3 次元の点を `translate` して円を置くと、その x / y が面の位置として
+        // 読まれ、**画面の中心から離れるほどマウスとずれる** (実測で突き止めた)
+        circle(mouseX, mouseY, 260)
     }
 
     /// 3 次元の球へ撒く。**回ごとに色と濃さを変える。**
@@ -141,9 +233,9 @@ final class Nebula: Sketch {
 
     /// 視点。**小さく揺らして視差だけ作る** (板が痩せない範囲に留める)。
     private func look() {
-        let distance = ring * 2.6
-        let yaw = sin(time * 0.31) * 0.62
-        let pitch = sin(time * 0.23) * 0.45
+        let distance = ring * 2.6 * zoom
+        let yaw = sin(swaying * 0.31) * 0.62
+        let pitch = sin(swaying * 0.23) * 0.45
         // 縦軸は下向きなので、見下ろす (正の仰角) と視点は -y へ上がる (mokume の `Orbit.eye`)
         let offset = SIMD3<Float>(
             sin(yaw) * cos(pitch), -sin(pitch), cos(yaw) * cos(pitch))
