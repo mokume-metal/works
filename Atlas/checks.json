@@ -1,17 +1,6 @@
 {
   "mokume": "0.7.0",
   "revision": "86b6fa147e6bd38b24768fbc5890c0ee5031298c",
-  "release": true,
-  "prepare": [
-    "python3 scripts/fetch.py"
-  ],
-  "ledger": {
-    "args": "--render-all out 1",
-    "path": "ledger/renders.txt",
-    "skip": [
-      "clock-1.png",
-      "intlistlottery-1.png"
-    ]
-  },
+  "renders": [],
   "origin": "processing/processing-examples"
 }
