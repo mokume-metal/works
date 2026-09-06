@@ -21,6 +21,6 @@ final class ShapePrimitives: Sketch {
         fill(204)
         triangle(288, 18, 351, 360, 288, 360)
         fill(255)
-        arc(479, 300, 280, 280, .pi, .pi * 2)
+        arc(479, 300, 280, 280, Float.pi, Float.pi * 2)
     }
 }

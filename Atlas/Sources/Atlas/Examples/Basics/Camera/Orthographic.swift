@@ -24,13 +24,13 @@ final class Orthographic: Sketch {
         background(0)
         let far = map(mouseX, 0, width, 120, 400)
         if showPerspective == true {
-            perspective(.pi / 3.0, width / height, 10, far)
+            perspective(Float.pi / 3.0, width / height, 10, far)
         } else {
             ortho(-width / 2.0, width / 2.0, -height / 2.0, height / 2.0, 10, far)
         }
         translate(width / 2, height / 2, 0)
-        rotateX(-.pi / 6)
-        rotateY(.pi / 3)
+        rotateX(-Float.pi / 6)
+        rotateY(Float.pi / 3)
         box(180)
     }
 

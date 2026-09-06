@@ -25,8 +25,8 @@ final class OnOff: Sketch {
 
         pushMatrix()
         translate(width / 2, height / 2, 0)
-        rotateX(.pi / 9)
-        rotateY(.pi / 5 + spin)
+        rotateX(Float.pi / 9)
+        rotateY(Float.pi / 5 + spin)
         box(150)
         popMatrix()
     }

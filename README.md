@@ -69,7 +69,18 @@ brew upgrade mokume                    # 古いと感じたら
 | [Atlas](Atlas/) | Processing の Examples を全数で当てた台帳と、[公式ページ](https://processing.org/examples/)の 162 本のうち移せる 157 本の実測。**作品ではなく物差し**で、1 本ずつでは出ない「どの欠けが何本の例を止めるか」を数える。**mokume `v0.6.0` で 26 本が `clean` へ移り、台帳が重いと数えた欠けから順に埋まった** |
 | [Helmet](Helmet/) | three.js の webgl_loader_gltf 相当を目標に、Khronos の DamagedHelmet を読んで PBR で見せようとした記録。語彙ではなく**資産と質感のパイプライン**を測る 1 本目。**絵を 1 枚貼るところで折れ**、その原因は mokume `v0.6.0` で直った |
 
-**全 6 作品が mokume `v0.6.0` を引いている** ([#21](https://github.com/mokume-metal/works/issues/21))。
+**全 6 作品が mokume `v0.7.0` を引いている** ([#21](https://github.com/mokume-metal/works/issues/21))。
+
+**`v0.7.0` への追随で 2 つ踏んだ。** どちらも #983 が描画の受け口を `Float` から
+`some ScalarConvertible` へ広げた副作用で、**総称の引数では型推論の既定が変わる**ことによる:
+
+| 踏んだもの | | 効き方 |
+| --- | --- | --- |
+| `rotateX(.pi)` が通らなくなった (暗黙メンバ参照が解決できない) | [mokume#1017](https://github.com/mokume-metal/mokume/issues/1017) | **赤くなる。** Atlas 22 箇所・Solids 1 箇所を `Float.pi` へ書き換えた |
+| `fill(255, 255 * 50 / 100)` が 127.5 から 127 になる (リテラルが `Int` へ倒れ整数除算になる) | [mokume#1018](https://github.com/mokume-metal/mokume/issues/1018) | **黙る。** Atlas の `additivewave-1.png` が動いて初めて気付いた |
+
+後者は**指紋を持っていたから見つかった**。絵のハッシュを版ごとに記録していなければ、
+「そういう絵だった」で通り過ぎていた。
 
 **`Package.resolved` は作品ごとに持ち、コミットする。** 作品のコミットへ戻れば mokume も
 当時の版に戻るので、別の作品が新しい mokume を要求しても前の作品の再現は壊れない。

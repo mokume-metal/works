@@ -52,7 +52,7 @@ NormalTangentTest と HDRI は段 3 以降で使うもので、**まだ 1 度も
 | | |
 | --- | --- |
 | works | この作品のコミット (`Package.resolved` が同じツリーにある) |
-| mokume | `v0.6.0` / `d153f982435b775101772d904153c8d2b6711fd6` (`Package.resolved` が固定している) |
+| mokume | `v0.7.0` / `86b6fa147e6bd38b24768fbc5890c0ee5031298c` (`Package.resolved` が固定している) |
 <!-- verify:end -->
 
 **先に資産を取る** (`python3 scripts/fetch.py`)。取っていないと形が出ず、ハッシュも合わない。

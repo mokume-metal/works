@@ -28,8 +28,8 @@ final class Perspective: Sketch {
         perspective(fov, aspect, cameraZ / 10.0, cameraZ * 10.0)
 
         translate(width / 2 + 30, height / 2, 0)
-        rotateX(-.pi / 6)
-        rotateY(.pi / 3 + mouseY / height * .pi)
+        rotateX(-Float.pi / 6)
+        rotateY(Float.pi / 3 + mouseY / height * Float.pi)
         box(45)
         translate(0, 0, -50)
         box(30)

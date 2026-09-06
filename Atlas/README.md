@@ -258,7 +258,7 @@ python3 scripts/ledger.py    # ledger/ を組み直す
 | | |
 | --- | --- |
 | works | この作品のコミット (`Package.resolved` が同じツリーにある) |
-| mokume | `v0.6.0` / `d153f982435b775101772d904153c8d2b6711fd6` (`Package.resolved` が固定している) |
+| mokume | `v0.7.0` / `86b6fa147e6bd38b24768fbc5890c0ee5031298c` (`Package.resolved` が固定している) |
 | 原典 | `processing/processing-examples` @ `b10c9e9a05a0d6c20d233ca7f30d315b5047720e` ([`ledger/sources.json`](ledger/sources.json) が刻む) |
 <!-- verify:end -->
 
@@ -356,6 +356,19 @@ python3 scripts/origins.py --check          # 原典どうしが食い違うの�
 [`main.swift`](Sources/Atlas/main.swift) の `--render` / `--frames` は Ring から写した。Ring は Solids から、Solids は Garden から、Garden は Grain から写している。**5 つを diff すると、違うのはコメントと識別子だけ**である。
 
 ただし Atlas は 1 product に例を N 本持つので、Grain の `makeSketch(_:)` を広げた。Grain が `if arguments.first == "slab" { Slab.main() } else { Grain.main() }` と分岐していたのは、**`Sketch.main()` が `@MainActor static func main()` で `any Sketch` から呼べない**ためで、例が増えると分岐も増える。`SketchApplication(sketch:gpu:)` は `any Sketch` を取るので、こちらを使うと分岐が消える (`Sketch.main()` の中身と同じ経路)。
+
+## 版を上げたときに動いたもの — `v0.6.0` → `v0.7.0`
+
+**155 枚のうち 3 枚が動いた。** 理由は 2 通りで、どちらも mokume 側の変更である。
+
+| 動いた絵 | 理由 |
+| --- | --- |
+| `colorvariables-1.png` / `pointslines-1.png` | **`setup()` に書いた `translate()` が、警告して無視されるようになった** ([mokume#970](https://github.com/mokume-metal/mokume/issues/970) / [#974](https://github.com/mokume-metal/mokume/issues/974))。図形が原点へ寄る。**原典は `setup()` で描く例なので、`draw()` へ移す書き直しが要る** |
+| `additivewave-1.png` | `fill(255, 255 * 50 / 100)` の透かしが 127.5 から 127 になった ([mokume#1018](https://github.com/mokume-metal/mokume/issues/1018))。**目には見えない 1 階調ぶん**で、指紋が無ければ気付けなかった |
+
+**ビルドも 22 箇所で落ちた。** `rotateX(.pi)` のような暗黙メンバ参照が総称の引数で解決できなくなったためで ([mokume#1017](https://github.com/mokume-metal/mokume/issues/1017))、`Float.pi` へ書き換えた。移した先で `.pi` と書くのは、原典が `PI` と書いているからである。
+
+**台帳 (`ledger/renders.txt`) はまだ `v0.6.0` の指紋のままである。** 更新は `publish.py --force` を要し、語彙の再判定とブラウザ撮影が人手を要るので、**版上げとは別の PR で進める**。
 
 ## mokume へ戻したもの
 

@@ -26,7 +26,7 @@ final class LoadDisplayOBJ: Sketch {
         lights()
 
         translate(width / 2, height / 2 + 100, -200)
-        rotateZ(.pi)
+        rotateZ(Float.pi)
         rotateY(ry)
         if let rocket { model(rocket) }   // 原典は `shape(rocket)`
 

@@ -30,7 +30,7 @@ final class Reflection1: Sketch {
         // 円は面の上の真ん中から始める
         position = SIMD2(width / 2, 0)
         // 初めの速さを乱数で決める (原典は `PVector.random2D()` と `mult(speed)`)
-        let angle = random(.pi * 2)
+        let angle = random(Float.pi * 2)
         velocity = SIMD2(cos(angle), sin(angle)) * speed
     }
 

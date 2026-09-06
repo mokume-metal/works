@@ -113,8 +113,8 @@ final class CircleCollision: Sketch {
 
     func setup() {
         balls = [
-            Ball(100, 400, 20, angle: random(.pi * 2)),
-            Ball(700, 400, 80, angle: random(.pi * 2)),
+            Ball(100, 400, 20, angle: random(Float.pi * 2)),
+            Ball(700, 400, 80, angle: random(Float.pi * 2)),
         ]
     }
 

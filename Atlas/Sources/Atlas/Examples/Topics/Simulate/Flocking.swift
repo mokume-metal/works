@@ -165,7 +165,7 @@ final class Flocking: Sketch {
 
     func setup() {
         for _ in 0..<150 {
-            flock.addBoid(Boid(width / 2, height / 2, angle: random(.pi * 2)))
+            flock.addBoid(Boid(width / 2, height / 2, angle: random(Float.pi * 2)))
         }
     }
 
@@ -176,6 +176,6 @@ final class Flocking: Sketch {
 
     /// 原典の `void mousePressed()` — 押した場所へ 1 羽足す。
     func mousePressed() {
-        flock.addBoid(Boid(mouseX, mouseY, angle: random(.pi * 2)))
+        flock.addBoid(Boid(mouseX, mouseY, angle: random(Float.pi * 2)))
     }
 }
