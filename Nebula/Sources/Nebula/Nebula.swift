@@ -179,19 +179,21 @@ final class Nebula: Sketch {
     /// (mokume の `SparksAndForces` が渦の目に円を置いているのと同じ理由)。
     /// 混ぜ方は名指しする — 粒と違って、この輪は加算で重ねると背景に沈む。
     ///
-    /// **線は太く取る。** 3 次元に置いた線は視点までの距離で細るので、4K の面でも
-    /// `strokeWeight(5)` では実寸の絵から消えた (実測)。20 で確実に出たので間を取る
+    /// **2 次元の図形は視点の変換を通らない。** `circle` は面の座標へそのまま描かれるので、
+    /// 指先の 3 次元の点を `translate` して置くと**画面の中心から離れるほどマウスと
+    /// ずれる** (面の四隅へ円を描くと、視点を動かしても四隅のまま出ることで確かめた)。
+    /// 力が効く点と印を画面の上で揃えるには、**印は面の座標のまま置く**のが正しい —
+    /// 3 次元の点が投影される先は `screenX` / `screenY` で、それはこの面の座標である
     private func mark() {
         guard touched, isMousePressed else { return }
-        let touch = pointer()
         blendMode(.blend)
         noFill()
         stroke(150, 200, 255, 220)
-        strokeWeight(12)
-        push()
-        translate(touch.x, touch.y, touch.z)
-        circle(0, 0, 220)
-        pop()
+        strokeWeight(14)
+        // **面の座標へそのまま置く。** 2 次元の図形は視点の変換を通らないので、
+        // 指先の 3 次元の点を `translate` して円を置くと、その x / y が面の位置として
+        // 読まれ、**画面の中心から離れるほどマウスとずれる** (実測で突き止めた)
+        circle(mouseX, mouseY, 260)
     }
 
     /// 3 次元の球へ撒く。**回ごとに色と濃さを変える。**
