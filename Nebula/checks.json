@@ -1,0 +1,17 @@
+{
+  "mokume": "0.7.0",
+  "revision": "86b6fa147e6bd38b24768fbc5890c0ee5031298c",
+  "release": true,
+  "renders": [
+    {
+      "args": "--render out 1",
+      "out": "out/nebula-1.png",
+      "sha256": "830fb0213ddbb40548c4c2538ac6bbe63404fb4b766eebfaba9cdf28289ab215"
+    },
+    {
+      "args": "--render out 200",
+      "out": "out/nebula-200.png",
+      "sha256": "d0c1f80a283178dbf73d1a71b0519e5968cddbe31bf000f2591e5800ad22223c"
+    }
+  ]
+}

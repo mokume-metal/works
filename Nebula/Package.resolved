@@ -1,0 +1,24 @@
+{
+  "originHash" : "5b69a145ab1e16de36b471c50b41df8ba088bca17d5c04fe7c8261711a450e87",
+  "pins" : [
+    {
+      "identity" : "mokume",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mokume-metal/mokume.git",
+      "state" : {
+        "revision" : "86b6fa147e6bd38b24768fbc5890c0ee5031298c",
+        "version" : "0.7.0"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
+      "state" : {
+        "revision" : "79e4b74a295b6eb74a8b585e3a39d29e70c1dbd1",
+        "version" : "603.0.2"
+      }
+    }
+  ],
+  "version" : 3
+}
