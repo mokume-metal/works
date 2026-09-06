@@ -192,13 +192,60 @@ function overlap(a, b, w, h) {
   return (hit / (w * h)) * 100;
 }
 
-/** 画素どうしの、いちばん大きいずれ (R/G/B のうち)。 */
+/** 画素どうしの、いちばん大きいずれ (R/G/B/A のうち)。
+ *
+ * **透明も差である。** 何も塗っていない面 (0,0,0,0) と `background(0)` を塗った面
+ * (0,0,0,255) は別の絵で、alpha を見ないとこの 2 つが完全一致になる (LoadingImages が
+ * そうだった)。`background()` を呼ばない例は原典側が透明のままなので、ここは効く。
+ */
 function gap(a, b, i) {
-  return Math.max(Math.abs(a[i] - b[i]), Math.abs(a[i + 1] - b[i + 1]), Math.abs(a[i + 2] - b[i + 2]));
+  return Math.max(Math.abs(a[i] - b[i]), Math.abs(a[i + 1] - b[i + 1]),
+                  Math.abs(a[i + 2] - b[i + 2]), Math.abs(a[i + 3] - b[i + 3]));
+}
+
+/** 面から画素を読む。 */
+function pixels(canvas, w, h) {
+  return canvas.getContext('2d').getImageData(0, 0, w, h).data;
+}
+
+/** **描かれた量** — いちばん多い画素以外の数。背景しか無ければ 0 になる。
+ *
+ * 一致率は「原典と同じ絵になったか」を表すはずだが、**原典が 1 画素も描いていないと
+ * 背景が揃っただけで高い数字が出る**。それを見分けるための物差しで、色そのものは見ない
+ * (背景が何色でも、そこに何か載っているかだけを数える)。
+ */
+function ink(data, w, h) {
+  const count = new Map();
+  let top = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    const key = ((data[i] << 24) | (data[i + 1] << 16) | (data[i + 2] << 8) | data[i + 3]) >>> 0;
+    const n = (count.get(key) || 0) + 1;
+    count.set(key, n);
+    if (n > top) top = n;
+  }
+  return w * h - top;
+}
+
+/** どちらの面が背景だけだったか。 */
+function blankness(drawn) {
+  if (!drawn) return null;
+  if (drawn.origin === 0 && drawn.port === 0) return 'both';
+  if (drawn.origin === 0) return 'origin';
+  if (drawn.port === 0) return 'port';
+  return null;
+}
+
+/** 測れない理由の文。**台帳へは保存しない** — 撮るたびに描かれた量から作り直す。
+ *
+ * 保存すると、次に絵が出るようになっても理由だけが残り、台帳が古い話をし続ける。
+ */
+function reason(blank, why) {
+  if (blank === 'origin') return '原典が 1 画素も描かなかった。mokume だけが描いている';
+  return why || '原典と条件が揃わない';
 }
 
 function difference(originCanvas, ourCanvas, w, h) {
-  const read = (canvas) => canvas.getContext('2d').getImageData(0, 0, w, h).data;
+  const read = (canvas) => pixels(canvas, w, h);
   const a = read(originCanvas), b = read(ourCanvas);
 
   // **半画素ずらした mokume。** 線を画素に載せる (255 が 1 列) のか、境界にまたがらせる
@@ -218,8 +265,11 @@ function difference(originCanvas, ourCanvas, w, h) {
     if (d === 0) same++;
     if (d <= 2) close++;
     if (d <= 8) near++;
+    // ずらした写しは右端と下端に 0.5 画素の透明な帯ができる。**そこは「その場」だけを見る** —
+    // 埋めてから比べると半透明の例 (Recursion ほか) の絵が濁り、比べる相手が変わってしまう
+    const onEdge = (p % w) === w - 1 || p >= (h - 1) * w;
     // その場で合うか、半画素ずらして合うか。**どちらかで合えば同じ絵**
-    if (d <= 8 || gap(a, c, i) <= 8) half++;
+    if (d <= 8 || (!onEdge && gap(a, c, i) <= 8)) half++;
     sum += d;
     if (d > max) max = d;
   }
@@ -233,7 +283,7 @@ function difference(originCanvas, ourCanvas, w, h) {
   };
 }
 
-function compose(left, right, item, diff) {
+function compose(left, right, item, diff, blank) {
   const [W, H] = item.size;
   const out = document.createElement('canvas');
   out.width = W * 2 + GAP;
@@ -266,12 +316,18 @@ function compose(left, right, item, diff) {
   g.font = '12px ui-monospace, SFMono-Regular, Menlo, monospace';
   if (diff) {
     g.fillStyle = '#444444';
-    const suffix = item.measure === 'resampled' ? '  ・  原典を縮めているので参考値' : '';
+    let suffix = item.measure === 'resampled' ? '  ・  原典を縮めているので参考値' : '';
+    // **両方とも背景しか無いなら、そう書く。** 100% と出ていても、揃ったのは背景の色だけで
+    // 絵の一致を言っていない (入力を待つ例は 1 枚目がこれになる)
+    if (blank === 'both') suffix += '  ・  どちらも背景だけ';
+    // **数字が高くても、片方が背景だけなら「揃った」とは言えない。** 絵に書いておく
+    else if (blank === 'port') suffix += '  ・  mokume は 1 画素も描いていない';
+    else if (blank === 'origin') suffix += '  ・  原典は 1 画素も描いていない';
     g.fillText(`その場で一致 ${diff.near.toFixed(1)}%  ・  半画素ずらして一致 ${diff.half.toFixed(1)}%`
       + `  ・  形が一致 ${diff.shape.toFixed(1)}%  ・  完全一致 ${diff.same.toFixed(1)}%${suffix}`, 2, BAR + H + 17);
   } else {
     g.fillStyle = '#8a5a00';
-    g.fillText(`画素では測れない — ${item.why || '原典と条件が揃わない'}`, 2, BAR + H + 17);
+    g.fillText(`画素では測れない — ${reason(blank, item.why)}`, 2, BAR + H + 17);
   }
   return out;
 }
@@ -287,16 +343,33 @@ async function one(item) {
 
   // **引き伸ばさない。** 原典と面の大きさが違うなら、揃えた気になった数字より
   // 「揃っていない」と言うほうが正しい (サーバ側が measure を none にしている)
-  const measurable = item.measure !== 'none' && origin.width === W && origin.height === H;
+  const sameSize = origin.width === W && origin.height === H;
+
+  // **描かれた量を先に数える。** 一致率は「同じ絵になったか」を表すはずなのに、
+  // 両側とも背景だけなら「背景の色が揃った」しか言っていない。どちらが描いたかで
+  // 測る意味が変わるので、測る前に数える
+  const drawn = sameSize
+    ? { origin: ink(pixels(origin.canvas, W, H), W, H), port: ink(pixels(ours, W, H), W, H) }
+    : null;
+
+  const blank = blankness(drawn);
+  // **原典が描いていないなら測らない** — 比べる相手が無く、背景だけが揃った数字を
+  // 「98% 同じ」と読まれてしまう (Perspective は fov が 0 になり投影が潰れる)。
+  //
+  // **移植だけが描いていない場合は測る。** 数字そのものは意味を持つ (原典が描いたものを
+  // 落としている、と言っている) ので、消すのではなく絵の上に書き添える。落とすかどうかは
+  // publish の --check が原典の描いた量で決める
+  const measurable = item.measure !== 'none' && sameSize && blank !== 'origin';
+
   const diff = measurable ? difference(origin.canvas, ours, W, H) : null;
-  const sheet = compose(origin.canvas, ours, item, diff);
+  const sheet = compose(origin.canvas, ours, item, diff, blank);
   await fetch('/save', { method: 'POST', body: item.slug + '|' + sheet.toDataURL('image/png') });
   await fetch('/save', { method: 'POST', body: 'stats|' + JSON.stringify({
     [item.example]: { measure: item.measure, why: item.why, frame: item.frame,
-                      width: W, height: H, status: 'ok', diff },
+                      width: W, height: H, status: 'ok', diff, ink: drawn },
   }) });
   running = null;
-  return diff;
+  return { diff, blank };
 }
 
 (async () => {
@@ -305,9 +378,9 @@ async function one(item) {
   let done = 0;
   for (const item of todo) {
     try {
-      const diff = await one(item);
+      const { diff, blank } = await one(item);
       done++;
-      const score = diff ? `その場 ${diff.near.toFixed(1)}% / 半画素 ${diff.half.toFixed(1)}% / 形 ${diff.shape.toFixed(1)}% / 完全 ${diff.same.toFixed(1)}%` : `測らない (${item.why})`;
+      const score = diff ? `その場 ${diff.near.toFixed(1)}% / 半画素 ${diff.half.toFixed(1)}% / 形 ${diff.shape.toFixed(1)}% / 完全 ${diff.same.toFixed(1)}%` : `測らない (${reason(blank, item.why)})`;
       log(`${String(done).padStart(3)}/${todo.length} ${item.example}  ${score}`);
     } catch (e) {
       blame(e);

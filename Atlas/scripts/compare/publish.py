@@ -47,6 +47,48 @@ MOTION = "1"
 MOTION_FRAMES = 24
 
 
+def blankness(entry: dict) -> str | None:
+    """どちらの面が背景だけだったか。`scripts/compare/index.html` の同名の関数と同じ判定。"""
+    drawn = entry.get("ink")
+    if not drawn:
+        return None
+    if drawn["origin"] == 0 and drawn["port"] == 0:
+        return "both"
+    if drawn["origin"] == 0:
+        return "origin"
+    if drawn["port"] == 0:
+        return "port"
+    return None
+
+
+def reason(entry: dict) -> str:
+    """測らない理由。**撮るたびに描かれた量から作り直す** — 台帳へは文を置かない。"""
+    if blankness(entry) == "origin":
+        return "原典が 1 画素も描かなかった。mokume だけが描いている"
+    return entry.get("why") or "原典と条件が揃わない"
+
+
+def caption(entry: dict) -> str:
+    """シートと `comparison.md` に刷る 1 行。**指紋にも混ぜる。**
+
+    指紋は移植と frame と measure から作っていたので、**測り方を変えて数字が動いても
+    指紋は動かず、古い絵が上がったまま残った**。刷る文そのものを混ぜれば、数字が変われば
+    必ず上げ直しになる。逆に乱数の例は絵が毎回変わっても文は変わらないので、
+    意味の無い上げ直しが起きない。
+    """
+    diff = entry.get("diff")
+    if not diff:
+        return f"**測らない** — {reason(entry)}"
+    line = (f"その場 **{diff['near']:.1f}%** ・ 半画素 {diff.get('half', 0):.1f}%"
+            f" ・ 形 {diff.get('shape', 0):.1f}% ・ 完全 {diff['same']:.1f}%")
+    blank = blankness(entry)
+    if blank == "both":
+        line += " ・ どちらも背景だけ"
+    elif blank == "port":
+        line += " ・ **mokume は 1 画素も描いていない**"
+    return line
+
+
 def port_path(example: str) -> pathlib.Path | None:
     """その例の移植。**群ごとのフォルダに分かれていても引ける。**"""
     leaf = example.split("/")[-1]
@@ -64,6 +106,7 @@ def fingerprint(example: str, entry: dict) -> str:
     port = port_path(example)
     digest.update(port.read_bytes() if port else b"")
     digest.update(f"{entry['frame']}|{entry['measure']}|{entry['width']}x{entry['height']}|{SHEET}".encode())
+    digest.update(caption(entry).encode())
     return digest.hexdigest()
 
 
@@ -133,20 +176,37 @@ def publish(force: bool) -> int:
         })
         if measured.get("why"):
             entry["why"] = measured["why"]
+        # **描かれた量。** 一致率が「背景が揃っただけ」でないことの裏付けで、
+        # 測らない理由もここから作り直す (理由そのものは台帳へ置かない — 絵が出る
+        # ようになっても文だけが残り、台帳が古い話をし続ける)
+        if measured.get("ink"):
+            entry["ink"] = measured["ink"]
+        else:
+            entry.pop("ink", None)
         # **測れないと言った例に数字を付けない。** 付けると乱数の例が実行のたびに違う
         # 数を出し、台帳が意味もなく動く。読み手も 0% を「まったく違う」と読んでしまう
-        if measured["measure"] == "none":
+        # **測らなかった回は、前に測った数字を残さない。** 測るかどうかは撮るたびに
+        # 決まる (原典が 1 画素も描かなければ測れない) ので、消さないと古い数字が居座る
+        if measured["measure"] == "none" or not measured.get("diff"):
             entry.pop("diff", None)
-        elif measured.get("diff"):
+        else:
             entry["diff"] = {k: round(v, 4) for k, v in measured["diff"].items()}
 
         mark = fingerprint(example, entry)
+        shot = WORK / "shots" / f"{entry['slug']}.png"
         if not force and entry.get("url") and entry.get("source") == mark:
             book["shots"][example] = entry
             continue
-        shot = WORK / "shots" / f"{entry['slug']}.png"
         if not shot.exists():
             print(f"  {example}: 撮った絵が無い", file=sys.stderr)
+            continue
+        # **同じバイト列なら上げ直さない。** 指紋の作り方を変えた回に全 157 枚が
+        # 上がってしまうのを防ぐ。上げ直しても同じ絵に別の URL が付くだけで、
+        # 直すべきは台帳の指紋のほうである
+        if not force and entry.get("url") and hashlib.sha256(shot.read_bytes()).hexdigest() == entry.get("sha256"):
+            entry["source"] = mark
+            book["shots"][example] = entry
+            save(book)
             continue
         result = upload(shot, f"{example} — 原典と mokume")
         entry["url"] = result["url"]
@@ -235,6 +295,34 @@ def bucket(book: dict) -> dict[str, int]:
     return counts
 
 
+def unmeasured(book: dict) -> list[tuple[str, int]]:
+    """**数を出さなかった例の内訳。** 理由が 1 つでないので、まとめて「乱数・時計・書体」と
+    書くと嘘になる (原典どうしが食い違う例と、原典が絵を出さない例が混ざっている)。"""
+    kinds = [
+        ("乱数・雑音・時計", "乱数"),
+        ("字を組む", "字を組む"),
+        ("原典が 2 つ食い違う", "原典が 2 つある"),
+        ("原典が 1 画素も描かない", "原典が 1 画素"),
+        ("面の大きさが違う", "面の大きさ"),
+    ]
+    counts = {label: 0 for label, _ in kinds}
+    other = 0
+    for _, entry in rows(book):
+        if entry.get("diff"):
+            continue
+        why = reason(entry)
+        for label, mark in kinds:
+            if why.startswith(mark):
+                counts[label] += 1
+                break
+        else:
+            other += 1
+    out = [(label, counts[label]) for label, _ in kinds if counts[label]]
+    if other:
+        out.append(("その他", other))
+    return out
+
+
 def bands(book: dict) -> list[tuple[str, int]]:
     """その場で一致した割合の分布。**線を引かず、並べるだけ。**"""
     scores = [e["diff"]["near"] for _, e in rows(book) if e.get("diff")]
@@ -260,6 +348,7 @@ def write_gallery(book: dict) -> None:
         groups.setdefault(entry["group"], []).append((example, entry))
 
     counts = bucket(book)
+    measured = sum(1 for _, e in rows(book) if e.get("diff"))
     out = [
         "# 原典と並べた全数",
         "",
@@ -270,9 +359,10 @@ def write_gallery(book: dict) -> None:
         " (Processing 版と 1 行ずつ対応した p5.js) を走らせたもので、**条件を 3 つ揃えて"
         "ある** — マウスを動かさない・決めた枚数で止める・等倍。",
         "",
-        f"画素で測れたのが {counts['pixel']} 本、原典が静止画しか無くて参考値なのが"
-        f" {counts['resampled']} 本、測らないと決めたのが {counts['none']} 本"
-        " (乱数・時計・書体を使う例は、原典と mokume で列が違うので一致率に意味が無い)。",
+        f"数を出したのが {measured} 本 (うち {counts['resampled']} 本は原典が静止画しか無く、"
+        "縮めて比べているので参考値)、**数を出さなかったのが"
+        f" {len(book['shots']) - measured} 本**。理由は 1 つではない — "
+        + "・".join(f"{label} {n} 本" for label, n in unmeasured(book)) + "。",
         "",
         "数は 4 つ出す。**どれが「同じ絵」かは決めていない** — 見て決めるのは人である。",
         "",
@@ -318,12 +408,7 @@ def write_gallery(book: dict) -> None:
         out += [f"## {group}", ""]
         for example, entry in items:
             leaf = example.split("/")[-1]
-            diff = entry.get("diff")
-            if diff:
-                score = (f"その場 **{diff['near']:.1f}%** ・ 半画素 {diff.get('half', 0):.1f}%"
-                         f" ・ 形 {diff.get('shape', 0):.1f}% ・ 完全 {diff['same']:.1f}%")
-            else:
-                score = f"**測らない** — {entry.get('why') or '原典と条件が揃わない'}"
+            score = caption(entry)
             note = f" ・ {entry['note']}" if entry.get("note") else ""
             frame = f" ・ {entry['frame']} 枚目" if entry.get("frame", 1) > 1 else ""
             out += [f"### `{leaf}`", "",
@@ -351,11 +436,16 @@ def write_readme(book: dict) -> None:
     for label, n in bands(book):
         body.append(f"| {label} | {n} |")
     body += [
-        f"| 測らない (乱数・時計・書体) | {counts['none']} |",
+        f"| 数を出さない | {sum(n for _, n in unmeasured(book))} |",
         "",
         f"移した {total} 本ぶん。うち {counts['resampled']} 本は原典が静止画しかなく、"
         "縮めて比べているので参考値。**どれが「同じ絵」かは決めていない** — 数と並べた"
         " 1 枚を出すところまでが機械の仕事で、見て決めるのは人である。",
+        "",
+        "**数を出さない理由は 1 つではない** — "
+        + "・".join(f"{label} {n} 本" for label, n in unmeasured(book))
+        + "。原典どうしが食い違う例と、原典が 1 画素も描かない例には数を出さない"
+        " ([`scripts/origins.py`](scripts/origins.py) が前者を機械で探す)。",
         "",
         "**157 枚を並べたものが [`ledger/comparison.md`](ledger/comparison.md)** にある"
         " (リンクではなく埋め込んであるので、上から流し読みできる)。",
@@ -394,6 +484,17 @@ def check() -> int:
             problems.append(f"{example}: 移植か測り方を変えたのに撮り直していない")
         if entry["measure"] == "none" and entry.get("diff"):
             problems.append(f"{example}: 測れないと言った例に数字が付いている")
+        # **原典が絵を出したのに移植が背景だけ、は移植の側の疑いである。**
+        # 157 枚を目で見張るのは回らないので、ここで落とす。
+        #
+        # ただし**原典が数画素しか描いていないときは黙る** — 潰れた図形の縁が 1 画素だけ
+        # 残る類 (Pattern の `ellipse(0,0,0,0)` が 1 画素、PenroseSnowflake の
+        # 面の外を通る線が 12 画素) で、絵と呼べるものが無い。面の 0.1% を目安にする
+        drawn = entry.get("ink")
+        if drawn and drawn["port"] == 0 and drawn["origin"] >= entry["width"] * entry["height"] / 1000:
+            problems.append(f"{example}: 原典は絵を出しているのに、移植が 1 画素も描いていない")
+        if entry["measure"] != "none" and not entry.get("ink"):
+            problems.append(f"{example}: 描かれた量を数える前に撮ったまま (撮り直す)")
         if entry.get("url") and entry["url"] not in GALLERY.read_text():
             problems.append(f"{example}: 台帳にある絵が comparison.md に出ていない")
         motion = entry.get("motion")
