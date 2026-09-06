@@ -155,9 +155,20 @@ def collect() -> tuple[dict, dict]:
     return stats, menu
 
 
+def diagnostics() -> dict[str, list[str]] | None:
+    """`scripts/compare/diagnostics.py` が集めた、mokume の一言。
+
+    **無ければ None を返す。** 集めていない回に台帳から消してしまうと、警告を残すために
+    毎回 157 回の起動が要ることになる。
+    """
+    path = WORK / "warnings.json"
+    return json.loads(path.read_text()) if path.exists() else None
+
+
 def publish(force: bool) -> int:
     book = load()
     stats, menu = collect()
+    said = diagnostics()
     book["tool"] = {
         "mokume": mokume_version(),
         "p5": "1.9.4",
@@ -183,6 +194,13 @@ def publish(force: bool) -> int:
             entry["ink"] = measured["ink"]
         else:
             entry.pop("ink", None)
+        # **mokume が「そうしなかった」と言った一言。** 一致率より先に読むべき事実なので
+        # 台帳に持つ。集めていない回は前の値をそのまま残す (消すと集め直しが要る)
+        if said is not None:
+            if said.get(example):
+                entry["warnings"] = said[example]
+            else:
+                entry.pop("warnings", None)
         # **測れないと言った例に数字を付けない。** 付けると乱数の例が実行のたびに違う
         # 数を出し、台帳が意味もなく動く。読み手も 0% を「まったく違う」と読んでしまう
         # **測らなかった回は、前に測った数字を残さない。** 測るかどうかは撮るたびに
@@ -349,6 +367,7 @@ def write_gallery(book: dict) -> None:
 
     counts = bucket(book)
     measured = sum(1 for _, e in rows(book) if e.get("diff"))
+    said = sum(1 for _, e in rows(book) if e.get("warnings"))
     out = [
         "# 原典と並べた全数",
         "",
@@ -365,6 +384,10 @@ def write_gallery(book: dict) -> None:
         + "・".join(f"{label} {n} 本" for label, n in unmeasured(book)) + "。",
         "",
         "数は 4 つ出す。**どれが「同じ絵」かは決めていない** — 見て決めるのは人である。",
+        "",
+        f"**mokume が「そうしなかった」と言った例には、数字より先にその一言を置いてある**"
+        f" ({said} 本)。言われたとおりにしなかったという申告なので、一致率だけを見ても"
+        "絵が食い違っている理由には辿り着けない。",
         "",
         "| | 何を見るか |",
         "| --- | --- |",
@@ -411,8 +434,12 @@ def write_gallery(book: dict) -> None:
             score = caption(entry)
             note = f" ・ {entry['note']}" if entry.get("note") else ""
             frame = f" ・ {entry['frame']} 枚目" if entry.get("frame", 1) > 1 else ""
-            out += [f"### `{leaf}`", "",
-                    f"台帳は `{entry['class']}`{frame} ・ {score}{note}", "",
+            out += [f"### `{leaf}`", ""]
+            # **mokume がそうしなかったと言っているなら、数字より先に読ませる。**
+            # 一致率だけを見ても、絵が食い違っている理由には辿り着けない
+            for line in entry.get("warnings", []):
+                out += [f"> **mokume はこう言っている** — {line}", ""]
+            out += [f"台帳は `{entry['class']}`{frame} ・ {score}{note}", "",
                     f"![{example}]({entry['url']})", ""]
             if entry.get("motion", {}).get("url"):
                 out += [f"![{example} の動き]({entry['motion']['url']})", ""]
@@ -476,6 +503,7 @@ def write_readme(book: dict) -> None:
 def check() -> int:
     """撮り直していないものを捕まえる。**画像そのものは比較しない。**"""
     book = load()
+    said = diagnostics()
     problems: list[str] = []
     if book.get("tool", {}).get("mokume") != mokume_version():
         problems.append(f"道具を上げたのに撮り直していない (台帳 {book.get('tool', {}).get('mokume')} / いま {mokume_version()})")
@@ -495,6 +523,8 @@ def check() -> int:
             problems.append(f"{example}: 原典は絵を出しているのに、移植が 1 画素も描いていない")
         if entry["measure"] != "none" and not entry.get("ink"):
             problems.append(f"{example}: 描かれた量を数える前に撮ったまま (撮り直す)")
+        if said is not None and said.get(example, []) != entry.get("warnings", []):
+            problems.append(f"{example}: mokume の一言が変わったのに台帳へ載せていない")
         if entry.get("url") and entry["url"] not in GALLERY.read_text():
             problems.append(f"{example}: 台帳にある絵が comparison.md に出ていない")
         motion = entry.get("motion")
