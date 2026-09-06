@@ -1,6 +1,6 @@
 ---
 name: mokume-bump
-description: "mokume の新しい版に works を追随させるときに読む。版上げ・新しい語彙での書き直し・Atlas の台帳の測り直しと証跡の撮り直し・mokume への起票までの順序と、版上げでだけ踏む落とし穴。Use when mokume releases a new version, when a mokume watch issue is filed, when running scripts/bump.py or scripts/verify.py, or when a work's Package.resolved is behind."
+description: "mokume の新しい版に works を追随させるときに読む。版上げ・新しい語彙での書き直し・Atlas の語彙の台帳の再判定・mokume への起票までの順序と、版上げでだけ踏む落とし穴。Use when mokume releases a new version, when a mokume watch issue is filed, when running scripts/bump.py or scripts/verify.py, or when a work's Package.resolved is behind."
 ---
 
 # mokume の版上げに追随する
@@ -31,7 +31,7 @@ mokume の口を名指しで持っている。[#21](https://github.com/mokume-me
 | --- | --- | --- |
 | ① | `build:` 版だけ上げる。**中身は 1 行も変えない** | Atlas の台帳がここで基準線を取るから、②で絵が動いたときに「版差か書き直しか」を言い切れる。**作品は指紋を持たないので目で見る比較になり**、なおさら混ぜられない |
 | ② | `refactor:` 埋まった穴を使って書き直す | |
-| ③ | `feat(atlas):` 台帳の再判定と証跡の撮り直し | 版を上げた瞬間に証跡が全件 stale になる。版上げと撮り直しが構造的に一続き |
+| ③ | `feat(atlas):` 語彙の台帳の再判定 | 埋まった穴のぶんだけ `vocabulary.jsonl` の判定が変わる。作品の書き直しとは見るものが違う |
 
 根拠は作品自身が書いている — `Helmet/README.md` の「**絵が動くので、版を上げる変更に
 混ぜない**」。①と②を混ぜると、この切り分けができなくなる。
@@ -41,9 +41,10 @@ python3 scripts/bump.py 0.7.0      # ① Package.swift と Package.resolved (全
 python3 scripts/verify.py --check  # 台帳の版がずれていないか (台帳を持つ Atlas だけ)
 ```
 
-**作品 (Grain / Garden / Solids / Ring / Helmet) は窓を開けて目で見る。** 絵のハッシュも
-書き出しの口も持たないので、動いたかどうかを機械は言わない — 気付いたことは各 README の
-散文へ書く。Atlas の測り直しは ③ で `publish.py` が回す。
+**絵が動いたかどうかは、窓を開けて目で見る。** works はもう指紋を持たない — 作品は計測も
+検証も持たず ([#40](https://github.com/mokume-metal/works/pull/40))、Atlas も絵を撮って
+突き合わせる仕組みを畳んだ ([#39](https://github.com/mokume-metal/works/pull/39))。
+気付いたことは各 README の散文へ書く。
 
 ## 作品ごとに並行させる
 
@@ -53,23 +54,21 @@ python3 scripts/verify.py --check  # 台帳の版がずれていないか (台�
 - **git を触るのはメインだけ。** サブエージェントには確認と README の散文だけを任せる
 - **Atlas は輪から外す。** 別 PR で、単独で進める — 台帳と証跡を持つのはあちらだけで、
   手順がまるごと違う
-- `verify.py --jobs=N` は台帳を持つものを並行させる。**動いた絵が出たら他を止めて 1 本ずつ
-  測り直す**ようになっている — mokume には待ち切れないときに黙って古い写しを返す経路が
-  あり (面の画素を読む・画像を面へ送る・字形を焼く)、混むと効く
+- `verify.py` が見るのは**ビルドが通ることと版の刻印**だけである。絵は測らない
 
 ## 版上げでだけ踏む落とし穴
 
 ### Atlas
 
-- **`publish.py` は `--force` が要る。** 指紋に mokume の版が入らない設計なので、素の
-  publish は台帳の版だけ書き換えて絵を上げ直さず、**以降 `--check` が「全部新鮮」と言う**
-- **撮る前にキャッシュを消す**: `out/` `upstream/compare/{shots,motion,webp,stats.json}`
+**絵を撮って突き合わせる仕組みは畳んである** ([#39](https://github.com/mokume-metal/works/pull/39))。
+`publish.py` / `serve.py` / `shots.json` / `renders.txt` はもう無いので、版上げで撮り直すものも無い。
+残っているのは語彙の台帳 (`ledger/`) である。
+
 - **`vocabulary.jsonl` の再判定は人にしかできない。** 判定は手書きが優先されるので、
   `write` / `bend` / `none` → `same` の格上げは機械では起きない。`checked` を新しい版へ
   進めるのは、その行を実際に見直した印である
-- **`serve.py` のブラウザ撮影は無人化できない。** 100 本を超えると必ず途中で切れる設計で、
-  `/todo` が空になるまで開き直す
-- **`--update` は使えない。** 期待値も版も `publish.py` が書く (正本を 2 つにしない)
+- **`checks.json` の `renders` は空のままにする。** 版の刻印と「ビルドが通るか」を他と
+  同じ形で見るために残してある器で、絵の期待値を書き戻す先ではない
 
 ### README を書き換えるとき
 
@@ -96,11 +95,13 @@ python3 scripts/verify.py --check  # 台帳の版がずれていないか (台�
 機械が言わない**ので (指紋を持つのは Atlas だけ)、版を上げたら必ず窓を開けて先頭の絵と
 見比べる。撮り方は repo-standards の `gyazo-capture` スキル。
 
-### 撮影が副作用を持つ
+### 走らせると副作用が出ることがある
 
-**版が上がると増える。** `v0.6.0` で押下を受け取れるようになった結果、`Atlas --motion`
-が `SaveOneImage` の例を押して `line.png` を書き出すようになった。撮り終えたら
-`git status` を見て、未追跡のファイルが増えていないか確かめる。
+**版が上がると増える。** `v0.6.0` で押下を受け取れるようになった結果、当時の
+`Atlas --motion` が `SaveOneImage` の例を押して `line.png` を書き出すようになった
+(その口は [#39](https://github.com/mokume-metal/works/pull/39) で畳んだ)。スケッチが
+自分で書き出す例はまだあるので、**手で走らせたら `git status` を見て、未追跡のファイルが
+増えていないか確かめる**。
 
 ## mokume へ戻す
 

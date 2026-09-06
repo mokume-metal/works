@@ -136,13 +136,12 @@ Processing にあって mokume に無い語彙のうち、**面の外に書け�
 
 **止まった 1 枚では判断できないものには、動くものを併載してある。** 決まった道すじでマウスを流しながら 24 枚撮り、原典と並べたアニメーション WebP にしたもので、**123 本に付いている**。置き換えではない — 細かい差は静止画のほうが向いている。
 
-道すじは式で決めてある ([`Support/MousePath.swift`](Sources/Atlas/Support/MousePath.swift) と [`scripts/compare/motion.html`](scripts/compare/motion.html) に同じ式)。**揃っていないと、動きの違いなのか入力の違いなのか分からなくなる。** 原典の側では `mousePressed()` などの出来事も起こす — 本物のブラウザなら呼ばれるものなので、呼ばないと原典だけ手加減したことになる。
+道すじは式で決めてあった (移植側と原典側の 2 か所に同じ式を置いた)。**揃っていないと、動きの違いなのか入力の違いなのか分からなくなる。** 原典の側では `mousePressed()` などの出来事も起こしていた — 本物のブラウザなら呼ばれるものなので、呼ばないと原典だけ手加減したことになる。
 
 **動きが付いていない 34 本**は、道すじを流しても絵が 1 枚も変わらなかったもの (Processing の静止形)。
 
 **`v0.5.0` のときは 117 本だった。** 増えた 6 本は、出来事の口が入って**マウスの道すじに反応するようになった**例である — 動きの証跡の本数そのものが、口が増えたことの目盛りになっている。
 
-<!-- compare:begin -->
 | その場で一致 | 本数 |
 | --- | ---: |
 | 100% | 13 |
@@ -154,22 +153,20 @@ Processing にあって mokume に無い語彙のうち、**面の外に書け�
 
 移した 157 本ぶん。うち 1 本は原典が静止画しかなく、縮めて比べているので参考値。**どれが「同じ絵」かは決めていない** — 数と並べた 1 枚を出すところまでが機械の仕事で、見て決めるのは人である。
 
-**数を出さない理由は 1 つではない** — 乱数・雑音・時計 30 本・字を組む 7 本・原典が 2 つ食い違う 10 本・原典が 1 画素も描かない 2 本・面の大きさが違う 1 本。原典どうしが食い違う例と、原典が 1 画素も描かない例には数を出さない ([`scripts/origins.py`](scripts/origins.py) が前者を機械で探す)。
+**数を出さない理由は 1 つではない** — 乱数・雑音・時計 30 本・字を組む 7 本・原典が 2 つ食い違う 10 本・原典が 1 画素も描かない 2 本・面の大きさが違う 1 本。原典どうしが食い違う例と、原典が 1 画素も描かない例には数を出さなかった (前者は機械で探していた)。
 
-**157 枚を並べたものが [`ledger/comparison.md`](ledger/comparison.md)** にある (リンクではなく埋め込んであるので、上から流し読みできる)。
+**157 枚を並べた一覧は畳んだ** (「測るのをやめたもの」)。下に残してあるのは、そのうちの代表である。
 
 ![Basics/Form/Bezier — 原典と mokume](https://i.gyazo.com/6ff2bfe81e2ad2ff547000e2a668fe74.png)
 
 ![Basics/Math/Map — 原典と mokume](https://i.gyazo.com/46af99de5c9d9aa743e8e51aed426371.png)
 
 ![Topics/Drawing/ContinuousLines — 原典と mokume](https://i.gyazo.com/43f8b666348bc84787692376db7652b5.png)
-<!-- compare:end -->
 
 **形と位置はよく合っている。** 157 本のうち 68 本が「その場で一致 99% 以上」で、差が出たものも輪郭の均し・色の作り方・線の載せ方の 3 つにほぼ収まる。
 
 #### 1. 半透明を重ねると色が変わる (`Mouse2D`)
 
-<!-- compare:image Basics/Input/Mouse2D -->
 ![Basics/Input/Mouse2D — 原典と mokume](https://i.gyazo.com/b0043f7a48c18cfe0199553b20dd3a8f.png)
 
 原典の `fill(255, 204)` — 白を 80% の濃さで、51 の背景へ重ねる 1 行。**出てくる色が違う。**
@@ -183,7 +180,6 @@ Processing にあって mokume に無い語彙のうち、**面の外に書け�
 
 #### 2. 同じ数から違う色が出る (`StatementsComments`)
 
-<!-- compare:image Basics/Structure/StatementsComments -->
 ![Basics/Structure/StatementsComments — 原典と mokume](https://i.gyazo.com/eccfb4d17f8f621dffdc23708a3865f0.png)
 
 原典は `background(204, 153, 0)` の 1 行だけの例で、**面ぜんぶが 9 ずれる。**
@@ -199,7 +195,6 @@ Processing にあって mokume に無い語彙のうち、**面の外に書け�
 
 #### 3. 1px の線をピクセルに載せるか、またがせるか (`NoLoop`)
 
-<!-- compare:image Basics/Structure/NoLoop -->
 ![Basics/Structure/NoLoop — 原典と mokume](https://i.gyazo.com/a57a486bad51f567042a317a4f0adcdf.png)
 
 `line(0, 180, width, 180)` の 1 本が、**p5 では 2 行に 128 ずつ・mokume では 1 行に 255** で出る。p5 は線をピクセルの境界にまたがらせて均し、mokume はピクセルに載せる。線 1 本ぶん (640 画素 = 面の 0.28%) の差なので一致率は 99.2% に留まる。
@@ -234,14 +229,9 @@ mokume mcp .      # 走っているスケッチを外から観測する
 **`mokume run` / `watch` / `mcp` は引数を通さない**ので、窓の経路は既定の 1 本に固定される。例を選ぶときは実行ファイルへ直に渡す。
 
 ```bash
-swift run Atlas --list                        # 移した例を並べる
-swift run Atlas Mouse2D                       # その 1 本を窓で出す
-swift run Atlas --render <置き場> <数> Mouse2D  # 1 枚だけ書き出す
-swift run Atlas --frames <置き場> <数> Mouse2D  # 連番で書き出す
-swift run Atlas --render-all <置き場> <数>      # 移した全部を 1 枚ずつ
+swift run Atlas --list     # 移した例を並べる
+swift run Atlas Mouse2D    # その 1 本を窓で出す
 ```
-
-**`--render-all` があるのは、版を上げたときに全部のハッシュを一度に取り直すため。** 既存 4 作品は 1 本ずつ手で確かめており、版上げのたびに同じ手順を作品の数だけ踏む。Atlas は移した例が増え続けるので、その手順が本数に比例しては回らない。
 
 台帳を組み直すときは:
 
@@ -250,9 +240,23 @@ python3 scripts/fetch.py     # 上流を取ってくる (upstream/ は gitignore
 python3 scripts/ledger.py    # ledger/ を組み直す
 ```
 
-## 検証する
+## 測るのをやめたもの
 
-**同じフレーム番号からは同じ絵が出る** (mokume の [ADR-0001](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0001-founding-principles.md) 原則 2)。下のハッシュが食い違ったら、変えたつもりのないところが変わっている。
+**絵を撮って突き合わせる仕組みを畳んだ。** 3 つが互いに噛み合っていたので、まとめて外した:
+
+| 畳んだもの | 何だったか |
+| --- | --- |
+| `--render` / `--frames` / `--render-all` / `--motion` | 移した例を PNG へ書き出す口。全数のハッシュを一度に取り直すためにあった |
+| `scripts/compare/` | 原典 (p5) と mokume を横に並べた 1 枚をブラウザで作り、Gyazo へ上げて台帳と文書へ書き戻す仕組み |
+| `ledger/renders.txt` / `ledger/shots.json` / `ledger/comparison.md` | 155 枚の指紋、撮影の台帳、157 枚を並べた一覧 |
+
+**失うものははっきりしている。** 絵のハッシュは、**版を上げたときに描画が黙って変わったことを捕まえる唯一の手段**だった。`v0.7.0` で `fill(255, 255 * 50 / 100)` が 127.5 から 127 になった件 ([mokume#1018](https://github.com/mokume-metal/mokume/issues/1018)) は `additivewave-1.png` が動いて初めて気付いたもので、**指紋を持っていなければ「そういう絵だった」で通り過ぎていた**。これからは通り過ぎる。
+
+やめたのは、Atlas を**例 1 本ずつが独立した mokume のスケッチである**形へ変えるため。撮影は「1 つの実行ファイルが 157 本を抱えている」ことに強く寄りかかっており、両立させるより畳むほうが素直だと判断した。**消したものは git 履歴に残る**ので、また測りたくなったら取り戻せる。
+
+下の「原典と同じ見た目になっているか」は、畳む前に測った結果の記録である。**もう一度回すことはできない**が、何をどう測って何が分かったかは残す。
+
+## 検証する
 
 <!-- verify:pins -->
 | | |
@@ -262,26 +266,12 @@ python3 scripts/ledger.py    # ledger/ を組み直す
 | 原典 | `processing/processing-examples` @ `b10c9e9a05a0d6c20d233ca7f30d315b5047720e` ([`ledger/sources.json`](ledger/sources.json) が刻む) |
 <!-- verify:end -->
 
-**先に上流を取る** (`python3 scripts/fetch.py`)。取っていないと**資材を読む 18 本の絵が変わる** — 画像・データ・OBJ を読む例は、資材が無いと原典と違うものを描く。
+**絵は測らない。** `checks.json` の `renders` は空で、検証が見るのは**ビルドが通るか**と**版の刻印が合っているか**だけである。
 
 <!-- verify:renders -->
-```bash
-swift run -c release Atlas --render-all out 1
-diff <(shasum -a 256 out/*.png | sed 's|out/||' \
-        | grep -vE ' (clock-1\.png|intlistlottery-1\.png)$') \
-     <(grep -v '^#' ledger/renders.txt)
-```
 <!-- verify:end -->
 
-155 行の一覧は [`ledger/renders.txt`](ledger/renders.txt)。**乱数を使う例も入っている** — mokume の乱数は同じフレーム番号から同じ値を出すので (ADR-0001 原則 2)、書き出しは再現する。
-
-**2 本だけ載せていない。** `Clock` は壁時計を読み、`IntListLottery` は Swift の `shuffle()` (系の乱数で種を指せない) を呼ぶので、**同じフレーム番号からでも毎回違う絵になる**。載せると突き合わせが毎回 2 行ずれるので、両側から外してある (名前と理由は `renders.txt` の冒頭にも書いてある)。**mokume の外から値を取っているのはこの 2 本だけ**である。
-
-**マウスで変わる例は、窓を持たない書き出しでは動かない。** `mouseX` が 0 のまま撮れる。外から動かすときは窓口と基準を揃える (Ring と同じ手順):
-
-```bash
-MOKUME_WORK_DIR="$PWD" mokume run Atlas
-```
+**先に上流を取る** (`python3 scripts/fetch.py`)。取っていないと**資材を読む 21 本が絵を出せない** — 画像・データ・OBJ を読む例は、資材が無いと原典と違うものを描く。
 
 台帳が再現できることは、上流の版を固定してあるので確かめられる。
 
@@ -289,50 +279,6 @@ MOKUME_WORK_DIR="$PWD" mokume run Atlas
 python3 scripts/fetch.py && python3 scripts/ledger.py
 git diff --stat ledger/    # 差分が出なければ、同じ版から同じ台帳が組める
 ```
-
-**原典と並べた比較も作り直せる。** 立てて、出た URL をブラウザで開くと、原典 (p5) と
-mokume を横に並べた 1 枚が `upstream/compare/shots/` に出る。**献立は台帳が決める**ので、
-移植を足せば次から比較の対象に入る (mokume の絵は足りないぶんだけ勝手に書き出される)。
-
-```bash
-swift run -c release Atlas --motion out/motion 24   # 動きの証跡 (mokume 側の連番)
-python3 scripts/compare/serve.py            # http://127.0.0.1:8731/ と /motion.html を開く
-python3 scripts/compare/animate.py          # 連番を WebP へ畳む
-python3 scripts/compare/diagnostics.py      # mokume が「そうしなかった」と言った一言を集める
-python3 scripts/compare/publish.py          # Gyazo へ上げ、台帳と文書を書き戻す
-python3 scripts/compare/publish.py --check  # 撮り直していないものを捕まえる
-python3 scripts/origins.py --check          # 原典どうしが食い違うのに測っていないか
-```
-
-比べているのが処理系の差であって撮り方の差ではないように、条件を 3 つ揃えてある
-([`scripts/compare/index.html`](scripts/compare/index.html) にその理由も書いた)。
-
-**数を出さないと決めるものが 3 種類ある。**
-
-| | 誰が決めるか |
-| --- | --- |
-| 乱数・雑音・時計を使う / 字を組む | 台帳の語彙から `serve.py` が決める |
-| **原典どうしが食い違う** (`.pde` と site の p5) | [`scripts/origins.py`](scripts/origins.py) が数値リテラルで探し、人が台帳へ書く |
-| **原典が 1 画素も描かなかった** | 撮るたびに `index.html` が数えて決める。台帳へは理由を書かず、描かれた量 (`ink`) だけ残す |
-
-最後の 1 つを台帳へ文で書かないのは、**絵が出るようになっても理由だけが残り、台帳が古い話を
-し続ける**のを避けるため。逆向きの「原典は絵を出したのに移植が 1 画素も描いていない」は
-`publish.py --check` が落とす — 157 枚を目で見張るのは回らない。
-
-**mokume が「そうしなかった」と言ったら、数字より先にそれを読む。** 書き出しのとき mokume は
-`mokume: perspective(): 写す範囲が潰れている…投影を変えませんでした` のように標準エラーへ
-1 行出す。**言われたとおりにしなかったという申告**なので、一致率だけを見ても絵が食い違って
-いる理由には辿り着けない。`diagnostics.py` が集めて台帳へ入れ、`comparison.md` の数字の前に
-置く。**例ごとにプロセスを分けている** — mokume は同じ警告を畳むので、157 本をまとめて回すと
-どの例のものか決まらない。いま出ているのは 1 本だけ (`Basics/Camera/Perspective`) で、
-動きの書き出しでは 1 種類も出ていない。
-**揃える前は原典側だけ 30 フレーム進み、線が 1 本ぶんずれていた。**
-
-**本文の画像行は手で書かない。** 撮った証跡の台帳は [`ledger/shots.json`](ledger/shots.json) で、
-`ledger/comparison.md` は丸ごと生成物、README のこの節も印 (`<!-- compare:begin -->`) で
-囲った区間だけが生成物である。`--check` は移植・枚数・測り方・mokume の版を撮影時の指紋と
-突き合わせ、**直したのに撮り直していない**を捕まえる (画像そのものは比べないので GPU も要らない)。
-**捕まえられるのはこちら側の変化だけ** — 原典が変わったことは、取ってきたときにしか分からない。
 
 ## 台帳の作り
 
@@ -351,11 +297,11 @@ python3 scripts/origins.py --check          # 原典どうしが食い違うの�
 
 `vocabulary.jsonl` に**行が無い語彙は未判定**である。番人の値 (`"unknown"`) を置いていないのは、集計側が数え忘れて静かに嘘の数字を出すのを防ぐため — 未判定を含む例は届く / 届かないのどちらにも数えない。いま未判定が 48 語あるが、どれも `out-of-scope` の例にしか出ないので区分には効いていない。
 
-### 書き出しの口を写すのは、これで 5 度目
+### 例を 1 本選ぶ口
 
-[`main.swift`](Sources/Atlas/main.swift) の `--render` / `--frames` は Ring から写した。Ring は Solids から、Solids は Garden から、Garden は Grain から写している。**5 つを diff すると、違うのはコメントと識別子だけ**である。
+**書き出しの口 (`--render` / `--frames`) は Ring から写したものだった** — Ring は Solids から、Solids は Garden から、Garden は Grain から写しており、**5 つを diff すると違うのはコメントと識別子だけ**という状態だった。いまは畳んである (「測るのをやめたもの」)。
 
-ただし Atlas は 1 product に例を N 本持つので、Grain の `makeSketch(_:)` を広げた。Grain が `if arguments.first == "slab" { Slab.main() } else { Grain.main() }` と分岐していたのは、**`Sketch.main()` が `@MainActor static func main()` で `any Sketch` から呼べない**ためで、例が増えると分岐も増える。`SketchApplication(sketch:gpu:)` は `any Sketch` を取るので、こちらを使うと分岐が消える (`Sketch.main()` の中身と同じ経路)。
+残っているのは例を選ぶ口だけである。Atlas は 1 product に例を N 本持つので、Grain の `makeSketch(_:)` を広げた。Grain が `if arguments.first == "slab" { Slab.main() } else { Grain.main() }` と分岐していたのは、**`Sketch.main()` が `@MainActor static func main()` で `any Sketch` から呼べない**ためで、例が増えると分岐も増える。`SketchApplication(sketch:gpu:)` は `any Sketch` を取るので、こちらを使うと分岐が消える (`Sketch.main()` の中身と同じ経路)。
 
 ## 版を上げたときに動いたもの — `v0.6.0` → `v0.7.0`
 
@@ -368,7 +314,7 @@ python3 scripts/origins.py --check          # 原典どうしが食い違うの�
 
 **ビルドも 22 箇所で落ちた。** `rotateX(.pi)` のような暗黙メンバ参照が総称の引数で解決できなくなったためで ([mokume#1017](https://github.com/mokume-metal/mokume/issues/1017))、`Float.pi` へ書き換えた。移した先で `.pi` と書くのは、原典が `PI` と書いているからである。
 
-**台帳 (`ledger/renders.txt`) はまだ `v0.6.0` の指紋のままである。** 更新は `publish.py --force` を要し、語彙の再判定とブラウザ撮影が人手を要るので、**版上げとは別の PR で進める**。
+**155 枚の指紋は `v0.6.0` のまま更新されなかった。** 撮り直しに語彙の再判定とブラウザ撮影という人手が要り、版上げとは別の PR へ回していたところで、指紋ごと畳んだ (「測るのをやめたもの」)。**上の 3 枚が、この作品が絵の変化を捕まえた最後の記録である。**
 
 ## mokume へ戻したもの
 
