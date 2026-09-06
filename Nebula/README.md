@@ -147,9 +147,13 @@ mokume: スタイルの積み降ろしはフレームの中でだけできます
 
 ## mokume へ戻したもの
 
-| 踏んだもの | 戻した先 |
-| --- | --- |
-| 粒の混ぜ方が `setup()` から決められない (説明どおりに書くと選べない) | (起票予定) |
-| 粒の初速が面内にしか向かない (`vz = 0`) | (起票予定) |
-| 粒の板がビルボードでない | (起票予定) |
-| 粒に明滅・寿命に応じたフェードが無い | (起票予定) |
+**4 本戻した。閉じても消さない** — 何を踏んで、どの版で塞がったかは記録である。
+
+| 踏んだもの | 戻した先 | |
+| --- | --- | --- |
+| 粒の混ぜ方が `setup()` から決められない (説明どおりに書くと `.blend` に固定される) | [mokume#1041](https://github.com/mokume-metal/mokume/issues/1041) | `fix` |
+| 粒の初速が面内にしか向かない (`vz = 0`) | [mokume#1042](https://github.com/mokume-metal/mokume/issues/1042) | `feat` |
+| 粒の板がビルボードでないので、視点を回すと痩せる | [mokume#1043](https://github.com/mokume-metal/mokume/issues/1043) | `feat` |
+| 引く力が距離によらないので、抵抗があると全粒が同じ半径へ落ちる | [mokume#1044](https://github.com/mokume-metal/mokume/issues/1044) | `feat` |
+
+**「粒に明滅が無い」は起票していない。** 色も大きさも寿命で変わらないのは事実だが、`.bloom` と `.wander` の重ね合わせで**作りたかった見た目には届いた**ので、実害が無い。mokume の [ADR-0008](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0008-mechanism-needs-demonstrated-harm.md) が求めるのは実害であって不足そのものではないため、**次に届かなかった作品が出てから戻す。**
