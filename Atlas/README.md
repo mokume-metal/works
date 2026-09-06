@@ -260,6 +260,8 @@ python3 scripts/ledger.py    # ledger/ を組み直す
 | 原典 | `processing/processing-examples` @ `b10c9e9a05a0d6c20d233ca7f30d315b5047720e` ([`ledger/sources.json`](ledger/sources.json) が刻む) |
 <!-- verify:end -->
 
+**先に上流を取る** (`python3 scripts/fetch.py`)。取っていないと**資材を読む 18 本の絵が変わる** — 画像・データ・OBJ を読む例は、資材が無いと原典と違うものを描く。
+
 <!-- verify:renders -->
 ```bash
 swift run -c release Atlas --render-all out 1
