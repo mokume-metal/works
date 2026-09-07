@@ -54,8 +54,14 @@ final class Prism: Sketch {
     /// 束の幅 (画素)。
     ///
     /// **細いほど虹は澄む。** 分光の純度は「扇の広がり ÷ 束の幅」で決まるので、
-    /// 太い束は隣り合う色が混ざって白く濁る。辺の 16% にしてある
-    private let beamWidth: Float = 60
+    /// 太い束は隣り合う色が混ざって白く濁る。辺の 7% にしてある。
+    ///
+    /// **硝子の中が読めるかどうかもここで決まる。** 中で分かれる量は出口の面で
+    /// 8〜13 画素しかない。しかも束は入るときに 1.3〜1.8 倍へ広がる (`spread`) ので、
+    /// 60 画素で入れると中では 80〜105 画素になり、分離は 1 割そこそこに埋もれて
+    /// 白い棒にしか見えなかった (実測で r−b の振れが ±10)。26 画素なら中でも
+    /// 34〜46 画素で、分離が 2〜3 割を占めるので**紫の縁と赤の縁**として読める
+    private let beamWidth: Float = 26
 
     /// 白い芯の明るさ。
     ///
@@ -126,10 +132,12 @@ final class Prism: Sketch {
         blendMode(.add)
         strokeCap(.round)
         drawBands(tracer.bands)
-        drawHotspots(tracer.hotspots)
+        drawSpots(tracer.spots)
         drawEdges(prism)
         drawScreen(tracer.screen, a: screenTop, b: screenBottom)
-        drawLamp()
+        // **灯りは帯より後。** 胴が `.blend` なので、束の切り口をここで覆える
+        drawLamp(
+            at: source, toward: aiming(), halfWidth: beamWidth / 2)
         drawGuide()
 
         effects([.bloom(amount: 0.55, threshold: 0.30, radius: 14), .vignette(amount: 0.25)])
@@ -137,6 +145,7 @@ final class Prism: Sketch {
         expose("incidence_deg", degrees(tracer.firstIncidence))
         expose("dispersion", dispersion)
         expose("bands", tracer.bands.count)
+        expose("spots", tracer.spots.count)
         expose("angle_deg", degrees(angle))
         expose("manual", manual)
     }
@@ -164,20 +173,12 @@ final class Prism: Sketch {
         return center + SIMD2(cos(sweep), sin(sweep)) * 470
     }
 
-    /// 光源そのもの。**どこから来ているかが分かると、入射角をいじる手が止まらなくなる。**
-    private func drawLamp() {
-        let toward = simd_normalize(center - source)
-        stroke(LinearRGBA.linear(red: 0.22, green: 0.22, blue: 0.24))
-        strokeWeight(3)
-        // 束の幅ぶんの口を開けたスリットとして描く。**唇は束に垂直へ伸ばす** —
-        // 進む向きへ倒すと光を遮っているように見える
-        let across = SIMD2(-toward.y, toward.x) * (beamWidth / 2)
-        line(
-            source.x + across.x, source.y + across.y,
-            source.x + across.x * 2.6, source.y + across.y * 2.6)
-        line(
-            source.x - across.x, source.y - across.y,
-            source.x - across.x * 2.6, source.y - across.y * 2.6)
+    /// 光源が狙っている向き。**灯りの向きと、追跡が使う向きは同じものである。**
+    private func aiming() -> SIMD2<Float> {
+        let heading = center - source
+        let distance = simd_length(heading)
+        // 重心に重なることは `clampedSource` が防いでいるが、割り算の下限は持つ
+        return distance > 1e-3 ? heading / distance : SIMD2(1, 0)
     }
 
     /// 操作の手引き。
