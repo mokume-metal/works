@@ -145,6 +145,7 @@ final class Prism: Sketch {
         expose("incidence_deg", degrees(tracer.firstIncidence))
         expose("dispersion", dispersion)
         expose("bands", tracer.bands.count)
+        expose("spots", tracer.spots.count)
         expose("angle_deg", degrees(angle))
         expose("manual", manual)
     }
