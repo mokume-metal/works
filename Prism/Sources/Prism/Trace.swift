@@ -4,13 +4,29 @@ import simd
 /// 光が通った跡の 1 区間。**線ではなく幅を持つ帯**である。
 ///
 /// 描く側はこれを三角形へ開くだけでよいように、必要なものを全部持たせてある —
-/// 幅の向き、半分の幅、そして**両端の色** (進むほど暗くなるので、入口と出口で違う)。
+/// 両端の切り口の向き、半分の幅、そして**両端の色** (進むほど暗くなるので、入口と
+/// 出口で違う)。
+///
+/// ## 端は面に沿って切る
+///
+/// **端を進む向きに垂直で切ってはいけない。** 束が面で折れるとき、入る側と出る側は
+/// 向きが違うので、垂直に切った切り口どうしは面の上で重ならない — **四角が 2 つ、
+/// 面ではないところで突き合わさっているように見える。**
+///
+/// `capA` / `capB` は面に沿って切った端の向きで、幅が `halfWidth` の束に対して
+/// **面の上での足跡そのもの**を張る (長さは入射角の余弦で伸びる)。入る側の `capB` と
+/// 出る側の `capA` は、`spread` を掛けた幅と合わせて**同じ線分になる** —
+/// `halfWidth / cos θ` が屈折の前後で等しいからである。だから束はきっちり面で折れる。
 struct Band {
     /// 入口と出口の中心。
     var a: SIMD2<Float>
     var b: SIMD2<Float>
-    /// 幅の向き (進む向きに垂直な単位ベクトル)。
-    var across: SIMD2<Float>
+    /// 入口と出口の切り口の向き。**進む向きに垂直ではなく、当たった面に沿う。**
+    ///
+    /// 面に当たっていない端 (光源の口・画面の外へ抜ける端) では垂直のままで、
+    /// 長さは 1。面で切った端では `1 / cos θ` に伸びる
+    var capA: SIMD2<Float>
+    var capB: SIMD2<Float>
     /// 半分の幅。**束の伸縮 (`spread`) を掛けたあとの値。**
     var halfWidth: Float
     /// 入口と出口の色。線形 Display P3、強度込み。
@@ -182,6 +198,11 @@ struct Tracer {
 
         let halfWidth = width / 2
         let screenEdge = prism.count
+        // 受け面も面である。**壁で終わる端も壁に沿って切る**ので、法線が要る
+        let screenSpan = screenB - screenA
+        let screenNormal =
+            simd_length(screenSpan) > 1e-3
+            ? simd_normalize(SIMD2(-screenSpan.y, screenSpan.x)) : SIMD2<Float>(1, 0)
 
         // **光源から硝子までは、まだ 1 本の白い光である。**
         //
@@ -194,10 +215,20 @@ struct Tracer {
         let entryTravel = entry.edge < 0 ? Self.escapeDistance : entry.distance
         let entryEnd = source + direction * entryTravel
         let entrySurvived = exp(-entryTravel / Self.airFalloff)
+        let entryAcross = SIMD2(-direction.y, direction.x)
+        // 口から出るところは面ではないので垂直に切る。当たった先は面に沿って切る
+        let entryCap: SIMD2<Float>
+        if entry.edge < 0 {
+            entryCap = entryAcross
+        } else {
+            entryCap = Self.cap(
+                direction: direction, across: entryAcross,
+                normal: entry.edge == screenEdge ? screenNormal : normals[entry.edge])
+        }
         bands.append(
             Band(
-                a: source, b: entryEnd,
-                across: SIMD2(-direction.y, direction.x), halfWidth: halfWidth,
+                a: source, b: entryEnd, capA: entryAcross, capB: entryCap,
+                halfWidth: halfWidth,
                 colorA: SIMD3(repeating: gain),
                 colorB: SIMD3(repeating: gain * entrySurvived)))
 
@@ -240,10 +271,25 @@ struct Tracer {
                 // **広がったぶんだけ薄くなる。** 力は保たれるので、明るさは幅の逆比
                 let brightness = gain * scattering / max(ray.spread, 1e-3)
                 if !ray.merged {
+                    let across = SIMD2(-ray.direction.y, ray.direction.x)
+                    // **立っている面と、当たる面で切る。** 区間の入口は必ず面の上に
+                    // ある (光源から出る 1 本目だけは上でまとめて置いてある)
+                    let capA =
+                        ray.lastEdge >= 0
+                        ? Self.cap(
+                            direction: ray.direction, across: across,
+                            normal: normals[ray.lastEdge]) : across
+                    let capB: SIMD2<Float>
+                    if hitEdge < 0 {
+                        capB = across
+                    } else {
+                        capB = Self.cap(
+                            direction: ray.direction, across: across,
+                            normal: hitEdge == screenEdge ? screenNormal : normals[hitEdge])
+                    }
                     bands.append(
                         Band(
-                            a: ray.origin, b: end,
-                            across: SIMD2(-ray.direction.y, ray.direction.x),
+                            a: ray.origin, b: end, capA: capA, capB: capB,
                             halfWidth: halfWidth * ray.spread,
                             colorA: sample.color * (ray.power * brightness),
                             colorB: sample.color * (powerEnd * brightness)))
@@ -304,6 +350,21 @@ struct Tracer {
                 }
             }
         }
+    }
+
+    /// 面に沿って切った端の向き。
+    ///
+    /// 幅 t の位置を通る光線は、中心の光線より `t·(n·across) / (n·d)` だけ早く (あるいは
+    /// 遅く) 面へ届く。その分を進む向きへ戻すと、端は**面の上に乗る**。
+    ///
+    /// **かすめる角では割り算が暴れる**ので、面との向きの下限で止める (足跡の長さを
+    /// 決める `Spot` と同じ下限)。
+    private static func cap(
+        direction: SIMD2<Float>, across: SIMD2<Float>, normal: SIMD2<Float>
+    ) -> SIMD2<Float> {
+        let facing = simd_dot(direction, normal)
+        let guarded = abs(facing) < 0.16 ? (facing < 0 ? -0.16 : 0.16) : facing
+        return across - direction * (simd_dot(across, normal) / guarded)
     }
 
     /// いちばん近い当たりを探す。
