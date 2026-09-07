@@ -40,10 +40,12 @@ extension Prism {
                 let o0 = Self.offset(j) * band.halfWidth
                 let o1 = Self.offset(j + 1) * band.halfWidth
 
-                let a0 = band.a + band.across * o0
-                let a1 = band.a + band.across * o1
-                let b0 = band.b + band.across * o0
-                let b1 = band.b + band.across * o1
+                // **端は面に沿って切る** (`Band.capA` / `capB`)。垂直に切ると、
+                // 折れているのが面の上だと読めなくなる
+                let a0 = band.a + band.capA * o0
+                let a1 = band.a + band.capA * o1
+                let b0 = band.b + band.capB * o0
+                let b1 = band.b + band.capB * o1
 
                 place(a0, band.colorA * w0)
                 place(a1, band.colorA * w1)
