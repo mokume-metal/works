@@ -18,6 +18,22 @@ struct Band {
     var colorB: SIMD3<Float>
 }
 
+/// 光が面を横切った跡。
+///
+/// **面の上での footprint そのもの**で、長さは束の幅を入射角の余弦で割ったものである
+/// (斜めに当たれば足跡は伸びる)。波長ごとに 1 つできるので、出口の面では 8〜13 画素
+/// ずれて並び、**面の上に小さな虹の筋**になる。
+struct Spot {
+    /// 面に当たった点。
+    var point: SIMD2<Float>
+    /// 面に沿う単位ベクトル。
+    var along: SIMD2<Float>
+    /// 面の上での足跡の半分の長さ。
+    var halfLength: Float
+    /// 線形 Display P3、強度込み。
+    var color: SIMD3<Float>
+}
+
 /// 場面と、そこを通る光の追跡。
 ///
 /// **絵の都合で触るのはこちら側**で、屈折の式そのものは `Optics` が持つ。
@@ -39,36 +55,53 @@ struct Tracer {
 
     // MARK: - 媒質
 
-    /// 空気の減衰の距離 (画素)。1000 画素で 68% が残る。
-    static let airFalloff: Float = 2600
+    /// 空気の減衰の距離 (画素)。1000 画素で 49% が残る。
+    ///
+    /// **短く取ってあるのは、束を棒に見せないためである。** 2600 画素にすると、
+    /// 光路が 250 画素しかない区間では端から端まで濃さが変わらず、平らな板が
+    /// 置いてあるようにしか見えない。塵の濃い空気だと言っているのと同じこと
+    static let airFalloff: Float = 1400
     /// 硝子の減衰の距離 (画素)。**空気より短い** — これが全反射に捕まった光を
     /// 最終的に消す仕組みでもある
-    static let glassFalloff: Float = 1800
+    static let glassFalloff: Float = 1200
     /// 硝子の中だけ散乱を強める倍率。
     ///
     /// **これは見せるための嘘である。** 硝子の中の扇は 300 画素で数画素しか開かない
     /// ので、外と同じ濃さで描くと白い塊にしか見えない。物理ではなく、中で何が
     /// 起きているかを読ませるための倍率
-    static let glassScattering: Float = 1.6
+    static let glassScattering: Float = 1.1
 
     /// 何にも当たらなかった光をどこまで伸ばすか (画素)。面の対角より長く取る。
     static let escapeDistance: Float = 2600
 
+    /// 面に落ちた足跡の明るさ。
+    ///
+    /// **帯より濃い** — 面に貼り付いた光は横から見た散乱ではなく、面そのものが
+    /// 照らされたものなので、同じ力でも明るく見える。
+    ///
+    /// **1.5 では出口の足跡が白く飛んだ。** 波長ごとに 8〜13 画素ずれて並ぶのが
+    /// 見せ場なので、飽和させると筋が 1 つの白い塊になる
+    static let spotGain: Float = 1.15
+
     /// 受け面に落ちた光の明るさ。
     ///
     /// **空中の帯と桁が違うのは、次元が違うからである。** 帯の明るさは束の断面に
-    /// 対する濃さだが、面に落ちた光は**面の上の線密度**になる — 幅 60 画素で入った
+    /// 対する濃さだが、面に落ちた光は**面の上の線密度**になる — 幅 26 画素で入った
     /// 束が 200 画素あまりに広がったところを、2.25 画素の刻みで拾うので、
-    /// 1 刻みが受け取るのは全体の 1% ほどしかない。その比から逆に決めた数である
-    static let screenGain: Float = 95
+    /// 1 刻みが受け取るのは全体の 1% ほどしかない。その比から逆に決めた数である。
+    ///
+    /// **減衰距離を詰めたぶんも入っている** — 受け面へ届く力が 0.71 倍になったので、
+    /// 95 から上げてある
+    static let screenGain: Float = 134
 
     // MARK: - 結果
 
     private(set) var bands: [Band] = []
     /// 受け面に落ちた色。**添字がそのまま面の上の位置。**
     private(set) var screen: [SIMD3<Float>] = []
-    /// 全反射が起きた点。面が光って見える演出に使う。
-    private(set) var hotspots: [SIMD2<Float>] = []
+    /// 光が面を横切った跡。**入口・出口・全反射をひとつも区別しない** — どれも
+    /// 「面を光が横切った」ことで、明るさは運んでいた力がそのまま決める
+    private(set) var spots: [Spot] = []
     /// 束が最初に硝子へ当たったときの入射角 (ラジアン)。
     ///
     /// **絵には出ないが、観測 (`expose`) へ差し出す。** 全反射の窓 (38.8 度〜45.9 度) の
@@ -89,6 +122,12 @@ struct Tracer {
         /// もう片方は交差の距離の下限である。片方だけだと、頂点にちょうど当たった
         /// 光が漏れる
         var lastEdge: Int
+        /// **この区間の帯と足跡はもう置いてある。**
+        ///
+        /// 光源から硝子までは波長がまだ分かれていないので、160 本ぶんの同じ三角形を
+        /// 積む意味が無い (`run` が 1 本の白い帯として先に置く)。追跡そのものは
+        /// 波長ごとに要るので、辿りはするが描かない
+        var merged: Bool = false
     }
 
     /// 受け面を刻む数。
@@ -96,6 +135,7 @@ struct Tracer {
 
     init() {
         bands.reserveCapacity(Spectrum.count * Self.maxDepth * 2)
+        spots.reserveCapacity(Spectrum.count * Self.maxDepth)
         stack.reserveCapacity(Self.maxDepth * 2)
         screen = Array(repeating: .zero, count: Self.screenBins)
     }
@@ -115,7 +155,7 @@ struct Tracer {
         width: Float, gain: Float
     ) {
         bands.removeAll(keepingCapacity: true)
-        hotspots.removeAll(keepingCapacity: true)
+        spots.removeAll(keepingCapacity: true)
         firstIncidence = 0
         for k in 0..<screen.count { screen[k] = .zero }
 
@@ -126,7 +166,9 @@ struct Tracer {
         // 外向きの法線を 1 度だけ作る。**中にいるかどうかで裏返す必要は無い** —
         // `Optics.interact` が進む向きから毎回決め直す
         var normals: [SIMD2<Float>] = []
+        var alongs: [SIMD2<Float>] = []
         normals.reserveCapacity(prism.count)
+        alongs.reserveCapacity(prism.count)
         var centroid = SIMD2<Float>.zero
         for vertex in prism { centroid += vertex }
         centroid /= Float(prism.count)
@@ -135,41 +177,58 @@ struct Tracer {
             var normal = simd_normalize(SIMD2(edge.y, -edge.x))
             if simd_dot(normal, prism[i] - centroid) < 0 { normal = -normal }
             normals.append(normal)
+            alongs.append(simd_normalize(edge))
         }
 
         let halfWidth = width / 2
         let screenEdge = prism.count
+
+        // **光源から硝子までは、まだ 1 本の白い光である。**
+        //
+        // 波長ごとの色を全部足すと白になる (`Spectrum` が成分ごとに正規化してある) ので、
+        // この区間だけは 1 本の帯として置ける — 同じ三角形を 160 回積むのをやめられるし、
+        // **分かれるのは面に当たってからだ**という筋書きが絵とも一致する
+        let entry = nearestHit(
+            origin: source, direction: direction, prism: prism,
+            screenA: screenA, screenB: screenB, skip: -1)
+        let entryTravel = entry.edge < 0 ? Self.escapeDistance : entry.distance
+        let entryEnd = source + direction * entryTravel
+        let entrySurvived = exp(-entryTravel / Self.airFalloff)
+        bands.append(
+            Band(
+                a: source, b: entryEnd,
+                across: SIMD2(-direction.y, direction.x), halfWidth: halfWidth,
+                colorA: SIMD3(repeating: gain),
+                colorB: SIMD3(repeating: gain * entrySurvived)))
+
+        if entry.edge == screenEdge {
+            // 硝子を外して受け面へ届いた — 分かれていないので白い筋が落ちる
+            deposit(
+                SIMD3(repeating: gain * entrySurvived * Self.screenGain), at: entryEnd,
+                halfWidth: halfWidth, screenA: screenA, screenB: screenB)
+        }
+        guard entry.edge >= 0, entry.edge < screenEdge else { return }
+
+        let entrySlant = max(abs(simd_dot(direction, normals[entry.edge])), 0.16)
+        spots.append(
+            Spot(
+                point: entryEnd, along: alongs[entry.edge],
+                halfLength: halfWidth / entrySlant,
+                color: SIMD3(repeating: gain * entrySurvived * Self.spotGain)))
 
         for sample in spectrum.samples {
             stack.removeAll(keepingCapacity: true)
             stack.append(
                 Pending(
                     origin: source, direction: direction, power: 1, spread: 1,
-                    inside: false, depth: 0, glassPath: 0, lastEdge: -1))
+                    inside: false, depth: 0, glassPath: 0, lastEdge: -1, merged: true))
 
             while let ray = stack.popLast() {
-                // いちばん近い当たりを探す
-                var nearest = Float.greatestFiniteMagnitude
-                var hitEdge = -1
-                for i in 0..<prism.count where i != ray.lastEdge {
-                    if let distance = Optics.intersect(
-                        origin: ray.origin, direction: ray.direction,
-                        a: prism[i], b: prism[(i + 1) % prism.count], minimumDistance: 1e-3),
-                        distance < nearest
-                    {
-                        nearest = distance
-                        hitEdge = i
-                    }
-                }
-                if let distance = Optics.intersect(
-                    origin: ray.origin, direction: ray.direction,
-                    a: screenA, b: screenB, minimumDistance: 1e-3), distance < nearest
-                {
-                    nearest = distance
-                    hitEdge = screenEdge
-                }
-
-                let travelled = hitEdge < 0 ? Self.escapeDistance : nearest
+                let hit = nearestHit(
+                    origin: ray.origin, direction: ray.direction, prism: prism,
+                    screenA: screenA, screenB: screenB, skip: ray.lastEdge)
+                let hitEdge = hit.edge
+                let travelled = hitEdge < 0 ? Self.escapeDistance : hit.distance
                 let end = ray.origin + ray.direction * travelled
 
                 // **区間のあいだに減る。** 硝子の中は減りが速く、散らす量は多い
@@ -180,21 +239,36 @@ struct Tracer {
 
                 // **広がったぶんだけ薄くなる。** 力は保たれるので、明るさは幅の逆比
                 let brightness = gain * scattering / max(ray.spread, 1e-3)
-                bands.append(
-                    Band(
-                        a: ray.origin, b: end,
-                        across: SIMD2(-ray.direction.y, ray.direction.x),
-                        halfWidth: halfWidth * ray.spread,
-                        colorA: sample.color * (ray.power * brightness),
-                        colorB: sample.color * (powerEnd * brightness)))
+                if !ray.merged {
+                    bands.append(
+                        Band(
+                            a: ray.origin, b: end,
+                            across: SIMD2(-ray.direction.y, ray.direction.x),
+                            halfWidth: halfWidth * ray.spread,
+                            colorA: sample.color * (ray.power * brightness),
+                            colorB: sample.color * (powerEnd * brightness)))
+                }
 
                 // 何にも当たらなかった / 受け面に当たった — どちらもここで終わる
                 if hitEdge < 0 { continue }
                 if hitEdge == screenEdge {
-                    deposit(
-                        sample.color * (powerEnd * gain * Self.screenGain), at: end,
-                        halfWidth: halfWidth * ray.spread, screenA: screenA, screenB: screenB)
+                    if !ray.merged {
+                        deposit(
+                            sample.color * (powerEnd * gain * Self.screenGain), at: end,
+                            halfWidth: halfWidth * ray.spread, screenA: screenA, screenB: screenB)
+                    }
                     continue
+                }
+
+                // **面での足跡。** 斜めに当たれば足跡は伸びるので、束の幅を入射角の
+                // 余弦で割る。かすめる角では割り算が暴れるので下限で止める
+                let slant = max(abs(simd_dot(ray.direction, normals[hitEdge])), 0.16)
+                if !ray.merged {
+                    spots.append(
+                        Spot(
+                            point: end, along: alongs[hitEdge],
+                            halfLength: halfWidth * ray.spread / slant,
+                            color: sample.color * (powerEnd * gain * Self.spotGain)))
                 }
 
                 let glassPath = ray.glassPath + (ray.inside ? travelled : 0)
@@ -208,10 +282,6 @@ struct Tracer {
                 let interaction = Optics.interact(
                     direction: ray.direction, normal: normals[hitEdge],
                     indexIn: ray.inside ? index : 1, indexOut: ray.inside ? 1 : index)
-
-                if interaction.transmitted == nil && ray.inside {
-                    hotspots.append(end)
-                }
 
                 let reflectedPower = powerEnd * interaction.reflectance
                 if reflectedPower > Self.minimumPower {
@@ -234,6 +304,37 @@ struct Tracer {
                 }
             }
         }
+    }
+
+    /// いちばん近い当たりを探す。
+    ///
+    /// 返す辺の番号は、多角形の辺なら 0 から、受け面なら `prism.count`、何にも
+    /// 当たらなければ −1。**`skip` で直前に当たった辺を外す** — 交差の距離の下限と
+    /// 合わせて 2 重に自己交差を止めている
+    private func nearestHit(
+        origin: SIMD2<Float>, direction: SIMD2<Float>, prism: [SIMD2<Float>],
+        screenA: SIMD2<Float>, screenB: SIMD2<Float>, skip: Int
+    ) -> (distance: Float, edge: Int) {
+        var nearest = Float.greatestFiniteMagnitude
+        var edge = -1
+        for i in 0..<prism.count where i != skip {
+            if let distance = Optics.intersect(
+                origin: origin, direction: direction,
+                a: prism[i], b: prism[(i + 1) % prism.count], minimumDistance: 1e-3),
+                distance < nearest
+            {
+                nearest = distance
+                edge = i
+            }
+        }
+        if let distance = Optics.intersect(
+            origin: origin, direction: direction, a: screenA, b: screenB,
+            minimumDistance: 1e-3), distance < nearest
+        {
+            nearest = distance
+            edge = prism.count
+        }
+        return (nearest, edge)
     }
 
     /// 受け面へ色を溜める。

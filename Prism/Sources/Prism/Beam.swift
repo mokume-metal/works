@@ -7,10 +7,13 @@ extension Prism {
 
     /// 束の断面を刻む数。**両端を含む。**
     ///
-    /// 5 点 (端・中間・芯・中間・端) で 4 区画。端の重みが 0 に落ちるので、帯の縁は
-    /// 描いた図形の輪郭ではなく**明るさの勾配**として消える — これが「レーザーの線が
-    /// 並んでいる」ようには見えないことの実体である
-    static let across = 5
+    /// 7 点で 6 区画。端の重みが 0 に落ちるので、帯の縁は描いた図形の輪郭ではなく
+    /// **明るさの勾配**として消える — これが「レーザーの線が並んでいる」ようには
+    /// 見えないことの実体である。
+    ///
+    /// **5 点では足りなかった。** 刻みのあいだは直線で結ばれるので、芯のまわりが
+    /// 平らな高原になり、束が板に見えていた
+    static let across = 7
 
     /// 断面の重み `(1 − u²)^1.5`。
     ///
@@ -66,6 +69,54 @@ extension Prism {
         vertex(point.x, point.y)
     }
 
+    // MARK: - 面に落ちた足跡
+
+    /// 足跡の塊を何角形で開くか。
+    static let rim = 6
+    /// 足跡の面から浮く厚み (画素)。
+    static let spotThickness: Float = 7
+
+    /// 光が面を横切った跡。
+    ///
+    /// **これが「四角が 2 つ並んでいる」ように見えないことの実体である。** 区間の
+    /// 端どうしが宙で突き合わさっているだけだと、折れているのが面の上だと読めない。
+    /// 足跡を面に貼ると、帯が面に刺さって向きを変えたように見える。
+    ///
+    /// 足跡は**波長ごと**に置くので、入口では全波長が重なって白い筋になり、
+    /// **出口では 8〜13 画素ずれて小さな虹の筋になる** — 硝子の中で分かれていたことが、
+    /// 出た瞬間ではなく面の上で読める
+    func drawSpots(_ spots: [Spot]) {
+        guard !spots.isEmpty else { return }
+        noStroke()
+        beginShape(.triangles)
+        for spot in spots {
+            blob(
+                at: spot.point, along: spot.along, halfLength: spot.halfLength,
+                thickness: Self.spotThickness, color: spot.color)
+        }
+        endShape()
+    }
+
+    /// 面に貼り付いた小さな塊の頂点を積む。
+    ///
+    /// **呼ぶ側が `beginShape(.triangles)` を開いている前提。** 足跡は 1 フレームに
+    /// 数百個できるので、1 個ずつ図形を開くと描画の呼び出しがそのぶん増える
+    private func blob(
+        at center: SIMD2<Float>, along: SIMD2<Float>, halfLength: Float, thickness: Float,
+        color: SIMD3<Float>
+    ) {
+        let normal = SIMD2(-along.y, along.x)
+        for i in 0..<Self.rim {
+            let a0 = Float(i) / Float(Self.rim) * 2 * .pi
+            let a1 = Float(i + 1) / Float(Self.rim) * 2 * .pi
+            place(center, color)
+            place(center + along * (cos(a0) * halfLength) + normal * (sin(a0) * thickness), .zero)
+            place(center + along * (cos(a1) * halfLength) + normal * (sin(a1) * thickness), .zero)
+        }
+    }
+
+    // MARK: - 硝子
+
     /// 硝子そのもの。
     ///
     /// **加算ではなく `.blend` で置く。** 加算で薄く塗ると三角形の内側の黒が一様に
@@ -78,7 +129,10 @@ extension Prism {
         for (i, vertexPoint) in prism.enumerated() {
             // 先端は薄く、底の 2 点は濃く
             let alpha: Float = i == 0 ? 0.05 : 0.13
-            fill(LinearRGBA.display(red: 0.42, green: 0.55, blue: 0.72, alpha: alpha))
+            // **青くしない。** 硝子を青く塗ると、いちばん見せたい紫の縁が地の色に
+            // 紛れて読めなくなる (実測で内側の r−b は地が −33、紫の縁が −38 だった)。
+            // わずかに冷たい灰なら、赤の縁も紫の縁も両方が地から離れる
+            fill(LinearRGBA.display(red: 0.50, green: 0.53, blue: 0.585, alpha: alpha))
             vertex(vertexPoint.x, vertexPoint.y)
         }
         endShape(.close)
@@ -95,15 +149,93 @@ extension Prism {
         endShape(.close)
     }
 
-    /// 全反射が起きた点。面の上で光っているように見せる。
-    func drawHotspots(_ points: [SIMD2<Float>]) {
-        guard !points.isEmpty else { return }
-        // **1 波長ぶんの重みで置く。** 160 本ぶん重なるので、1 点あたりは薄くてよい
-        stroke(LinearRGBA.linear(red: 0.020, green: 0.016, blue: 0.030))
-        strokeWeight(9)
+    // MARK: - 光源
+
+    /// 光源そのもの — 胴・唇・口・にじみ。
+    ///
+    /// **どこから来ているかが分かると、入射角をいじる手が止まらなくなる。** 束の
+    /// 出どころに何も無いと、光が宙で唐突に始まって切り口が見える。ここでは絞った
+    /// 口を持つ灯りとして描き、**胴で束の切り口を覆う**。
+    ///
+    /// - Parameters:
+    ///   - toward: 狙っている向き (単位ベクトル)。灯りはこれに合わせて向きを変える。
+    ///   - halfWidth: 束の半分の幅。**口の大きさがそのまま束の幅になる。**
+    func drawLamp(at source: SIMD2<Float>, toward: SIMD2<Float>, halfWidth: Float) {
+        let across = SIMD2(-toward.y, toward.x)
+
+        // にじみ — **入れ子の扇を 4 枚重ねる。** 扇 1 枚は中心から縁まで直線に落ちるので、
+        // 大きく取るとただの灰色の円錐になる。細い山を積むと灯りの滲みの形になる
+        blendMode(.add)
+        noStroke()
+        let eye = source + toward * 2
+        halo(at: eye, radius: 20, tone: 0.42)
+        halo(at: eye, radius: 38, tone: 0.20)
+        halo(at: eye, radius: 66, tone: 0.085)
+        halo(at: eye, radius: 108, tone: 0.030)
+        // いちばん外は薄く広く。**縁が円として見えないところまで伸ばす**
+        halo(at: eye, radius: 168, tone: 0.011)
+
+        // 胴 — **`.blend` の暗い胴で自分の滲みを遮る。** 灯りが自分の光を隠すので、
+        // 口の前だけが明るくなり、絞った灯りに見える (加算だと胴が透けて灰色の斑になる)
+        blendMode(.blend)
+        // (口からの距離, 半分の幅, 明るさ)
+        let body: [(Float, Float, Float)] = [
+            (-2, halfWidth + 17, 0.085),
+            (-30, halfWidth + 21, 0.055),
+            (-80, halfWidth + 11, 0.032),
+            (-99, halfWidth + 3, 0.022),
+        ]
+        beginShape(.polygon)
+        for (along, half, tone) in body { bodyVertex(source, toward, across, along, half, tone) }
+        for (along, half, tone) in body.reversed() {
+            bodyVertex(source, toward, across, along, -half, tone)
+        }
+        endShape(.close)
+
+        // 唇 — 胴の前面。口の際で金属が光る。**進む向きへ倒さない** (光を遮って見える)
+        stroke(LinearRGBA.display(red: 0.56, green: 0.58, blue: 0.63, alpha: 1))
+        strokeWeight(6)
         strokeCap(.round)
-        for spot in points { point(spot.x, spot.y) }
+        for side in [Float(1), Float(-1)] {
+            let root = source + across * (halfWidth * side) - toward * 3
+            let tip = source + across * ((halfWidth + 16) * side) - toward * 5
+            line(root.x, root.y, tip.x, tip.y)
+        }
+
+        // 口 — 束の幅ぶんの白熱した芯。ここから帯が出ていく
+        blendMode(.add)
+        noStroke()
+        beginShape(.triangles)
+        blob(
+            at: source, along: across, halfLength: halfWidth, thickness: 11,
+            color: SIMD3(0.90, 0.88, 0.84))
+        endShape()
     }
+
+    /// 胴の頂点を 1 つ置く。
+    private func bodyVertex(
+        _ source: SIMD2<Float>, _ toward: SIMD2<Float>, _ across: SIMD2<Float>,
+        _ along: Float, _ half: Float, _ tone: Float
+    ) {
+        // わずかに青を足すと、黒い胴でも金属に見える
+        fill(LinearRGBA.display(red: tone, green: tone * 1.03, blue: tone * 1.16, alpha: 1))
+        let point = source + toward * along + across * half
+        vertex(point.x, point.y)
+    }
+
+    /// 灯りのまわりの滲み。**中心が明るく、縁で 0 に落ちる扇。**
+    private func halo(at center: SIMD2<Float>, radius: Float, tone: Float) {
+        let steps = 28
+        beginShape(.triangleFan)
+        place(center, SIMD3(tone, tone * 0.99, tone * 0.96))
+        for i in 0...steps {
+            let a = Float(i) / Float(steps) * 2 * .pi
+            place(center + SIMD2(cos(a), sin(a)) * radius, .zero)
+        }
+        endShape()
+    }
+
+    // MARK: - 受け面
 
     /// 受け面と、そこに落ちた虹。
     ///
