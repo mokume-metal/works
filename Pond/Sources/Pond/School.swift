@@ -1,0 +1,299 @@
+import Foundation
+import mokume
+import simd
+
+/// 鯉の群れと、鯉を描く面。
+///
+/// **体は断片で塗る。** 輪郭の頂点に体の座標 (u = 鼻から尾、v = 左から右) を持たせて
+/// あるので、断片は体の上の位置だけを見て模様を決められる — 泳いで曲がれば斑も一緒に
+/// 歪み、画面に貼り付かない。立体でこれをやったのが Grain の `shapePosition` で、
+/// **2D で同じことをするのが `vertex(x, y, u, v)`** である。
+///
+/// 影は別の面 (池の底) へ、光の向きへずらして落とす。同じ輪郭を 2 度描いているので、
+/// 泳ぎの形と影の形は必ず一致する。
+final class School {
+
+    /// 鯉の面。**背景は透明**で、水面の断片がここを合成する。
+    let canvas: Canvas
+    private var paint: Shader?
+    /// **1 画素の白い絵。** 体の座標を頂点に持たせるためだけに束ねる。
+    ///
+    /// `vertex(x, y, u, v)` が書いた位置は**貼る絵を束ねていないと捨てられる**
+    /// (`Canvas.textureUV` が `currentPicture` を見て nil を返す)。読む先の画素数で
+    /// 割る決まりなので、1×1 を束ねておけば書いた 0…1 がそのまま断片の `in.uv` へ届く。
+    /// **この絵自体は一度も読まない** — 断片は `in.texel` を見ない
+    private var unit: Image?
+    private(set) var koi: [Koi] = []
+
+    /// 濁って見える色。深いほどここへ寄る。
+    var deep: LinearRGBA = .display(red: 0.10, green: 0.20, blue: 0.17)
+    /// 太陽の向き (画面の x, y と、上向きの z)。
+    var sun = SIMD3<Float>(-0.42, -0.62, 0.66)
+    /// 影が横へずれる量 ÷ 深さ。**太陽の高さで決まる** (tan の余角)。
+    var shadowSlide: Float = 0.62
+
+    init(canvas: Canvas, bounds: SIMD2<Float>) {
+        self.canvas = canvas
+        canvas.noiseSeed(9137)
+        canvas.noiseDetail(3, 0.55)
+        unit = try? canvas.createImage(1, 1)
+        unit?.fill(.display(red: 1, green: 1, blue: 1))
+        paint = try? canvas.makeShader(Self.body, name: "koi", values: Self.startingValues)
+
+        // 6 匹。**品種は全部違う** — 同じ斑が 2 つ出ると群れが繰り返しに見える
+        let places: [(Float, Float, Float, Float, Float)] = [
+            (0.24, 0.30, 0.4, 344, 52),
+            (0.68, 0.22, 2.6, 300, 96),
+            (0.80, 0.62, 3.6, 368, 34),
+            (0.34, 0.74, 5.4, 268, 118),
+            (0.56, 0.48, 1.4, 232, 140),
+            (0.12, 0.56, 0.9, 312, 74),
+        ]
+        for (index, variety) in Variety.allCases.enumerated() {
+            let (x, y, angle, length, depth) = places[index]
+            koi.append(
+                Koi(
+                    variety: variety,
+                    at: SIMD2(bounds.x * x, bounds.y * y),
+                    heading: angle, length: length, depth: depth,
+                    seed: SIMD2(Float(index) * 13.7, Float(index) * 5.3 + 2.1),
+                    phase: Float(index) * 0.37))
+        }
+    }
+
+    // MARK: - 描く
+
+    /// 鯉を面へ描く。
+    func draw(time: Float) {
+        canvas.beginDraw()
+        canvas.background(.transparent)
+        canvas.noStroke()
+        // **奥から描く。** 深い鯉が浅い鯉の下になる
+        for fish in koi.sorted(by: { $0.depth > $1.depth }) {
+            fins(of: fish, time: time)
+            body(of: fish)
+        }
+        canvas.endDraw()
+    }
+
+    /// 池の底へ影を落とす。
+    ///
+    /// **暈けは深さで決まる。** 同じ輪郭を少しずつずらして 4 枚重ねるので、深い鯉ほど
+    /// 影の縁が広がる (太陽は点ではないので、実際の半影も深さに比例して広がる)
+    func castShadows(onto bed: Canvas) {
+        bed.noStroke()
+        // **影は太陽の反対側へ落ちる**
+        let slide = -SIMD2(sun.x, sun.y)
+        for fish in koi {
+            let offset = slide * (fish.depth * shadowSlide)
+            let blur = 2.5 + fish.depth * 0.075
+            for step in 0..<4 {
+                let angle = Float(step) * Float.pi / 2 + 0.4
+                let jitter = SIMD2(cos(angle), sin(angle)) * blur
+                bed.fill(.display(red: 0.0, green: 0.02, blue: 0.02, alpha: 0.19))
+                strip(of: fish, on: bed, shift: offset + jitter)
+                fan(
+                    base: fish.caudal.base + offset + jitter, direction: fish.caudal.direction,
+                    length: fish.length * 0.30, spread: 0.60, on: bed)
+            }
+        }
+    }
+
+    // MARK: - 部分
+
+    private func body(of fish: Koi) {
+        guard let paint else { return }
+        canvas.shader(paint)
+        // **値は毎フレーム置き直す。** 前のフレームの値が残ると、先頭の 1 匹の斑で
+        // 群れ全部が塗られる
+        paint.set("seed", .pair(fish.seed.x, fish.seed.y))
+        paint.set("kind", .number(Float(fish.variety.rawValue)))
+        paint.set("skin", .color(fish.variety.skin))
+        paint.set("beni", .color(fish.variety.beni))
+        paint.set("sumi", .color(fish.variety.sumi))
+        paint.set("deep", .color(deep))
+        paint.set("sheen", .number(fish.variety.sheen))
+        paint.set("murk", .number(murk(of: fish)))
+        paint.set("light", .pair(lightAcross(fish), sun.z))
+        canvas.fill(255, 255, 255)
+        if let unit { canvas.texture(unit) }
+        strip(of: fish, on: canvas, shift: SIMD2(0, 0))
+        canvas.noTexture()
+        canvas.resetShader()
+    }
+
+    private func fins(of fish: Koi, time: Float) {
+        let tint = fish.variety.fin
+        let fade = 1 - murk(of: fish)
+        let alpha = 0.66 * fade
+        canvas.fill(
+            .display(
+                red: tint.red, green: tint.green, blue: tint.blue, alpha: alpha))
+
+        let tail = fish.caudal
+        fan(
+            base: tail.base, direction: tail.direction, length: fish.length * 0.30,
+            spread: 0.86, on: canvas)
+        for sign in [Float(1), Float(-1)] {
+            let fin = fish.pectoral(sign)
+            fan(
+                base: fin.base, direction: fin.direction, length: fish.length * 0.17,
+                spread: 0.62, on: canvas)
+        }
+
+        // 鰭条。**鰭が膜であることは筋で分かる** — 塗りだけだと板に見える
+        canvas.stroke(
+            .display(red: 1, green: 1, blue: 1, alpha: 0.10 * fade))
+        canvas.strokeWeight(1.3)
+        canvas.noFill()
+        for step in 0...6 {
+            let s = Float(step) / 3 - 1
+            let rim = fanRim(
+                base: tail.base, direction: tail.direction, length: fish.length * 0.26,
+                spread: 0.86, at: s)
+            canvas.line(tail.base.x, tail.base.y, rim.x, rim.y)
+        }
+        canvas.noStroke()
+    }
+
+    /// 体の輪郭を三角形の帯で描く。**閉じた多角形にしない** — 帯なら分割の仕方が
+    /// 一意に決まるので、細い尾柄で潰れない。
+    private func strip(of fish: Koi, on target: Canvas, shift: SIMD2<Float>) {
+        let left = fish.flank(1)
+        let right = fish.flank(-1)
+        target.beginShape(.triangleStrip)
+        for index in 0..<Koi.samples {
+            let u = Float(index) / Float(Koi.samples - 1)
+            let a = left[index] + shift
+            let b = right[index] + shift
+            target.vertex(a.x, a.y, u, 0)
+            target.vertex(b.x, b.y, u, 1)
+        }
+        target.endShape()
+    }
+
+    /// 鰭の縁の 1 点。
+    ///
+    /// 又の入った尾鰭は「根元から見て星型」なので、扇で描ける。`s` は −1…1 で、
+    /// 真ん中 (0) がいちばん短い = そこが又になる
+    private func fanRim(
+        base: SIMD2<Float>, direction: SIMD2<Float>, length: Float, spread: Float, at s: Float
+    ) -> SIMD2<Float> {
+        let reach = length * (0.42 + 0.58 * pow(abs(s), 0.75))
+        return base + Koi.turn(direction, by: s * spread) * reach
+    }
+
+    private func fan(
+        base: SIMD2<Float>, direction: SIMD2<Float>, length: Float, spread: Float, on target: Canvas
+    ) {
+        target.beginShape(.triangleFan)
+        target.vertex(base.x, base.y)
+        for step in 0...20 {
+            let s = Float(step) / 10 - 1
+            let rim = fanRim(
+                base: base, direction: direction, length: length, spread: spread, at: s)
+            target.vertex(rim.x, rim.y)
+        }
+        target.endShape()
+    }
+
+    /// その深さで、どれだけ水の色へ寄るか。
+    ///
+    /// **水面の断片が掛ける濁りとは役目が違う。** あちらは「鯉の層より上の水」を
+    /// 一様に掛けるもので、こちらは**匹ごとの深さの差**を受け持つ
+    private func murk(of fish: Koi) -> Float {
+        min(max((fish.depth - 34) / 190, 0), 0.62)
+    }
+
+    /// 太陽の、その鯉の体の横向き成分。**背の照りが左右どちらへ寄るかを決める。**
+    private func lightAcross(_ fish: Koi) -> Float {
+        let side = SIMD2(-fish.heading.y, fish.heading.x)
+        return simd_dot(SIMD2(sun.x, sun.y), side)
+    }
+
+    // MARK: - 断片
+
+    private static let startingValues: [String: ShaderValue] = [
+        "seed": .pair(0, 0),
+        "light": .pair(0, 1),
+        "kind": 0,
+        "sheen": 0.3,
+        "murk": 0,
+        "skin": .color(.display(red: 1, green: 1, blue: 1)),
+        "beni": .color(.display(red: 1, green: 0, blue: 0)),
+        "sumi": .color(.display(red: 0, green: 0, blue: 0)),
+        "deep": .color(.display(red: 0, green: 0.2, blue: 0.2)),
+    ]
+
+    /// 体を塗る断片。**読むのは体の座標だけ**である。
+    private static let body = """
+        float4 paint(Fragment in, Values values) {
+            float2 b = in.uv;
+            float along = clamp(b.x, 0.0, 1.0);
+            float across = clamp(b.y, 0.0, 1.0);
+            float kind = values.kind;
+
+            // 体の座標で引く揺らぎ。**体に貼り付いている**ので、泳ぎで斑が歪む
+            float3 q = float3(along * 3.6 + values.seed.x, across * 1.5 + values.seed.y, 0.0);
+            float blotch = mokume_noise(in, q * 1.7);
+            float second = mokume_noise(in, q * 2.3 + float3(17.0, 5.0, 2.0));
+            float third = mokume_noise(in, q * 3.1 + float3(41.0, 23.0, 7.0));
+
+            float3 skin = values.skin.rgb;
+            float3 beni = values.beni.rgb;
+            float3 sumi = values.sumi.rgb;
+
+            // **斑の縁は鋭い。** にじませると鯉に見えない (錦鯉の評価軸が「キワ」で
+            // あるのはそのため)
+            float hi = smoothstep(0.505, 0.545, blotch);
+            float back = smoothstep(0.20, 0.55, 1.0 - abs(across - 0.5) * 2.0);
+
+            float3 body = skin;
+            if (kind < 0.5) {                       // 紅白
+                body = mix(skin, beni, hi);
+            } else if (kind < 1.5) {                // 大正三色
+                body = mix(skin, beni, hi);
+                body = mix(body, sumi, smoothstep(0.585, 0.625, second) * back);
+            } else if (kind < 2.5) {                // 昭和三色
+                body = mix(skin, beni, smoothstep(0.435, 0.475, blotch));
+                body = mix(body, sumi, smoothstep(0.575, 0.615, third));
+            } else if (kind < 3.5) {                // 黄金
+                body = mix(skin, beni, 0.22 + 0.26 * blotch);
+            } else if (kind < 4.5) {                // 浅黄
+                body = mix(beni, skin, back);
+                body = mix(body, sumi, smoothstep(0.52, 0.72, second) * back * 0.55);
+            } else {                                // 白写り
+                body = mix(skin, sumi, smoothstep(0.445, 0.485, blotch));
+            }
+
+            // 鱗。**千鳥に並べる** — 格子に並べると織物に見える
+            float2 cell = float2(along * 40.0, across * 10.0);
+            cell.x += fmod(floor(cell.y), 2.0) * 0.5;
+            float2 f = fract(cell) - 0.5;
+            float d = length(f * float2(1.0, 1.6));
+            body *= 1.0 - smoothstep(0.26, 0.46, d) * 0.17;
+            body += smoothstep(0.30, 0.04, d) * values.sheen * 0.09;
+
+            // 真上から見た体の丸み。背 (v = 0.5) が正面を向き、脇腹が逃げる
+            float theta = (across - 0.5) * 3.14159265;
+            float lam = max(values.light.x * sin(theta) + values.light.y * cos(theta), 0.0);
+            body *= 0.44 + 0.68 * lam;
+            body += values.sheen * pow(lam, 16.0) * 0.5;
+
+            // 縁は水へ溶ける
+            body *= 0.55 + 0.45 * smoothstep(0.0, 0.055, min(across, 1.0 - across));
+
+            // 目
+            float2 eyeL = float2(0.064, 0.225);
+            float2 eyeR = float2(0.064, 0.775);
+            float2 squash = float2(2.4, 1.0);
+            float eye = min(length((b - eyeL) * squash), length((b - eyeR) * squash));
+            body = mix(body, float3(0.020, 0.018, 0.016), 1.0 - smoothstep(0.017, 0.025, eye));
+            body += (1.0 - smoothstep(0.004, 0.008, eye)) * 0.35;
+
+            // 深さのぶん、水の色へ寄る
+            body = mix(body, values.deep.rgb, values.murk);
+            return float4(body * in.color.a, in.color.a);
+        }
+        """
+}
