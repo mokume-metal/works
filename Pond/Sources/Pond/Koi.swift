@@ -109,6 +109,9 @@ final class Koi {
     private(set) var heading: SIMD2<Float>
     private(set) var speed: Float
 
+    /// 口の位置。**背骨の先端がそのまま鼻先**で、餌はここへ届いたときだけ消える。
+    var mouth: SIMD2<Float> { pose[0] }
+
     /// 背骨の節 (引かれる鎖)。0 が鼻先。
     private var chain: [SIMD2<Float>]
     /// 泳ぎの波を足した、描くための背骨。
@@ -182,12 +185,14 @@ final class Koi {
         // 餌へ向かう。**近づいたら速さを落とす** — 曲がれる半径は速さに比例するので、
         // 全速のまま寄ると口が届く前に行き過ぎ、**餌の周りを回り続ける**
         // (実際にそうなった: 6.7 秒回して 1 粒も食べなかった)
+        var reaching = false
         if let food {
             let toward = food - head
             let far = simd_length(toward)
             if far > 1 {
                 want += toward / far * 3.2
                 target = min(length * 0.72, length * 0.2 + far * 0.62)
+                reaching = far < length * 0.9
             }
         }
 
@@ -213,8 +218,14 @@ final class Koi {
             //
             // **1.3 倍まで緩めてある。** 0.85 倍では旋回中の体が常に弓なりで、
             // 「曲がったまま滑っている」ようにしか見えなかった — 泳ぎの波より
-            // 旋回の曲がりのほうが大きいと、くねりがその中に埋もれる
-            let limit = min(max(speed / (length * 1.3), 0.22), 0.7) * dt
+            // 旋回の曲がりのほうが大きいと、くねりがその中に埋もれる。
+            //
+            // **餌が目の前にあるときだけ、その場で向きを変えられる。** 魚は遅い
+            // ところでは体ではなく鰭で向きを変えるので、口を餌へ持っていくときは
+            // 旋回半径の縛りが外れる — これが無いと、口の当たり判定を実寸まで
+            // 絞ったとたんに餌の周りを回り続ける
+            let pivot: Float = reaching ? 0.95 : 0.22
+            let limit = min(max(speed / (length * 1.3), pivot), 1.1) * dt
             turn = min(max(turn, -limit), limit)
             heading = SIMD2(
                 heading.x * cos(turn) - heading.y * sin(turn),

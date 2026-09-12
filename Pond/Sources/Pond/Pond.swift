@@ -157,8 +157,13 @@ final class Pond: Sketch {
                 dt: step, now: now, bounds: span, school: school.koi,
                 food: bait?.place, scare: scare, water: water)
             guard let bait else { continue }
-            // 口が届いたら食べる。**食べた場所にも小さな輪が出る**
-            if simd_length(bait.place - fish.head) < fish.maximumHalfWidth + 52 {
+            // **口へ届いたときだけ食べる。** 体の中心から半径 90 画素で消していた
+            // ときは、鯉が近づいただけで餌が消え、口に入るところが見えなかった。
+            // いま見ているのは**鼻先から体長の 5.5%** (340 mm の鯉で 19 mm) で、
+            // しかも鼻先より前にあることを求める
+            let toward = bait.place - fish.mouth
+            let reach = fish.length * 0.055
+            if simd_length(toward) < reach, simd_dot(toward, fish.heading) > -reach * 0.4 {
                 if let eaten = pond.take(bait.index) {
                     water.ripple(at: eaten, now: now, amplitude: 1.8, wavelength: 36, life: 1.1)
                 }
