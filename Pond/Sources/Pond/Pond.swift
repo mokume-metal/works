@@ -67,7 +67,6 @@ final class Pond: Sketch {
         // 飽和させずに出口で肩を丸める
         exposure(0.96)
         toneMapping(.roll)
-        textSize(24)
         noiseSeed(5107)
         noiseDetail(4, 0.5)
 
@@ -130,8 +129,6 @@ final class Pond: Sketch {
         rect(0, 0, span.x, span.y)
         resetShader()
         resetNumbers()
-
-        guide()
 
         effects([.bloom(amount: 0.46, threshold: 0.66, radius: 20), .vignette(amount: 0.24)])
 
@@ -217,19 +214,6 @@ final class Pond: Sketch {
             water.wind = 0.55
             touchedAt = -100
         }
-    }
-
-    // MARK: - 手引き
-
-    private func guide() {
-        noStroke()
-        fill(.display(red: 0.80, green: 0.86, blue: 0.84, alpha: 0.72))
-        let baseline = span.y - 152
-        text("クリック — 餌を落とす", 56, baseline)
-        text("動かす — 水面を撫でる (鯉は逃げる)", 56, baseline + 33)
-        text("スクロール — 風 \(String(format: "%.2f", water.wind))", 56, baseline + 66)
-        text("スペース — 餌を片付ける", 56, baseline + 99)
-        text("R — はじめへ戻す", 56, baseline + 132)
     }
 
     // MARK: - 断片へ渡すもの
