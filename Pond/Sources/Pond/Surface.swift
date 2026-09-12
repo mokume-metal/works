@@ -86,7 +86,7 @@ final class Surface {
                         + SIMD2(scatter.next(-30, 30), scatter.next(-30, 30)),
                     radius: scatter.next(62, 104),
                     angle: scatter.next(0, 6.28),
-                    sway: scatter.next(0.09, 0.18),
+                    sway: scatter.next(0.05, 0.10),
                     tone: scatter.next(0.84, 1.14),
                     flower: index == 1 || index == 4,
                     stem: scatter.next(180, 420),
@@ -166,16 +166,17 @@ final class Surface {
     ///
     /// **葉は茎で底に繋がった振り子である。** 風に押されて風下へ寄り、戻ってくる。
     /// 角振動数は振り子の式 `√(g/L)` そのままで、長い茎ほどゆっくり大きく振れる —
-    /// ただし水中では浮力が重力を打ち消すので、`g` は 6 分の 1 にしてある。
+    /// ただし水中では浮力が重力をほとんど打ち消すので、`g` は 14 分の 1 にしてある
+    /// (6 分の 1 では周期が 2〜3 秒になり、葉が忙しなく揺れて見えた)。
     ///
     /// **波の 1 つ 1 つが与える捻りは、ここでは数えていない。** 高さ場は断片の中に
     /// しかなく、CPU 側へ写せば式が 2 か所に住む。波に乗って流されるぶん
     /// (`pond_ride`) と、傾いて照りが動くぶんは、どちらも水面の断片が受け持つ
     private func swung(_ pad: Pad, time: Float) -> (place: SIMD2<Float>, turn: Float) {
-        let beat = (Water.gravity / 6 / pad.stem).squareRoot()
+        let beat = (Water.gravity / 14 / pad.stem).squareRoot()
         let swing = sin(time * beat + pad.phase)
         let cross = sin(time * beat * 0.61 + pad.phase * 1.7)
-        let reach = (14 + 26 * wind) * (pad.stem / 300)
+        let reach = (6 + 12 * wind) * (pad.stem / 300)
         let place =
             pad.place + flow * (swing * reach)
             + SIMD2(-flow.y, flow.x) * (cross * reach * 0.45)
