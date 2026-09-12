@@ -25,10 +25,17 @@ import simd
 /// **影が狙いの外へ出ることは原理的に起きない**。起こるのは欠けだけで、どれだけ
 /// 埋まったかは立ち上げに 1 度数えて名乗る (``Cover``)。
 ///
-/// ## 状態は角度だけ
+/// ## 48 秒を 4 つの幕で渡る
 ///
-/// 絵は角度の関数で、スケッチが持つ状態は再生位置と「手で回しているか」だけである。
-/// 乱数も雑音も使わず、`frameCount` も読まない。**同じ角度からは同じ絵が出る。**
+/// 影だけの床から始まり (幕 1)、塊が 3 つの姿勢を渡り (幕 2)、粒へ砕けて光の筋に
+/// 沿って伸び (幕 3)、最後は塊を止めたまま光のほうが 1 周する (幕 4)。**どの幕も
+/// 同じ 1 つの式の別の見え方**で、譜は ``Score`` が持つ。
+///
+/// ## 状態は再生位置だけ
+///
+/// 絵は時刻の関数である。時刻を渡すと ``Score/Frame`` が決まり、そこから下は時計を
+/// 読まない。乱数も雑音も使わず、`frameCount` も読まない。**同じ時刻からは同じ絵が
+/// 出る。**
 final class Cast: Sketch {
     var settings = SketchSettings(width: 1920, height: 1080, title: "cast")
 
@@ -38,14 +45,16 @@ final class Cast: Sketch {
     private(set) var playhead: Float = 0
     /// 動いているか。
     private var isPlaying = true
-    /// 手で回している角度。**譜から外れている間だけ持つ。**
-    private var handled: Float?
     private var isScrubbing = false
 
     // MARK: - 焼いたもの
 
     /// 塊。**走り出してから 1 度だけ彫って焼く。**
     private var mass: Shape?
+    /// 粒 1 つぶんの立方体。**1 つ焼いて、置き場所を配る。**
+    private var cube: Shape?
+    /// 粒の置き場所のもと。
+    private var grains: [Grains.Grain] = []
     private var baked = false
     /// 彫りに掛かった時間 (ミリ秒)。
     private var carveMs: Float = 0
@@ -72,25 +81,33 @@ final class Cast: Sketch {
         bakeIfNeeded()
 
         // **飛んだフレームで時間を飛ばさない。** 作り直しの後の 1 フレーム目が長い
-        if isPlaying, handled == nil {
+        if isPlaying, !isScrubbing {
             playhead += min(deltaTime, 1.0 / 20)
         }
-        // **ここから下は時計を読まない。** 絵は角度だけの関数である
-        let turn = handled ?? Turn.angle(at: playhead)
+        // **ここから下は時計を読まない。** 絵はこの 1 つの構造体の関数である
+        let frame = Score.frame(at: playhead)
 
-        stage()
-        if let mass { place(mass, turn: turn) }
-        trace(turn: turn)
-        dress(turn: turn)
+        stage(frame)
+        rule()
+        if let mass { place(mass, frame: frame) }
+        if let cube { scatter(cube, grains: grains, frame: frame) }
+        trace(frame)
+        dress(frame)
 
-        let nearest = Turn.nearest(to: turn)
-        expose("turn", Ruler.wrap(turn) * 180 / .pi)
-        expose("pose", nearest.pose)
-        expose("aim", Targets.order[nearest.pose].name)
-        expose("offset", nearest.offset * 180 / .pi)
-        expose("settled", Turn.settled(at: turn))
+        let (kind, settled) = aim(frame)
+        expose("time", frame.time)
+        expose("act", frame.act.name)
+        expose("turn", frame.turn * 180 / .pi)
+        expose("azimuth", frame.azimuth * 180 / .pi)
+        expose("aim", kind.name)
+        expose("settled", settled)
+        expose("massVeil", frame.mass)
+        expose("grainVeil", frame.grains)
+        expose("spread", frame.spread)
+        expose("wave", frame.wave)
+        expose("pull", frame.pull)
+        expose("grains", grains.count)
         expose("playing", isPlaying)
-        expose("handled", handled != nil)
         expose("nodes", cells)
         expose("faces", faces)
         expose("vertices", mass?.vertexCount ?? 0)
@@ -98,7 +115,7 @@ final class Cast: Sketch {
         expose("carveMs", carveMs)
         expose("bakeMs", bakeMs)
         expose("coverMs", coverMs)
-        expose("shadowRange", Stage.range)
+        expose("shadowRange", Stage.range(for: frame))
         for result in coverage {
             expose("covered:\(result.kind.name)", result.covered * 100)
             // **はみ出しは 0 のはず。** 0 でなければ彫り出しの式が間違っている
@@ -126,6 +143,8 @@ final class Cast: Sketch {
         let surface = Surface.mesh(lattice, turns: Cast.turns)
         faces = surface.faces
         mass = form(surface.corners)
+        grains = Grains.pick(lattice, turns: Cast.turns)
+        cube = block()
         bakeMs = Float(Date().timeIntervalSince(began) * 1000)
 
         began = Date()
@@ -151,6 +170,15 @@ final class Cast: Sketch {
         }
     }
 
+    /// 粒 1 つぶんの立方体を焼く。
+    private func block() -> Shape {
+        createShape {
+            noStroke()
+            fill(Palette.mass.x, Palette.mass.y, Palette.mass.z)
+            box(Field.grain)
+        }
+    }
+
     // MARK: - 触る
 
     func mousePressed() {
@@ -167,31 +195,23 @@ final class Cast: Sketch {
         isScrubbing = false
     }
 
-    /// 横の位置を角度へ写す。**下に敷いた定規と同じ物差しを使う** (``Ruler``)。
+    /// 横の位置を時刻へ写す。**下に敷いた定規と同じ物差しを使う** (``Ruler``)。
     private func scrub() {
-        handled = Ruler.angle(atX: mouseX)
+        playhead = Ruler.time(atX: mouseX)
     }
 
     func keyPressed() {
         switch keyCode {
         case Key.space:
-            // **手で回していたら、いちばん近い姿勢から譜へ戻す。** 途中の角度から
-            // 続けると、次に止まる場所が姿勢とずれたままになる
-            if let handled {
-                playhead = Turn.resume(from: handled)
-                self.handled = nil
-                isPlaying = true
-            } else {
-                isPlaying.toggle()
-            }
+            isPlaying.toggle()
         case Key.arrowLeft, Key.arrowRight:
-            let step: Float = (keyCode == Key.arrowRight ? 1 : -1) * 2 * .pi / 180
-            handled = Ruler.wrap((handled ?? Turn.angle(at: playhead)) + step)
-        case Key.digit1, Key.digit2, Key.digit3:
-            let keys: [Key] = [.digit1, .digit2, .digit3]
-            if let index = keys.firstIndex(where: { $0 == keyCode }) {
-                playhead = Turn.start(of: index)
-                handled = nil
+            playhead = Score.wrap(playhead + (keyCode == Key.arrowRight ? 0.25 : -0.25))
+        case Key.digit1, Key.digit2, Key.digit3, Key.digit4:
+            let keys: [Key] = [.digit1, .digit2, .digit3, .digit4]
+            if let index = keys.firstIndex(where: { $0 == keyCode }),
+                index < Score.Act.allCases.count
+            {
+                playhead = Score.start(of: Score.Act.allCases[index])
             }
         default:
             break

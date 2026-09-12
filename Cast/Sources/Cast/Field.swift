@@ -67,8 +67,11 @@ enum Field {
     /// 塊の縦軸が床のどこに立っているか。
     ///
     /// **3 つの影が床の原点で重なるように決める** — 中心の影が原点へ落ちる位置である。
-    static var axis: SIMD2<Float> { -kappa * centerHeight * Shear.heading }
+    static var axis: SIMD2<Float> { -kappa * centerHeight * Shear.heading(Shear.design) }
 
     /// 床の広さ (一辺)。**画面の外まで敷く** — 端が見えると床が板に見える。
     static let floorSpan: Float = 12000
+
+    /// 粒 (立方体) の一辺。**塊の体積をこれで割った数だけ粒が出る。**
+    static let grain: Float = 22
 }

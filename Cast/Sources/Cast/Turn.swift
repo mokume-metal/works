@@ -1,9 +1,9 @@
 import Foundation
 
-/// 回転の譜 — **止まりと送りが拍を作る。**
+/// 幕 2 の譜 — **止まりと送りが拍を作る。**
 ///
-/// 12 秒でひと回り。4 秒ずつの 3 区間で、それぞれ 2.4 秒止まって 1.6 秒で 120 度回る。
-/// 3 回で 360 度、つまり**ひと回りして同じ姿勢へ戻る**。
+/// 12 秒の幕を 4 秒ずつの 3 区間に割り、それぞれ 2.4 秒止まって 1.6 秒で 120 度回る。
+/// 3 回で 360 度、つまり**幕の終わりには同じ姿勢へ戻る**ので、次の幕は円から始まる。
 ///
 /// **止まっている時間があることが、この作品の見え方そのもの**である。止まらずに
 /// 回し続けると、影が形になる瞬間が通り過ぎてしまい、何を見ればよいのか分からない。
@@ -31,12 +31,6 @@ enum Turn {
         let progress = local <= hold ? 0 : ease((local - hold) / swing)
         return (Float(index) + progress) * 2 * .pi / 3
     }
-
-    /// いま何番目の姿勢へ向いているか (0/1/2)。
-    static func pose(at time: Float) -> Int { Int(wrap(time) / step) % 3 }
-
-    /// 姿勢の頭の時刻。
-    static func start(of pose: Int) -> Float { Float(pose) * step }
 
     /// 揃い具合 — **角度だけで決まる。**
     ///
@@ -67,12 +61,6 @@ enum Turn {
         }
         return best
     }
-
-    /// 手で回した角度から、譜のどこへ戻るかを決める。
-    ///
-    /// **いちばん近い姿勢の頭へ戻す。** 送りの途中の時刻へ戻すこともできるが、
-    /// そこから続けると中途半端な角度で止まることになる。
-    static func resume(from angle: Float) -> Float { start(of: nearest(to: angle).pose) }
 
     /// 送りのイージング。**速く出て、長く効かせて、静かに着く。**
     static func ease(_ t: Float) -> Float {
