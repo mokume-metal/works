@@ -89,13 +89,56 @@ final class Koi {
     /// 背骨を測る点の数。
     static let samples = 23
 
-    /// 真上から見た体の幅 (最大の半幅に対する割合)。
+    /// 真上から見た体の輪郭。**背骨の節とは別に置いてある。**
     ///
-    /// 鼻先が 0、いちばん太いのが頭から 27%、尾の付け根 (尾柄) で 0.10 まで細る
-    private static let profile: [Float] = [
-        0.10, 0.44, 0.66, 0.81, 0.92, 0.98, 1.00, 1.00, 0.99, 0.96, 0.92,
-        0.87, 0.81, 0.74, 0.67, 0.59, 0.51, 0.43, 0.36, 0.30, 0.25, 0.21, 0.18,
+    /// `u` は鼻先 0・尾柄 1、値は最大半幅に対する割合。
+    ///
+    /// ## 節に合わせて 23 等分すると、鼻が尖る
+    ///
+    /// はじめは背骨の節 (23 個・4.5% 刻み) と同じ位置で幅を置いていた。鯉の鼻先は
+    /// **体長の 1% 足らずで最大半幅の 2 割まで立ち上がる**ので、4.5% 刻みでは
+    /// そこを 1 本の斜辺で結ぶことになり、**鼻が楔に尖る。** ここを頭のほうだけ
+    /// 細かく刻んであるのは、丸い鼻先を丸いまま描くためである。
+    ///
+    /// ## 頭は実測した
+    ///
+    /// 上見の写真 (Wikimedia Commons の
+    /// [2 year old Aka Muji](https://commons.wikimedia.org/wiki/File:2_year_old_Aka_Muji.jpg)、
+    /// CC BY-SA。青い舟に浮かべた単色の鯉を真上から撮ったもの) の 1 匹を体軸へ
+    /// 回してから、軸に垂直な走査線ごとに**紅と青の変わり目**を拾って半幅を測った
+    /// (画像の閾値で切り分けると照りで穴が空くので、局所の変わり目で見ている)。
+    ///
+    /// 分かったこと:
+    ///
+    /// - **鼻先は丸い。** 鼻から体長の 0.4% で既に最大半幅の 0.21、1.2% で 0.30。
+    ///   ここを 0.10 から始めていたのが「顔が尖って見える」の正体だった
+    /// - **最大幅は体長の 0.24 倍** (半幅 0.12)。置いてあった 0.236 とほぼ同じで、
+    ///   ここは動かさなくてよかった
+    /// - **いちばん太いのは頭から 30% 前後。** 27% で 0.98、31% で 1.00
+    ///
+    /// **後ろ半分は測り直していない。** 舟の鯉はどれも体を曲げていて、直線の軸で
+    /// 走査すると斜めに切ることになり幅が過大に出る。尾筒だけは上見の評価軸
+    /// (太い尾筒がよいとされる) に合わせて 0.18 → 0.22 へわずかに太らせた
+    static let outline: [(u: Float, half: Float)] = [
+        (0.000, 0.00), (0.004, 0.21), (0.012, 0.30), (0.022, 0.34), (0.035, 0.41),
+        (0.050, 0.49), (0.070, 0.60), (0.090, 0.68), (0.115, 0.75), (0.140, 0.80),
+        (0.170, 0.86), (0.200, 0.91), (0.230, 0.95), (0.270, 0.98), (0.310, 1.00),
+        (0.360, 0.99), (0.410, 0.96), (0.460, 0.92), (0.520, 0.84), (0.580, 0.76),
+        (0.640, 0.66), (0.700, 0.56), (0.760, 0.44), (0.820, 0.36), (0.880, 0.30),
+        (0.940, 0.25), (1.000, 0.22),
     ]
+
+    /// その位置の半幅 (最大半幅に対する割合)。**輪郭の表を線形に読む。**
+    static func halfWidth(at u: Float) -> Float {
+        let t = min(max(u, 0), 1)
+        for index in 1..<outline.count where outline[index].u >= t {
+            let a = outline[index - 1]
+            let b = outline[index]
+            let span = b.u - a.u
+            return span > 1e-6 ? a.half + (b.half - a.half) * ((t - a.u) / span) : a.half
+        }
+        return outline[outline.count - 1].half
+    }
 
     let variety: Variety
     /// 個体ごとの種。**同じ品種でも斑の出方が違う。**
@@ -479,13 +522,46 @@ final class Koi {
 
     // MARK: - 形
 
-    /// 体の輪郭の片側。
+    /// 背骨の途中の位置と、そこでの体の横向き。
+    ///
+    /// **輪郭は節より細かく刻む**ので (`outline`)、節と節のあいだを読める必要がある。
+    /// 向きも隣の接線どうしを混ぜる — 位置だけ補間して向きを節のものにすると、
+    /// 鼻先の数点が同じ向きを向いて丸みが平たく潰れる
+    func rib(atFraction u: Float) -> (place: SIMD2<Float>, side: SIMD2<Float>) {
+        let scaled = min(max(u, 0), 1) * Float(Self.samples - 1)
+        let index = min(Int(scaled), Self.samples - 2)
+        let t = scaled - Float(index)
+        let place = pose[index] + (pose[index + 1] - pose[index]) * t
+        let first = tangent(at: index)
+        let second = tangent(at: index + 1)
+        var forward = first + (second - first) * t
+        let far = simd_length(forward)
+        forward = far > 1e-5 ? forward / far : heading
+        return (place, SIMD2(-forward.y, forward.x))
+    }
+
+    /// 体の輪郭の片側。**節ではなく `outline` の刻みで返す。**
     func flank(_ sign: Float) -> [SIMD2<Float>] {
-        (0..<Self.samples).map { index in
-            let tangent = tangent(at: index)
-            let normal = SIMD2(-tangent.y, tangent.x)
-            return pose[index] + normal * (Self.profile[index] * maximumHalfWidth * sign)
+        Self.outline.map { station in
+            let rib = rib(atFraction: station.u)
+            return rib.place + rib.side * (station.half * maximumHalfWidth * sign)
         }
+    }
+
+    /// 髭 2 対。**鯉と金魚を分けているのはここである。**
+    ///
+    /// 上顎の左右に、短い吻髭と長い上顎髭が 1 本ずつ生えている。真上からは口角から
+    /// 後ろへ流れる細い線として見える。長さは目径 (体長の 2.6%) を基準に、吻髭が
+    /// その 0.8 倍、上顎髭が 1.6 倍
+    func whiskers(_ sign: Float) -> [(base: SIMD2<Float>, direction: SIMD2<Float>, reach: Float)] {
+        let corner = rib(atFraction: 0.022)
+        let base = corner.place + corner.side * (Self.halfWidth(at: 0.022) * maximumHalfWidth * sign)
+        // **後ろへ流れる。** 泳いでいる鯉の髭は前へ突き出さず、頬に沿って寝ている
+        let backward = SIMD2(-corner.side.y, corner.side.x)
+        return [
+            (base, Self.turn(backward, by: 0.62 * sign), length * 0.020),
+            (base, Self.turn(backward, by: 0.24 * sign), length * 0.040),
+        ]
     }
 
     /// 尾柄の位置・体の後ろへ伸びる向き・尾鰭が撓む角 (ラジアン)。
@@ -512,12 +588,13 @@ final class Koi {
 
     /// 胸鰭の付け根と、鰭が伸びる向き。**ゆっくり漕ぐ。**
     func pectoral(_ sign: Float) -> (base: SIMD2<Float>, direction: SIMD2<Float>) {
-        // **鰓蓋のすぐ後ろ。** 体のいちばん太いところ (index 6) に置くと、
+        // **鰓蓋のすぐ後ろ。** 実際の鯉の鰓蓋の後端は頭から 4 分の 1 のあたりで、
+        // 胸鰭はその真後ろに付く。体のいちばん太いところ (30%) まで下げると、
         // 腹から翼が生えているように見える
-        let index = 4
-        let tangent = tangent(at: index)
-        let normal = SIMD2(-tangent.y, tangent.x)
-        let base = pose[index] + normal * (Self.profile[index] * maximumHalfWidth * sign * 0.85)
+        let u: Float = 0.24
+        let rib = rib(atFraction: u)
+        let tangent = SIMD2(rib.side.y, -rib.side.x)
+        let base = rib.place + rib.side * (Self.halfWidth(at: u) * maximumHalfWidth * sign * 0.85)
         let paddle = sin(2 * Float.pi * tailPhase * 0.55 + (sign > 0 ? 0 : 0.5)) * 0.30
         // **回す向きは法線と逆符号。** 揃えると鰭が体の下へ潜り、
         // どの鯉にも胸鰭が見えなくなる (実際にそうなっていた)
