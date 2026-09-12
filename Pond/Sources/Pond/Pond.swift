@@ -135,6 +135,10 @@ final class Pond: Sketch {
 
         expose("wind", water.airflow(at: span * 0.5, now: now).strength)
         expose("gusts", water.gustCount)
+        expose("liveliness", Koi.liveliness(now: now))
+        expose("dashing", school.koi.filter { $0.dashing }.count)
+        expose("fastest", school.koi.map { $0.speed / $0.length }.max() ?? 0)
+        expose("deepest", school.koi.map { $0.depth }.max() ?? 0)
         expose("rings", water.rings.count)
         expose("pellets", pond.pellets.count)
         expose("koi", school.koi.count)
