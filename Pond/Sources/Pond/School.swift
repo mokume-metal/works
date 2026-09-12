@@ -182,6 +182,22 @@ final class School {
             width: width * 0.20 * (1 + 1.6 * abs(tail.cup)), cup: tail.cup,
             tint: tint, alpha: 0.46 * fade, on: canvas)
 
+        // 髭 2 対。**鯉と金魚を分けているのはここ。**
+        //
+        // 太くすると牙に見えるので、**幅は 1 画素前後・濃さも控えめ**にしてある。
+        // 色は鰭ではなく頭の地の色を落としたもの (髭は膜ではなく肉である)
+        let skin = fish.variety.skin
+        for sign in [Float(1), Float(-1)] {
+            for whisker in fish.whiskers(sign) {
+                blade(
+                    base: whisker.base, direction: whisker.direction, length: whisker.reach,
+                    width: max(width * 0.030, 0.6), cup: 0.7 * sign,
+                    tint: .display(red: skin.red * 0.72, green: skin.green * 0.62,
+                                   blue: skin.blue * 0.58),
+                    alpha: 0.38 * fade, on: canvas)
+            }
+        }
+
         // **鰭条は引かない。** 縦に立った尾鰭の筋は真上からは同じ線へ潰れて見えず、
         // 胸鰭のほうは 40 画素ほどしかないので、筋を引くと膜ではなく櫛に見える
     }
@@ -192,12 +208,12 @@ final class School {
         let left = fish.flank(1)
         let right = fish.flank(-1)
         target.beginShape(.triangleStrip)
-        for index in 0..<Koi.samples {
-            let u = Float(index) / Float(Koi.samples - 1)
+        for (index, station) in Koi.outline.enumerated() {
             let a = left[index] + shift
             let b = right[index] + shift
-            target.vertex(a.x, a.y, u, 0)
-            target.vertex(b.x, b.y, u, 1)
+            // **体の座標は輪郭の刻みがそのまま持つ。** 節で割った値ではない
+            target.vertex(a.x, a.y, station.u, 0)
+            target.vertex(b.x, b.y, station.u, 1)
         }
         target.endShape()
     }
@@ -365,22 +381,39 @@ final class School {
             body *= 1.0 - smoothstep(0.26, 0.46, d) * 0.17;
             body += smoothstep(0.30, 0.04, d) * values.sheen * 0.09;
 
-            // 真上から見た体の丸み。背 (v = 0.5) が正面を向き、脇腹が逃げる
-            float theta = (across - 0.5) * 3.14159265;
+            // 真上から見た体の丸み。背 (v = 0.5) が正面を向き、脇腹が逃げる。
+            // **頭は平たい。** 鯉の頭は上から見ると幅の割に薄く、胴のような丸い
+            // 円柱ではない — 全長に同じ丸みを掛けると、顔だけが樽のように見える
+            float round = mix(0.45, 1.0, smoothstep(0.05, 0.30, along));
+            float theta = (across - 0.5) * 3.14159265 * round;
             float lam = max(values.light.x * sin(theta) + values.light.y * cos(theta), 0.0);
             body *= 0.44 + 0.68 * lam;
             body += values.sheen * pow(lam, 16.0) * 0.5;
 
+            // 鰓蓋の後端。**肩がどこで終わるか**がここで読める (頭から 4 分の 1)
+            float gill = 1.0 - smoothstep(0.0, 0.022, abs(along - 0.255));
+            body *= 1.0 - gill * 0.13 * smoothstep(0.10, 0.30, abs(across - 0.5));
+
+            // 口。突き出た上唇のぶん、鼻先は前へ丸い
+            float lip = 1.0 - smoothstep(0.006, 0.020, abs(along - 0.013));
+            body *= 1.0 - lip * 0.30 * (1.0 - smoothstep(0.18, 0.40, abs(across - 0.5)));
+
             // 縁は水へ溶ける
             body *= 0.55 + 0.45 * smoothstep(0.0, 0.055, min(across, 1.0 - across));
 
-            // 目
-            float2 eyeL = float2(0.064, 0.225);
-            float2 eyeR = float2(0.064, 0.775);
-            float2 squash = float2(2.4, 1.0);
-            float eye = min(length((b - eyeL) * squash), length((b - eyeR) * squash));
-            body = mix(body, float3(0.020, 0.018, 0.016), 1.0 - smoothstep(0.017, 0.025, eye));
-            body += (1.0 - smoothstep(0.004, 0.008, eye)) * 0.35;
+            // 目。
+            //
+            // **位置も大きさも上見の写真から取った** — 鼻先から体長の 9%、頭の側面
+            // (中心から縁へ 7 割の位置)、径は体長の 2.6%。`across` は体の幅で割った
+            // 座標なので、そこが体長の 16% しかないこの位置では、**丸い目は across
+            // 方向へ 6 倍に伸ばして置く**ことになる (置いてあった値は along 方向に
+            // 長い薄片で、真上から見ると細い線に見えていた)
+            float2 radius = float2(0.0132, 0.083);
+            float eye = min(
+                length((b - float2(0.090, 0.170)) / radius),
+                length((b - float2(0.090, 0.830)) / radius));
+            body = mix(body, float3(0.020, 0.018, 0.016), 1.0 - smoothstep(0.86, 1.02, eye));
+            body += (1.0 - smoothstep(0.22, 0.42, eye)) * 0.30;
 
             // 深さのぶん、水の色へ寄る
             body = mix(body, values.deep.rgb, values.murk);
