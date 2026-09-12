@@ -64,14 +64,18 @@ final class School {
     // MARK: - 描く
 
     /// 鯉を面へ描く。
-    func draw(time: Float) {
+    func draw() {
         canvas.beginDraw()
         canvas.background(.transparent)
         canvas.noStroke()
         // **奥から描く。** 深い鯉が浅い鯉の下になる
         for fish in koi.sorted(by: { $0.depth > $1.depth }) {
-            fins(of: fish, time: time)
+            fins(of: fish)
             body(of: fish)
+            // **背鰭は体の後。** 背中の上に立っているものなので、体の下へ回すと消える
+            ridge(
+                of: fish, tint: fish.variety.fin, alpha: 0.34 * (1 - murk(of: fish)),
+                on: canvas)
         }
         canvas.endDraw()
     }
@@ -92,9 +96,13 @@ final class School {
                 let jitter = SIMD2(cos(angle), sin(angle)) * blur
                 bed.fill(.display(red: 0.0, green: 0.02, blue: 0.02, alpha: 0.19))
                 strip(of: fish, on: bed, shift: offset + jitter)
-                fan(
-                    base: fish.caudal.base + offset + jitter, direction: fish.caudal.direction,
-                    length: fish.length * 0.30, spread: 0.60, on: bed)
+                let tail = fish.caudal
+                blade(
+                    base: tail.base + offset + jitter, direction: tail.direction,
+                    length: fish.length * 0.29,
+                    width: fish.maximumHalfWidth * 0.20 * (1 + 1.6 * abs(tail.cup)),
+                    cup: tail.cup, tint: .display(red: 0, green: 0.02, blue: 0.02),
+                    alpha: 0.13, on: bed)
             }
         }
     }
@@ -122,38 +130,41 @@ final class School {
         canvas.resetShader()
     }
 
-    private func fins(of fish: Koi, time: Float) {
+    /// 鰭を描く。
+    ///
+    /// ## 縦に立った鰭と、水平に開いた鰭は、真上からの見え方が違う
+    ///
+    /// 魚の**尾鰭・背鰭は体の正中面に立っている**ので、真上から見ると板ではなく
+    /// **細い刃**になる。扇が開いて見えるのはイルカやクジラで、あちらの尾は水平だから
+    /// である。**胸鰭だけが水平に近い**ので、こちらは真上から開いた形で見える。
+    ///
+    /// はじめは尾鰭も扇で描いていて、**鯉ではなくイルカの尾に見えた。**
+    private func fins(of fish: Koi) {
         let tint = fish.variety.fin
         let fade = 1 - murk(of: fish)
-        let alpha = 0.66 * fade
-        canvas.fill(
-            .display(
-                red: tint.red, green: tint.green, blue: tint.blue, alpha: alpha))
+        let width = fish.maximumHalfWidth
 
-        let tail = fish.caudal
-        fan(
-            base: tail.base, direction: tail.direction, length: fish.length * 0.30,
-            spread: 0.86, on: canvas)
+        // 胸鰭。水平に近いので、真上からは開いて見える
+        canvas.fill(
+            .display(red: tint.red, green: tint.green, blue: tint.blue, alpha: 0.58 * fade))
         for sign in [Float(1), Float(-1)] {
             let fin = fish.pectoral(sign)
-            fan(
-                base: fin.base, direction: fin.direction, length: fish.length * 0.17,
-                spread: 0.62, on: canvas)
+            paddle(
+                base: fin.base, direction: fin.direction, length: fish.length * 0.165,
+                spread: 0.46, on: canvas)
         }
 
-        // 鰭条。**鰭が膜であることは筋で分かる** — 塗りだけだと板に見える
-        canvas.stroke(
-            .display(red: 1, green: 1, blue: 1, alpha: 0.10 * fade))
-        canvas.strokeWeight(1.3)
-        canvas.noFill()
-        for step in 0...6 {
-            let s = Float(step) / 3 - 1
-            let rim = fanRim(
-                base: tail.base, direction: tail.direction, length: fish.length * 0.26,
-                spread: 0.86, at: s)
-            canvas.line(tail.base.x, tail.base.y, rim.x, rim.y)
-        }
-        canvas.noStroke()
+        // 尾鰭。正中面に立っているので、真上からは撓んだ刃に見える。
+        // **撓んでいるときほど太く見える** — 鰭が反って面が斜めを向くので、
+        // 真上から見える切り口が広がる (打ち返す瞬間がいちばん細い)
+        let tail = fish.caudal
+        blade(
+            base: tail.base, direction: tail.direction, length: fish.length * 0.29,
+            width: width * 0.20 * (1 + 1.6 * abs(tail.cup)), cup: tail.cup,
+            tint: tint, alpha: 0.46 * fade, on: canvas)
+
+        // **鰭条は引かない。** 縦に立った尾鰭の筋は真上からは同じ線へ潰れて見えず、
+        // 胸鰭のほうは 40 画素ほどしかないので、筋を引くと膜ではなく櫛に見える
     }
 
     /// 体の輪郭を三角形の帯で描く。**閉じた多角形にしない** — 帯なら分割の仕方が
@@ -172,27 +183,88 @@ final class School {
         target.endShape()
     }
 
-    /// 鰭の縁の 1 点。
-    ///
-    /// 又の入った尾鰭は「根元から見て星型」なので、扇で描ける。`s` は −1…1 で、
-    /// 真ん中 (0) がいちばん短い = そこが又になる
-    private func fanRim(
+    /// 胸鰭の縁の 1 点。**又は入れない** — 尾鰭と違って先が丸い。
+    private func paddleRim(
         base: SIMD2<Float>, direction: SIMD2<Float>, length: Float, spread: Float, at s: Float
     ) -> SIMD2<Float> {
-        let reach = length * (0.42 + 0.58 * pow(abs(s), 0.75))
+        // 真ん中がいちばん長く、両端へなだらかに短くなる。前縁 (s > 0) をわずかに長く
+        let reach = length * (0.44 + 0.56 * cos(s * 1.25)) * (1 + 0.20 * s)
         return base + Koi.turn(direction, by: s * spread) * reach
     }
 
-    private func fan(
+    /// 水平に開いた鰭 (胸鰭) を扇で描く。
+    private func paddle(
         base: SIMD2<Float>, direction: SIMD2<Float>, length: Float, spread: Float, on target: Canvas
     ) {
         target.beginShape(.triangleFan)
         target.vertex(base.x, base.y)
-        for step in 0...20 {
-            let s = Float(step) / 10 - 1
-            let rim = fanRim(
+        for step in 0...16 {
+            let s = Float(step) / 8 - 1
+            let rim = paddleRim(
                 base: base, direction: direction, length: length, spread: spread, at: s)
             target.vertex(rim.x, rim.y)
+        }
+        target.endShape()
+    }
+
+    /// 尾鰭の切り口の幅 (根元の幅に対する割合)。
+    ///
+    /// 途中でいったん締まってから上下の葉のぶんだけ膨らみ、**先で 0 近くまで細る。**
+    /// 一定の幅で引くと板が刺さっているようにしか見えない
+    private static let bladeProfile: [Float] = [
+        1.00, 0.92, 0.84, 0.79, 0.78, 0.82, 0.88, 0.94, 0.96, 0.90, 0.72, 0.44, 0.16,
+    ]
+
+    /// 正中面に立った鰭 (尾鰭) を、真上から見た形で描く。
+    ///
+    /// **見えているのは膜の板ではなく、その切り口である。** 幅は膜の厚みと、鰭が
+    /// 水を掴んで反り返るぶんしかない。反りは根元で 0、先へ向かって効かせる
+    /// (`t²`) ので、刃は根元から滑らかに曲がる。
+    ///
+    /// **濃さも先へ向かって抜く。** 鰭は先へ行くほど薄い膜なので、水が透ける
+    private func blade(
+        base: SIMD2<Float>, direction: SIMD2<Float>, length: Float,
+        width: Float, cup: Float, tint: LinearRGBA, alpha: Float, on target: Canvas
+    ) {
+        let steps = Self.bladeProfile.count - 1
+        var place = base
+        var ribs: [(place: SIMD2<Float>, side: SIMD2<Float>, half: Float)] = []
+        ribs.reserveCapacity(steps + 1)
+        for step in 0...steps {
+            let t = Float(step) / Float(steps)
+            let heading = Koi.turn(direction, by: cup * t * t)
+            ribs.append((place, SIMD2(-heading.y, heading.x), width * Self.bladeProfile[step]))
+            place += heading * (length / Float(steps))
+        }
+        target.beginShape(.triangleStrip)
+        for (step, rib) in ribs.enumerated() {
+            let t = Float(step) / Float(steps)
+            target.fill(
+                .display(
+                    red: tint.red, green: tint.green, blue: tint.blue,
+                    alpha: alpha * (1 - 0.55 * t * t)))
+            let offset = rib.side * rib.half
+            target.vertex(rib.place.x - offset.x, rib.place.y - offset.y)
+            target.vertex(rib.place.x + offset.x, rib.place.y + offset.y)
+        }
+        target.endShape()
+    }
+
+    /// 背鰭。**背の上に乗る細い筋**で、真ん中がいちばん高く、前後の端で消える。
+    private func ridge(of fish: Koi, tint: LinearRGBA, alpha: Float, on target: Canvas) {
+        let first = 7
+        let last = 16
+        target.beginShape(.triangleStrip)
+        for index in first...last {
+            let t = Float(index - first) / Float(last - first)
+            let rib = fish.rib(at: index)
+            let hump = sin(t * Float.pi)
+            target.fill(
+                .display(
+                    red: tint.red, green: tint.green, blue: tint.blue, alpha: alpha * hump))
+            let offset = rib.side * max(fish.maximumHalfWidth * 0.13 * hump, 0.4)
+            target.vertex(rib.place.x - offset.x, rib.place.y - offset.y)
+            target.vertex(rib.place.x + offset.x, rib.place.y + offset.y)
         }
         target.endShape()
     }
