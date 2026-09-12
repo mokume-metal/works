@@ -110,7 +110,7 @@ final class Pond: Sketch {
         bed.finish()
 
         // 鯉
-        school.draw(time: now)
+        school.draw()
 
         // 水面。**3 枚がここで 1 枚になる**
         field.set(water.pack(now: now, koi: school.koi))

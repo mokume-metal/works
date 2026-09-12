@@ -311,26 +311,40 @@ final class Koi {
         }
     }
 
-    /// 尾柄の位置と、尾鰭の向き (体の後ろへ伸びる向き)。
+    /// 尾柄の位置・体の後ろへ伸びる向き・尾鰭が撓む角 (ラジアン)。
     ///
-    /// **尾鰭は体より遅れて振れる。** 打った波が尾鰭へ届くまでの遅れであり、鰭が水を
-    /// 掴んで撓むぶんでもある。位相を 0.22 周期ぶん遅らせてある
-    var caudal: (base: SIMD2<Float>, direction: SIMD2<Float>) {
+    /// **尾鰭は体より遅れて撓む。** 打った波が尾鰭へ届くまでの遅れであり、鰭が水を
+    /// 掴んで反り返るぶんでもある。位相を 0.22 周期ぶん遅らせてある。
+    ///
+    /// **向きそのものは回さず、撓む角を別に返す。** 真上から見た尾鰭は板ではなく
+    /// 刃なので (`School.blade`)、絵になるのは「どちらへどれだけ反っているか」であって
+    /// 「どちらを向いた扇か」ではない
+    var caudal: (base: SIMD2<Float>, direction: SIMD2<Float>, cup: Float) {
         let base = pose[Self.samples - 1]
         let backward = -tangent(at: Self.samples - 1)
         let swing = min(0.3 + speed / 240, 1.2)
-        let lag = sin(2 * Float.pi * (0.85 - tailPhase - 0.22)) * 0.40 * swing
-        return (base, Self.turn(backward, by: lag))
+        let cup = sin(2 * Float.pi * (0.85 - tailPhase - 0.22)) * 0.66 * swing
+        return (base, backward, cup)
+    }
+
+    /// 背骨のその節の、位置と体の横向き。**背鰭を立てるのに要る。**
+    func rib(at index: Int) -> (place: SIMD2<Float>, side: SIMD2<Float>) {
+        let forward = tangent(at: index)
+        return (pose[index], SIMD2(-forward.y, forward.x))
     }
 
     /// 胸鰭の付け根と、鰭が伸びる向き。**ゆっくり漕ぐ。**
     func pectoral(_ sign: Float) -> (base: SIMD2<Float>, direction: SIMD2<Float>) {
-        let index = 5
+        // **鰓蓋のすぐ後ろ。** 体のいちばん太いところ (index 6) に置くと、
+        // 腹から翼が生えているように見える
+        let index = 4
         let tangent = tangent(at: index)
         let normal = SIMD2(-tangent.y, tangent.x)
         let base = pose[index] + normal * (Self.profile[index] * maximumHalfWidth * sign * 0.85)
         let paddle = sin(2 * Float.pi * tailPhase * 0.55 + (sign > 0 ? 0 : 0.5)) * 0.30
-        return (base, Self.turn(-tangent, by: (0.85 + paddle) * sign))
+        // **回す向きは法線と逆符号。** 揃えると鰭が体の下へ潜り、
+        // どの鯉にも胸鰭が見えなくなる (実際にそうなっていた)
+        return (base, Self.turn(-tangent, by: -(0.52 + paddle) * sign))
     }
 
     /// 向きを回す。
