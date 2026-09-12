@@ -77,7 +77,7 @@ enum Variety: Int, CaseIterable {
 ///
 /// 本当は体をくねらせるから進むのだが、ここではその向きを逆にしてある —
 /// 進んだぶんだけ鎖が伸び、その鎖へ頭から尾へ向かう波を重ねる。**打つ速さは
-/// 泳ぐ速さから決める** (魚は尾を 1 回打つごとに体長の 0.6 倍ほど進む) ので、
+/// 泳ぐ速さから決める** (鯉は尾を 1 回打つごとに体長の 0.45 倍ほど進む) ので、
 /// 流しているときはゆっくり、逃げるときは速く打つ。ここは物理ではなく約束である。
 ///
 /// ## 尾を打つたびに水を蹴る
@@ -129,7 +129,7 @@ final class Koi {
         self.depth = depth
         self.head = place
         self.heading = SIMD2(cos(angle), sin(angle))
-        self.speed = 70
+        self.speed = length * 0.45
         self.tailPhase = phase
         self.wanderSeed = seed.x * 6.1
         let link = length / Float(Self.samples - 1)
@@ -150,12 +150,15 @@ final class Koi {
     ) {
         let side = SIMD2(-heading.y, heading.x)
         var want = heading * 1.4
-        var target: Float = 70
+        // **巡航は体長の 0.45 倍 / 秒。** 速さを画素で置いていたときは、
+        // 体長 300 mm の鯉が 0.23 体長 / 秒でしか進まず、尾を 2.6 秒に 1 回しか
+        // 打たなかった — 体がくねっているようには見えなかった
+        var target = length * 0.45
 
         // さまよい。**向きの揺れは 2 つの周期を重ねる** — 1 つだと振り子に見える
         let slow: Float = sin(now * 0.23 + wanderSeed)
         let quick: Float = sin(now * 0.61 + wanderSeed * 2.3)
-        want += side * (slow * 0.22 + quick * 0.09)
+        want += side * (slow * 0.15 + quick * 0.06)
 
         // 縁を避ける。**押し返しは距離の 2 乗で効かせる** — 縁ぎりぎりで急に曲がる。
         // 曲がれる速さに上限があるので、**体 1 つぶん以上手前から効かせる**
@@ -184,7 +187,7 @@ final class Koi {
             let far = simd_length(toward)
             if far > 1 {
                 want += toward / far * 3.2
-                target = min(210, 52 + far * 0.62)
+                target = min(length * 0.72, length * 0.2 + far * 0.62)
             }
         }
 
@@ -194,7 +197,7 @@ final class Koi {
             let far = simd_length(away)
             if far > 1 {
                 want += away / far * (5.5 * scare.strength)
-                target = max(target, 150 + 180 * scare.strength)
+                target = max(target, length * (0.5 + 0.55 * scare.strength))
             }
         }
 
@@ -206,8 +209,12 @@ final class Koi {
                 heading.x * desired.y - heading.y * desired.x, simd_dot(heading, desired))
             // **曲がれる速さは体の長さで決まる。** 魚の最小旋回半径は体長の
             // 1 倍ほどで、それより速く首を振らせると体が輪になって折り返す
-            // (ここを速さだけで決めていたときは、6 匹とも巻き貝になった)
-            let limit = min(max(speed / (length * 0.85), 0.30), 0.9) * dt
+            // (ここを速さだけで決めていたときは、6 匹とも巻き貝になった)。
+            //
+            // **1.3 倍まで緩めてある。** 0.85 倍では旋回中の体が常に弓なりで、
+            // 「曲がったまま滑っている」ようにしか見えなかった — 泳ぎの波より
+            // 旋回の曲がりのほうが大きいと、くねりがその中に埋もれる
+            let limit = min(max(speed / (length * 1.3), 0.22), 0.7) * dt
             turn = min(max(turn, -limit), limit)
             heading = SIMD2(
                 heading.x * cos(turn) - heading.y * sin(turn),
@@ -254,13 +261,14 @@ final class Koi {
         }
     }
 
-    /// 尾を打つ。**1 打ちで体長の 0.6 倍だけ進む**ので、速さから打つ回数が決まる。
+    /// 尾を打つ。**1 打ちで体長の 0.45 倍だけ進む**ので、速さから打つ回数が決まる。
     private func beat(dt: Float, now: Float, water: Water) {
-        let rate = max(0.34, speed / (0.60 * length))
+        // **1 打ちで体長の 0.45 倍だけ進む。** 鯉は効率のよい泳ぎ手ではない
+        let rate = max(0.42, speed / (0.45 * length))
         tailPhase += rate * dt
         beats += rate * dt
         // 速く泳いでいるときだけ水を蹴る。流しているときの尾は水を置いていかない
-        if speed > 66, floor(beats) != lastBeat {
+        if speed > length * 0.38, floor(beats) != lastBeat {
             lastBeat = floor(beats)
             water.ripple(
                 at: pose[Self.samples - 1], now: now,
@@ -273,13 +281,20 @@ final class Koi {
     /// 振幅は尾へ向かって 2 乗で増やす (carangiform — 前半はほとんど動かず、
     /// 後ろ 3 分の 1 で振れる)。**流しているときは振らない**ので、速さで縮める
     private func shapeBody() {
-        let swing = min(0.25 + speed / 260, 1.25)
+        // 止まっていてもわずかにくねる。速さで 1.0 まで開く
+        let swing = min(0.45 + speed / (length * 1.4), 1.15)
         for index in 0..<Self.samples {
             let u = Float(index) / Float(Self.samples - 1)
             let tangent = tangentOfChain(at: index)
             let normal = SIMD2(-tangent.y, tangent.x)
-            let amplitude = length * (0.004 + 0.055 * u * u) * swing
-            pose[index] = chain[index] + normal * (amplitude * sin(2 * Float.pi * (u * 0.85 - tailPhase)))
+            // **尾の振れ幅は体長の 5〜6%** (片振幅)。実物の巡航がその程度で、
+            // 0.9% しか振っていなかったときは体が動いて見えなかった。
+            // 頭にも小さく残すのは**反動**で、これがあると体が 1 本に繋がって見える
+            // **u の 1.6 乗で増やす。** 2 乗にすると振れるのが後ろ 3 分の 1 だけに
+            // なり、胴が板のまま尾だけが動いて見える
+            let amplitude = length * (0.009 + 0.058 * pow(u, 1.6)) * swing
+            let wave = sin(2 * Float.pi * (u * 0.95 - tailPhase))
+            pose[index] = chain[index] + normal * (amplitude * wave)
         }
     }
 
