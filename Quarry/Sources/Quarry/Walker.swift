@@ -119,7 +119,11 @@ final class Walker {
         place.z += delta.z
         if blocked(in: world) { place.z = before.z }
 
-        if place.x == before.x || place.z == before.z {
+        // **止まったときだけ登る。** 動こうとしていない軸まで見ると、立ち止まって
+        // いる間ずっと持ち上げては戻す無駄が回る
+        let stuckX = delta.x != 0 && place.x == before.x
+        let stuckZ = delta.z != 0 && place.z == before.z
+        if stuckX || stuckZ {
             climb(from: before, by: delta, in: world)
         }
 
