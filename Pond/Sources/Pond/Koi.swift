@@ -145,8 +145,11 @@ final class Koi {
     let seed: SIMD2<Float>
     /// 鼻先から尾柄までの長さ (mm)。
     let length: Float
-    /// 水面からの深さ (mm)。**濁りの強さと大きさに効く。**
-    let depth: Float
+    /// 水面からの深さ (mm)。**濁りの強さと影の広がりに効く。**
+    ///
+    /// **固定していない。** 池の鯉は上下にも動くもので、沈めば濁りに溶けて影が広がり、
+    /// 浮けば色が戻る。長く映していても同じ層の重なりにならないのはこれのため
+    private(set) var depth: Float
 
     private(set) var head: SIMD2<Float>
     private(set) var heading: SIMD2<Float>
@@ -164,6 +167,12 @@ final class Koi {
     private var beats: Float = 0
     private let wanderSeed: Float
     private var lastBeat: Float = -1
+    /// 出来事の籤に使う塩。**個体ごとに違う予定表になる。**
+    private let stirSalt: UInt64
+    /// いま突進しているか。**近くの仲間はこれに驚く。**
+    private(set) var dashing = false
+    /// 深さの落ち着き先 (mm)。**ここを中心に漂う。**
+    private let depthHome: Float
 
     var maximumHalfWidth: Float { length * 0.118 }
 
@@ -178,9 +187,91 @@ final class Koi {
         self.speed = length * 0.45
         self.tailPhase = phase
         self.wanderSeed = seed.x * 6.1
+        self.stirSalt = UInt64(seed.x * 97 + seed.y * 31) &+ 6_120_713
+        self.depthHome = depth
         let link = length / Float(Self.samples - 1)
         chain = (0..<Self.samples).map { place - SIMD2(cos(angle), sin(angle)) * (Float($0) * link) }
         pose = chain
+    }
+
+
+    // MARK: - 出来事
+
+    /// ときどき起きること。
+    ///
+    /// **ふだんはゆったりでよい。** ただ、巡航に緩い揺れを足し続けるだけだと、
+    /// 長く映したときに「同じ絵がずっと続く」ようにしか見えない。**たまに何かが
+    /// 起きて、また静かに戻る**という時間の緩急が要る。
+    enum Stir {
+        /// 突進。
+        case dart
+        /// 翻る。**突進に大きな転回を重ねたもの。**
+        case turn
+        /// 漂う。**ほとんど止まる。**
+        case hover
+        /// 渡る。**さまよわずまっすぐ泳ぐ。**
+        case cross
+    }
+
+    private struct Event {
+        var kind: Stir
+        var born: Float
+        var life: Float
+        /// 目標の速さ (体長 / 秒)。
+        var pace: Float
+        /// 転回の角 (rad)。`turn` だけが使う。
+        var swerve: Float
+    }
+
+    /// 出来事の間隔の目安 (秒)。**6 匹なら池全体で 40 秒に 1 つ。**
+    static let stirSpacing: Float = 240
+
+    /// 群れの活気 (0.66…1.34)。
+    ///
+    /// **数分かけて静と動を行き来する。** 周期の噛み合わない 2 つの正弦なので
+    /// 繰り返しが読めない (風向きの首振りと同じ作法)。巡航の速さ・さまよいの幅・
+    /// 出来事の起きやすさに掛かる
+    static func liveliness(now: Float) -> Float {
+        1.0 + 0.22 * sin(now * 0.019 + 0.7) + 0.12 * sin(now * 0.0071 + 2.3)
+    }
+
+    /// 何番目かの出来事。**時刻だけから決まる** (風の斑と同じ作法)。
+    ///
+    /// 賽を毎フレーム振ると、引く回数がフレームの刻みで変わって速い機械ほど
+    /// 忙しい池になる。番号で種を作れば予定表は時刻の関数のままでいられる
+    private func event(_ index: Int) -> Event? {
+        guard index >= 0 else { return nil }
+        var draw = Scatter(counting: index, salt: stirSalt)
+        let born = Float(index) * Self.stirSpacing + draw.next(0, Self.stirSpacing * 0.92)
+        // **静かなときは、起きるはずだった出来事が流れる。** 活気が低い数分は
+        // 池全体が本当に静かになる
+        guard draw.next(0, 1) < 0.30 + 0.62 * Self.liveliness(now: born) else { return nil }
+        switch Int(draw.next(0, 4)) {
+        case 0:
+            return Event(kind: .dart, born: born, life: draw.next(0.6, 1.1),
+                         pace: draw.next(2.6, 3.2), swerve: 0)
+        case 1:
+            // **C スタートの転回角そのもの** (実測で約 150 度)
+            return Event(kind: .turn, born: born, life: draw.next(0.7, 1.2),
+                         pace: draw.next(2.4, 3.0),
+                         swerve: draw.next(1.7, 2.6) * (draw.next(0, 1) < 0.5 ? -1 : 1))
+        case 2:
+            return Event(kind: .hover, born: born, life: draw.next(3.0, 6.0),
+                         pace: 0.10, swerve: 0)
+        default:
+            return Event(kind: .cross, born: born, life: draw.next(4.0, 8.0),
+                         pace: draw.next(0.8, 1.0), swerve: 0)
+        }
+    }
+
+    /// いま起きている出来事。**隣り合う 2 番だけを見れば足りる** (寿命 < 間隔)。
+    private func stirring(now: Float) -> Event? {
+        let turn = Int((now / Self.stirSpacing).rounded(.down))
+        for index in [turn - 1, turn] {
+            guard let event = event(index) else { continue }
+            if now >= event.born, now - event.born <= event.life { return event }
+        }
+        return nil
     }
 
     // MARK: - 泳ぐ
@@ -198,13 +289,15 @@ final class Koi {
         var want = heading * 1.4
         // **巡航は体長の 0.45 倍 / 秒。** 速さを画素で置いていたときは、
         // 体長 300 mm の鯉が 0.23 体長 / 秒でしか進まず、尾を 2.6 秒に 1 回しか
-        // 打たなかった — 体がくねっているようには見えなかった
-        var target = length * 0.45
+        // 打たなかった — 体がくねっているようには見えなかった。
+        // **群れの活気で伸び縮みする** — 静かな数分と活気づく数分が交互に来る
+        let mood = Self.liveliness(now: now)
+        var target = length * 0.45 * mood
 
         // さまよい。**向きの揺れは 2 つの周期を重ねる** — 1 つだと振り子に見える
         let slow: Float = sin(now * 0.23 + wanderSeed)
         let quick: Float = sin(now * 0.61 + wanderSeed * 2.3)
-        want += side * (slow * 0.15 + quick * 0.06)
+        var wander = (slow * 0.15 + quick * 0.06) * mood
 
         // 縁を避ける。**押し返しは距離の 2 乗で効かせる** — 縁ぎりぎりで急に曲がる。
         // 曲がれる速さに上限があるので、**体 1 つぶん以上手前から効かせる**
@@ -218,6 +311,42 @@ final class Koi {
         let flock = shoal(school)
         want += flock.steer
 
+        // **仲間の突進に驚く。** 逃避は群れに伝わるもので、これがあると
+        // 「1 匹の出来事」が「群れの出来事」になる
+        if flock.alarm > 0 {
+            want += flock.away * (2.6 * flock.alarm)
+            target = max(target, length * (0.9 + 0.9 * flock.alarm))
+        }
+
+        // ときどき起きること。**予定は時刻だけから決まる** (`event`)
+        var rush: Float = 0
+        dashing = false
+        if let stir = stirring(now: now) {
+            let age = now - stir.born
+            switch stir.kind {
+            case .dart, .turn:
+                dashing = true
+                // **立ち上がりを潰さない。** 尾を打った瞬間から速い
+                target = max(target, length * stir.pace)
+                rush = 1
+                if case .turn = stir.kind, age < 0.22 {
+                    // **C スタート。** 体を折って向きを変える 0.22 秒だけ、
+                    // 首を振れる速さの縛りを外す (実測の転回角は約 150 度)
+                    want = Self.turn(heading, by: stir.swerve) * 4.0
+                    rush = 2
+                }
+            case .hover:
+                // **漂う。** 尾はほとんど止まり、胸鰭だけが漕ぐ
+                target = min(target, length * stir.pace)
+                wander *= 0.3
+            case .cross:
+                // **渡る。** さまよいを抑えてまっすぐ泳ぐ
+                target = max(target, length * stir.pace)
+                wander *= 0.15
+            }
+        }
+        want += side * wander
+
         // 餌へ向かう。**近づいたら速さを落とす** — 曲がれる半径は速さに比例するので、
         // 全速のまま寄ると口が届く前に行き過ぎ、**餌の周りを回り続ける**
         // (実際にそうなった: 6.7 秒回して 1 粒も食べなかった)
@@ -226,9 +355,18 @@ final class Koi {
             let toward = food - head
             let far = simd_length(toward)
             if far > 1 {
-                want += toward / far * 3.2
+                let aim = toward / far
+                want += aim * 3.2
                 target = min(length * 0.72, length * 0.2 + far * 0.62)
                 reaching = far < length * 0.9
+                // **食いつく瞬間だけ跳ねる。** 近づくほど落とす減速はそのままで、
+                // 口が届く手前で狙いが付いているときにだけ一息に詰める — 魚が
+                // 実際にそうするし、狙いが付いてからなので餌の周りを回る挙動
+                // (旋回半径を体長に縛った副作用) には戻らない
+                if far < length * 0.30, simd_dot(aim, heading) > 0.90 {
+                    target = length * 1.6
+                    rush = max(rush, 1)
+                }
             }
         }
 
@@ -269,19 +407,24 @@ final class Koi {
             // C 字に折って向きを変える。ここを巡航のままにしておくと、先読みで
             // 早めに逸れ始めても最後の詰めが足りずに触れる
             let pivot: Float = reaching ? 0.95 : 0.22 + flock.urgency * 0.75
-            let limit = min(max(speed / (length * 1.3), pivot), 1.1) * dt
+            // **翻る一瞬だけ、縛りを外す。** 150 度を 0.22 秒で回るので 12 rad/s
+            let ceiling: Float = rush > 1 ? 12 : 1.1
+            let limit = min(max(speed / (length * 1.3), pivot), ceiling) * dt
             turn = min(max(turn, -limit), limit)
             heading = SIMD2(
                 heading.x * cos(turn) - heading.y * sin(turn),
                 heading.x * sin(turn) + heading.y * cos(turn))
         }
 
-        // 速さは急に変えない。**逃げるほうが戻るより速い**
-        let rate: Float = target > speed ? 2.6 : 0.9
+        // 速さは急に変えない。**逃げるほうが戻るより速い**。
+        // **突進と食いつきだけは別格** — 加速は 9000 mm/s² ほどで、C スタートの
+        // 実測 (54000 mm/s²) の 6 分の 1。抜けた後は普通の減速でゆっくり惰行する
+        let rate: Float = rush > 0 ? 12 : (target > speed ? 2.6 : 0.9)
         speed += (target - speed) * min(dt * rate, 1)
         head += heading * (speed * dt)
         head = simd_clamp(head, SIMD2(-160, -160), bounds + SIMD2(160, 160))
 
+        sink(dt: dt, now: now, reaching: reaching)
         follow()
         beat(dt: dt, now: now, water: water)
         shapeBody()
@@ -320,13 +463,22 @@ final class Koi {
     /// 見えても構わない — 実際に池の鯉はそうやって擦れ違う。**ここを 60 mm で
     /// 切っていたときは、6 匹中ほとんどの組が「別の層」と見なされ**、避ける力が
     /// 7 割も削がれていた。それが重なって見えた元である。
-    private func shoal(_ school: [Koi]) -> (steer: SIMD2<Float>, room: Float, urgency: Float) {
+    ///
+    /// ## 突進は伝わる
+    ///
+    /// 5 つ目として、**近くの仲間が突進していたら驚く**を足してある。魚群の逃避は
+    /// 隣へ伝わるもので、これがあると「1 匹の出来事」が「群れの出来事」になる
+    private func shoal(_ school: [Koi]) -> (
+        steer: SIMD2<Float>, room: Float, urgency: Float, alarm: Float, away: SIMD2<Float>
+    ) {
         var steer = SIMD2<Float>.zero
         var align = SIMD2<Float>.zero
         var centre = SIMD2<Float>.zero
         var seen: Float = 0
         var room: Float = 1
         var urgency: Float = 0
+        var alarm: Float = 0
+        var flee = SIMD2<Float>.zero
         var closest = Float.greatestFiniteMagnitude
 
         // 見える範囲。**体長の 2.4 倍。** 魚は側線で近くの仲間だけを感じている
@@ -353,6 +505,15 @@ final class Koi {
                 steer += away * (press * press * 6.5 * solid)
                 // 触れそうなときは**首を振れる速さも緩める** (下の 4 と同じ扱い)
                 urgency = max(urgency, press * press * solid)
+            }
+
+            // 5. 驚く — **突進している仲間の近くにいたら、そこから逸れる**
+            if other.dashing {
+                let startle = 1 - min(far / (length * 2.2), 1)
+                if startle > alarm, far > 1e-3 {
+                    alarm = startle
+                    flee = -gap / far
+                }
             }
 
             // 2 と 3 は**同じ層の仲間とだけ**。深さの違う鯉と向きを揃えても、
@@ -406,7 +567,7 @@ final class Koi {
             }
         }
 
-        return (steer, room, urgency)
+        return (steer, room, urgency, alarm, flee)
     }
 
     /// 背骨のうち、その点にいちばん近いところ。**間合いを測るのに要る。**
@@ -464,6 +625,25 @@ final class Koi {
             chain[index] = chain[index - 1] + direction * link
             previous = direction
         }
+    }
+
+    /// 深さを漂わせる。
+    ///
+    /// **鯉は上下にも動く。** 沈めば濁りに溶けて底へ落とす影が広がり、浮けば色が
+    /// 戻って影が締まる — 真上から見ている絵でも、深さは濁りと影として出る。
+    ///
+    /// 落ち着き先を中心に、周期の噛み合わない 2 つの正弦でゆっくり漂う。**餌へ
+    /// 向かうときは浮き、漂う (`hover`) ときは沈む。** 変化は毎秒 22 mm までに
+    /// 抑えてあるので、層の入れ替わりは数秒かけて起きる
+    private func sink(dt: Float, now: Float, reaching: Bool) {
+        let sway =
+            48 * sin(now * 0.041 + wanderSeed * 1.7) + 32 * sin(now * 0.017 + wanderSeed * 0.6)
+        var wanted = depthHome + sway
+        if reaching { wanted -= 55 }
+        if !dashing, speed < length * 0.2 { wanted += 45 }
+        wanted = min(max(wanted, 30), 240)
+        let step = min(abs(wanted - depth), 22 * dt)
+        depth += wanted > depth ? step : -step
     }
 
     /// 尾を打つ。**1 打ちで体長の 0.45 倍だけ進む**ので、速さから打つ回数が決まる。
