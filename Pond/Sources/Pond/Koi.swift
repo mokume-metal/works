@@ -171,16 +171,9 @@ final class Koi {
         if head.y < margin { want.y += pow(1 - head.y / margin, 2) * 2.2 }
         if head.y > bounds.y - margin { want.y -= pow(1 - (bounds.y - head.y) / margin, 2) * 2.2 }
 
-        // 仲間を避ける。**深さが近いときだけ強く効く** — すれ違う深さが違えば重なってよい
-        for other in school where other !== self {
-            let gap = head - other.head
-            let far = simd_length(gap)
-            let reach = (length + other.length) * 0.42
-            if far < reach && far > 1 {
-                let layered = 1 - min(abs(depth - other.depth) / 60, 1) * 0.7
-                want += gap / far * ((1 - far / reach) * 2.6 * layered)
-            }
-        }
+        // 仲間との間合い。**Boids の 3 則と、すれ違いの先読み** (`shoal`)
+        let flock = shoal(school)
+        want += flock.steer
 
         // 餌へ向かう。**近づいたら速さを落とす** — 曲がれる半径は速さに比例するので、
         // 全速のまま寄ると口が届く前に行き過ぎ、**餌の周りを回り続ける**
@@ -195,6 +188,11 @@ final class Koi {
                 reaching = far < length * 0.9
             }
         }
+
+        // **前が塞がっていたら速さを落とす。** 曲がれる半径は体長の 1.3 倍に
+        // 縛られているので、向きを変えるだけでは擦れ違えない場面が残る。魚が
+        // 実際にそうするように、詰まったら鰭を立てて減速する
+        target *= flock.room
 
         // 指から逃げる。**餌より強い** — 寄っていても手が来れば散る
         if let scare {
@@ -224,7 +222,10 @@ final class Koi {
             // ところでは体ではなく鰭で向きを変えるので、口を餌へ持っていくときは
             // 旋回半径の縛りが外れる — これが無いと、口の当たり判定を実寸まで
             // 絞ったとたんに餌の周りを回り続ける
-            let pivot: Float = reaching ? 0.95 : 0.22
+            // **仲間と擦れ違う間際も、少しだけ緩める。** 魚は差し迫ると体を
+            // C 字に折って向きを変える。ここを巡航のままにしておくと、先読みで
+            // 早めに逸れ始めても最後の詰めが足りずに触れる
+            let pivot: Float = reaching ? 0.95 : 0.22 + flock.urgency * 0.75
             let limit = min(max(speed / (length * 1.3), pivot), 1.1) * dt
             turn = min(max(turn, -limit), limit)
             heading = SIMD2(
@@ -241,6 +242,156 @@ final class Koi {
         follow()
         beat(dt: dt, now: now, water: water)
         shapeBody()
+    }
+
+    // MARK: - 群れ
+
+    /// 先読みする長さ (秒)。**巡航なら体長 1 つぶん先**まで見ている。
+    private static let lookahead: Float = 2.6
+
+    /// 仲間との間合い。**Boids の 3 則に、すれ違いの先読みを足したもの。**
+    ///
+    /// 1. **離れる** — 近すぎる仲間から押し返される
+    /// 2. **揃える** — 近くの仲間と向きを合わせる
+    /// 3. **寄る** — 離れすぎたときだけ、群れの真ん中へ弱く引かれる
+    /// 4. **先読み** — 相対速度から最接近の時刻を出し、**そのとき擦れ違えないなら
+    ///    いまのうちに逸れる**
+    ///
+    /// ## 押し返すだけでは、重なってから離れることになる
+    ///
+    /// 4 を足してあるのは、曲がれる速さに上限があるからである。1 だけで組むと、
+    /// 反応が始まるのは触れる直前になる — 体長 344 mm の鯉は旋回半径 450 mm で
+    /// しか曲がれないので、そこから避け始めても間に合わない。**最接近まで 2.6 秒を
+    /// 見ておけば 50 度ぶんの猶予がある**ので、ゆっくり逸れるだけで擦れ違える。
+    /// 避けているように見えるかどうかは、力の強さではなく**いつ始めるか**で決まる。
+    ///
+    /// ## 鯉は点ではない
+    ///
+    /// 間合いを頭同士で測っていたときは、頭が 270 mm 離れていれば何も起きなかった。
+    /// **体長 344 mm の鯉の横腹は、その距離で平気で重なる。** いま測っているのは
+    /// 自分の頭と**相手の背骨のいちばん近いところ**で、横切られたぶんも拾う。
+    ///
+    /// ## 深さが離れていれば、上を通ってよい
+    ///
+    /// 鯉の体の厚みは体長の 2 割ほどなので、それより深さが離れていれば重なって
+    /// 見えても構わない — 実際に池の鯉はそうやって擦れ違う。**ここを 60 mm で
+    /// 切っていたときは、6 匹中ほとんどの組が「別の層」と見なされ**、避ける力が
+    /// 7 割も削がれていた。それが重なって見えた元である。
+    private func shoal(_ school: [Koi]) -> (steer: SIMD2<Float>, room: Float, urgency: Float) {
+        var steer = SIMD2<Float>.zero
+        var align = SIMD2<Float>.zero
+        var centre = SIMD2<Float>.zero
+        var seen: Float = 0
+        var room: Float = 1
+        var urgency: Float = 0
+        var closest = Float.greatestFiniteMagnitude
+
+        // 見える範囲。**体長の 2.4 倍。** 魚は側線で近くの仲間だけを感じている
+        let vision = length * 2.4
+        let side = SIMD2(-heading.y, heading.x)
+
+        for other in school where other !== self {
+            let gap = other.head - head
+            let far = simd_length(gap)
+            guard far < vision + other.length else { continue }
+
+            // 体の厚みぶん深さが離れていれば、上を通り抜けられる
+            let thickness = (length + other.length) * 0.11
+            let apart = min(abs(depth - other.depth) / thickness, 1)
+            let solid = 1 - apart * 0.30
+
+            // 1. 離れる — **相手の背骨のいちばん近いところ**から押し返される
+            let touch = other.nearest(to: head)
+            closest = min(closest, touch.far)
+            let skin = (maximumHalfWidth + other.maximumHalfWidth) * 4.0
+            if touch.far < skin, touch.far > 1e-3 {
+                let away = (head - touch.place) / touch.far
+                let press = 1 - touch.far / skin
+                steer += away * (press * press * 6.5 * solid)
+                // 触れそうなときは**首を振れる速さも緩める** (下の 4 と同じ扱い)
+                urgency = max(urgency, press * press * solid)
+            }
+
+            // 2 と 3 は**同じ層の仲間とだけ**。深さの違う鯉と向きを揃えても、
+            // 絵の上では関わりのない 2 匹が並んで泳ぐだけになる
+            if far < vision {
+                let together = 1 - apart
+                align += other.heading * together
+                centre += other.head * together
+                seen += together
+            }
+
+            // 4. 先読み — 相対速度が変わらないとして、最接近の時刻と隔たりを出す
+            let drift = heading * speed - other.heading * other.speed
+            let closing = simd_length_squared(drift)
+            guard closing > 1e-3 else { continue }
+            let when = simd_dot(gap, drift) / closing
+            guard when > 0, when < Self.lookahead else { continue }
+            let miss = gap - drift * when
+            let missFar = simd_length(miss)
+            let lane = (maximumHalfWidth + other.maximumHalfWidth) * 5.0
+            guard missFar < lane else { continue }
+            // 真正面から来たときは隔たりが 0 に潰れて避ける側が決まらない。
+            // **どちらも自分の左へ逸れる**ことにしておくと、2 匹とも同じ答えを
+            // 出しても擦れ違える
+            let dodge = missFar > 1e-3 ? -miss / missFar : side
+            // **時刻の重みは浅くしてある。** 差し迫ってからの強い力より、
+            // 早くから掛かる弱い力のほうが効く — 首を振れる速さに上限がある
+            // 体では、向きの差は力ではなく**掛かっている時間**で埋まる
+            let closeness: Float = 1 - missFar / lane
+            let soon: Float = 0.45 + 0.55 * (1 - when / Self.lookahead)
+            let press = closeness * soon * solid
+            steer += dodge * (press * 5.0)
+            urgency = max(urgency, press)
+            // 正面を塞がれているぶんだけ減速する
+            room = min(room, 1 - press * 0.65)
+        }
+
+        if seen > 0 {
+            // 2. 揃える。**弱くしてある** — 鯉は鰯ではないので隊列は作らない
+            let mean = align / seen
+            let straight = simd_length(mean)
+            if straight > 1e-3 { steer += mean / straight * 0.42 }
+
+            // 3. 寄る。**独りになったときだけ。** 仲間がすぐ横にいるうちから
+            // 群れの真ん中へ引かせると、離れる力と綱引きになって**団子のまま
+            // 固まる** — 池が狭いので、寄る力はほとんどの時間で害にしかならない
+            if closest > length * 1.6 {
+                let toCentre = centre / seen - head
+                let far = simd_length(toCentre)
+                if far > length * 2.0 { steer += toCentre / far * 0.24 }
+            }
+        }
+
+        return (steer, room, urgency)
+    }
+
+    /// 背骨のうち、その点にいちばん近いところ。**間合いを測るのに要る。**
+    ///
+    /// 3 節ごとに区切った線分へ落とすので、節と節の間を突かれても拾える
+    func nearest(to place: SIMD2<Float>) -> (place: SIMD2<Float>, far: Float) {
+        var best = pose[0]
+        var least = simd_length_squared(place - pose[0])
+        var index = 0
+        let step = 3
+        while index + 1 < Self.samples {
+            let from = pose[index]
+            let to = pose[min(index + step, Self.samples - 1)]
+            let along = to - from
+            let extent = simd_length_squared(along)
+            var point = from
+            if extent > 1e-6 {
+                let t = min(max(simd_dot(place - from, along) / extent, 0), 1)
+                point = from + along * t
+            }
+            let far = simd_length_squared(place - point)
+            if far < least {
+                least = far
+                best = point
+            }
+            index += step
+        }
+        return (best, least.squareRoot())
     }
 
     /// 鎖を引く。**前の節から一定距離**に置き直すだけ。

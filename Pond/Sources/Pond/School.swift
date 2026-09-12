@@ -61,6 +61,25 @@ final class School {
         }
     }
 
+    /// 群れのいちばん狭い間合い (mm)。**負なら体が重なって見えている。**
+    ///
+    /// 背骨同士のいちばん近いところから、互いの半幅を引いたもの。深さの違いは
+    /// 見ていないので、**上を通り抜けた組も詰まったものとして数える** — 真上から
+    /// 見て重なった画素がどれだけ出たか、の目安である
+    var clearance: Float {
+        var least = Float.greatestFiniteMagnitude
+        for (index, fish) in koi.enumerated() {
+            for other in koi[(index + 1)...] {
+                var near = Float.greatestFiniteMagnitude
+                for sample in stride(from: 0, to: Koi.samples, by: 4) {
+                    near = min(near, other.nearest(to: fish.pose[sample]).far)
+                }
+                least = min(least, near - fish.maximumHalfWidth - other.maximumHalfWidth)
+            }
+        }
+        return least
+    }
+
     // MARK: - 描く
 
     /// 鯉を面へ描く。

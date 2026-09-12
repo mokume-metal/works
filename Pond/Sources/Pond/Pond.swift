@@ -139,6 +139,7 @@ final class Pond: Sketch {
         expose("rings", water.rings.count)
         expose("pellets", pond.pellets.count)
         expose("koi", school.koi.count)
+        expose("clearance", school.clearance)
         expose("touched", now - touchedAt < fearFade)
     }
 
