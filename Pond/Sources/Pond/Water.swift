@@ -111,6 +111,13 @@ final class Water {
     /// 風の向き。
     private let heading = SIMD2<Float>(cos(-0.42), sin(-0.42))
 
+    /// 浮いているものが従う波長の下限 (mm)。
+    ///
+    /// **物は自分より短い波には乗らない。** 睡蓮の葉は 200 mm ほどあるので、
+    /// 22 mm の細波はその下をすり抜けていく — 葉が寒天のように波打たないのは
+    /// このためである
+    static let floatFollows: Float = 60
+
     /// 風の強さ (0…1)。スクロールで動く。**0 なら面は完全な鏡になる。**
     var wind: Float = 0.55
 
@@ -171,7 +178,10 @@ final class Water {
         let lengths: [Float] = [22, 38, 66, 112, 190, 330]
         // 中ほどの尺度をいちばん急にする。細かい側だけだと面が砂嵐になり、
         // 粗い側だけだとうねって池に見えない
-        let weights: [Float] = [0.62, 0.86, 1.00, 0.96, 0.78, 0.55]
+        // **長い側を重くしてある。** はじめは中ほどを頂点にした山にしていたが、
+        // それだと長い波の振幅が 3 mm ほどしかなく、浮いているものがほとんど
+        // 動かなかった (水粒子が描く円の半径は波の振幅そのものである)
+        let weights: [Float] = [0.62, 0.80, 0.95, 1.12, 1.18, 1.10]
         for index in 0..<Self.maxWinds {
             swells.append(
                 Swell(
@@ -191,6 +201,9 @@ final class Water {
         slots[0] = Float(min(rings.count, Self.maxRings))
         slots[1] = Float(min(koi.count, Self.maxKoi))
         slots[2] = Float(swells.count)
+
+        // **浮いているものが従う波の下限。** 自分より短い波は、下をすり抜ける
+        slots[3] = Float(swells.firstIndex { $0.wavelength >= Self.floatFollows } ?? 0)
 
         for (index, swell) in swells.enumerated() {
             let base = Self.windSlot + index * Self.windStride
@@ -318,6 +331,61 @@ final class Water {
             float lb = reach * 0.38;
             float e = amp * exp(-0.5 * (a * a / (la * la) + b * b / (lb * lb)));
             return dir * (-a / (la * la) * e) + side * (-b / (lb * lb) * e);
+        }
+
+        /// 浮いているものが乗る動き。**xy が傾き、zw が横へ流される量** (mm)。
+        ///
+        /// ## 横の動きは高さの 90 度ずれである
+        ///
+        /// 深水波の水粒子は円を描く。高さが `a·cos(kx − ωt)` なら横の変位は
+        /// `a·sin(kx − ωt)` で、**傾き `∂h/∂x = −a·k·sin` を `−1/k` 倍すると
+        /// ちょうどそれになる。** だから傾きさえ持っていれば、横の動きは別に
+        /// 数えなくてよい (Gerstner 波が使うのと同じ関係である)。
+        ///
+        /// **短い波は外す。** 浮いているものは自分より短い波には乗らないので、
+        /// 下限より短い尺度は飛ばす (下限は Swift の `Water.floatFollows`)
+        static inline float4 pond_ride(Fragment in, float2 p, float t) {
+            device const float *n = in.numbers;
+            float2 slope = float2(0.0);
+            float2 slide = float2(0.0);
+
+            int winds = int(n[2]);
+            for (int i = int(n[3]); i < winds; ++i) {
+                int b = POND_WIND_SLOT + i * POND_WIND_STRIDE;
+                float2 d = float2(n[b], n[b + 1]);
+                float2 side = float2(-d.y, d.x);
+                float lambda = n[b + 2];
+                float gain = n[b + 3];
+                if (gain < 1e-5) { continue; }
+                float2 q = p - d * (n[b + 4] * t);
+                float2 r = float2(dot(q, d), dot(q, side) * 0.62) / lambda;
+                float3 s = pond_swell(r, n[b + 5]);
+                float2 g = (d * s.y + side * (s.z * 0.62)) * (gain * 0.62);
+                slope += g;
+                slide -= g * (lambda / 6.2831853);
+            }
+
+            // 輪も乗せる。**餌の粒が自分の立てた輪に揺られる**のがこれである。
+            // 葉は輪より大きいので均してしまうぶん、寄与を 0.7 倍にしてある
+            int count = int(n[0]);
+            for (int i = 0; i < count; ++i) {
+                int b = POND_RING_SLOT + i * POND_RING_STRIDE;
+                float2 centre = float2(n[b], n[b + 1]);
+                float age = t - n[b + 2];
+                if (age < 0.0) { continue; }
+                float k = n[b + 4];
+                float cg = n[b + 6];
+                float lambda = 6.2831853 / k;
+                float outer = cg * age + lambda * 3.7;
+                float inner = max(cg * age - lambda * 9.9, 0.0);
+                float2 rel = p - centre;
+                float rr = dot(rel, rel);
+                if (rr > outer * outer || rr < inner * inner) { continue; }
+                float2 g = pond_ring(p, centre, age, n[b + 3], k, n[b + 5], cg, n[b + 7]) * 0.7;
+                slope += g;
+                slide -= g / k;
+            }
+            return float4(slope, slide);
         }
 
         /// その場所の水面の傾き。**この関数の戻り値だけが絵に効く。**
