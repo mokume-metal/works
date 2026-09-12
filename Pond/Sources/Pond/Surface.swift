@@ -4,15 +4,33 @@ import simd
 
 /// 水の上にあるもの — 睡蓮の葉、散った花びら、撒いた餌。
 ///
-/// ## 浮いているものは、波でほとんど動かない
+/// ## 浮いているものは、水面の断片が動かす
 ///
-/// 真上から見ているので、波が持ち上げるぶん (上下) は見えない。水の粒が波と一緒に
-/// 描く円運動の横向き成分は**波の振幅と同じ大きさ**しかなく、この池では 2 mm ほど
-/// である。だから**ここに並ぶものは高さ場を読まない** — 読ませれば水面の式を CPU
-/// 側へ写すことになり、同じ式が 2 か所に住む。
+/// ここに並ぶものは**自分の面へ描くだけ**で、水面の断片がそれを読んで重ねる。
+/// 水越しに見ていないので屈折も濁りも掛からないが、代わりに 2 つが効く:
 ///
-/// 睡蓮はそもそも茎で底に繋がっているので流れない。回るだけである。
+/// 1. **横へ流されるぶん** — 深水波の水粒子は円を描く。その横向きの変位は
+///    傾きを `−1/k` 倍したものなので (`pond_ride`)、**傾きさえ持っていれば
+///    別に数えなくてよい。** 輪も乗るので、落とした餌は自分が立てた輪に揺られる
+/// 2. **濡れた葉の照り** — 面の傾きから鏡面反射を出すので、照りが葉の上を
+///    細い帯として流れる
+///
+/// **CPU 側は高さ場を持たない。** 写せば同じ式が 2 か所に住む。
+///
+/// ## 葉そのものは茎に吊られた振り子である
+///
+/// 睡蓮は茎で底に繋がっているので流れていかない。風に押されて風下へ寄り、戻って
+/// くるだけで、その周期は茎の長さで決まる (`swung`)。
+///
+/// **はじめはここを「浮いているものは波でほとんど動かない」で済ませていた。**
+/// 真上から見る限り上下の揺れは見えず、横の動きは波の振幅 (数 mm) しかない、
+/// という理屈は間違っていないのだが、**絵としては貼り紙にしか見えなかった。**
+/// 見落としていたのは、照りが傾きで大きく動くことと、その横の動きも断片の側なら
+/// 傾きから出せることである。
 final class Surface {
+
+    /// 浮いているものの面。**背景は透明**で、水面の断片がここを最後に重ねる。
+    let canvas: Canvas
 
     /// 睡蓮の葉。
     private struct Pad {
@@ -22,6 +40,9 @@ final class Surface {
         var sway: Float
         var tone: Float
         var flower: Bool
+        /// 茎の長さ (mm)。**振り子の半径**で、長いほど大きく振れて周期も遅い。
+        var stem: Float
+        var phase: Float
     }
 
     /// 散った花びら。
@@ -39,6 +60,8 @@ final class Surface {
     }
 
     private var pads: [Pad] = []
+    /// いまの風の強さ。**振れ幅に効く。**
+    var wind: Float = 0.55
     private var petals: [Petal] = []
     private(set) var pellets: [Pellet] = []
 
@@ -46,7 +69,8 @@ final class Surface {
     /// 花びらを流す向き。**風と同じ向き**にしてある。
     var flow = SIMD2<Float>(0.91, 0.41)
 
-    init(span: SIMD2<Float>) {
+    init(canvas: Canvas, span: SIMD2<Float>) {
+        self.canvas = canvas
         self.span = span
         var scatter = Scatter(seed: 77_020_931)
         // 葉は隅に寄せる。**真ん中は水面のためにあける**
@@ -62,9 +86,11 @@ final class Surface {
                         + SIMD2(scatter.next(-30, 30), scatter.next(-30, 30)),
                     radius: scatter.next(62, 104),
                     angle: scatter.next(0, 6.28),
-                    sway: scatter.next(0.03, 0.08),
-                    tone: scatter.next(0.72, 1.18),
-                    flower: index == 1 || index == 4))
+                    sway: scatter.next(0.09, 0.18),
+                    tone: scatter.next(0.84, 1.14),
+                    flower: index == 1 || index == 4,
+                    stem: scatter.next(180, 420),
+                    phase: scatter.next(0, 6.28)))
         }
         for _ in 0..<7 {
             petals.append(
@@ -127,17 +153,40 @@ final class Surface {
     // MARK: - 描く
 
     /// 葉が底へ落とす影。**水面の断片より前** (池の底) へ描く。
-    func castShadows(onto bed: Canvas, slide: SIMD2<Float>, depth: Float) {
+    func castShadows(onto bed: Canvas, slide: SIMD2<Float>, depth: Float, time: Float) {
         bed.noStroke()
         bed.fill(.display(red: 0.0, green: 0.015, blue: 0.02, alpha: 0.42))
         for pad in pads {
-            let place = pad.place + slide * depth
+            let place = swung(pad, time: time).place + slide * depth
             bed.ellipse(place.x, place.y, pad.radius * 2.05, pad.radius * 2.05)
         }
     }
 
-    /// 水の上のものを描く。**水面を塗った後**に重ねる。
-    func draw(on canvas: Canvas, time: Float) {
+    /// 振れた後の葉の置き方。**影も同じ場所へ落とす**ので 1 か所に置く。
+    ///
+    /// **葉は茎で底に繋がった振り子である。** 風に押されて風下へ寄り、戻ってくる。
+    /// 角振動数は振り子の式 `√(g/L)` そのままで、長い茎ほどゆっくり大きく振れる —
+    /// ただし水中では浮力が重力を打ち消すので、`g` は 6 分の 1 にしてある。
+    ///
+    /// **波の 1 つ 1 つが与える捻りは、ここでは数えていない。** 高さ場は断片の中に
+    /// しかなく、CPU 側へ写せば式が 2 か所に住む。波に乗って流されるぶん
+    /// (`pond_ride`) と、傾いて照りが動くぶんは、どちらも水面の断片が受け持つ
+    private func swung(_ pad: Pad, time: Float) -> (place: SIMD2<Float>, turn: Float) {
+        let beat = (Water.gravity / 6 / pad.stem).squareRoot()
+        let swing = sin(time * beat + pad.phase)
+        let cross = sin(time * beat * 0.61 + pad.phase * 1.7)
+        let reach = (14 + 26 * wind) * (pad.stem / 300)
+        let place =
+            pad.place + flow * (swing * reach)
+            + SIMD2(-flow.y, flow.x) * (cross * reach * 0.45)
+        // 向きは振れの遅れとして出る
+        return (place, pad.angle + (swing * 0.62 + cross * 0.38) * pad.sway)
+    }
+
+    /// 水の上のものを自分の面へ描く。**重ねるのは水面の断片。**
+    func draw(time: Float) {
+        canvas.beginDraw()
+        canvas.background(.transparent)
         canvas.noStroke()
         for pad in pads { lily(pad, on: canvas, time: time) }
         for petal in petals {
@@ -155,49 +204,50 @@ final class Surface {
             canvas.fill(.display(red: 0.66, green: 0.48, blue: 0.22))
             canvas.circle(pellet.place.x, pellet.place.y, 13)
         }
+        canvas.endDraw()
     }
 
     /// 睡蓮の葉 1 枚。**切れ込みが 1 本入る**ので、丸ではなく葉に見える。
-    private func lily(_ pad: Pad, on canvas: Canvas, time: Float) {
-        let turn = pad.angle + sin(time * 0.23 + pad.place.x * 0.004) * pad.sway
-        canvas.push()
-        canvas.translate(pad.place.x, pad.place.y)
-        canvas.rotate(turn)
+    private func lily(_ pad: Pad, on target: Canvas, time: Float) {
+        let ride = swung(pad, time: time)
+        target.push()
+        target.translate(ride.place.x, ride.place.y)
+        target.rotate(ride.turn)
 
         let notch: Float = 0.42
         let steps = 34
         // 縁。**葉は内側より縁が明るい** (立ち上がって光を受ける)
         for (inset, colour) in [
-            (Float(1.0), LinearRGBA.display(red: 0.46, green: 0.62, blue: 0.32)),
-            (Float(0.93), LinearRGBA.display(red: 0.33, green: 0.50, blue: 0.24)),
+            (Float(1.0), LinearRGBA.display(red: 0.38, green: 0.56, blue: 0.25)),
+            (Float(0.93), LinearRGBA.display(red: 0.27, green: 0.45, blue: 0.19)),
         ] {
-            canvas.fill(
+            target.fill(
                 .display(
                     red: colour.red * pad.tone, green: colour.green * pad.tone,
                     blue: colour.blue * pad.tone))
-            canvas.beginShape(.triangleFan)
-            canvas.vertex(0, 0)
+            target.beginShape(.triangleFan)
+            target.vertex(0, 0)
             for step in 0...steps {
                 let t = Float(step) / Float(steps)
                 let angle = notch / 2 + t * (2 * Float.pi - notch)
                 let wobble = 1 + sin(angle * 7 + pad.angle) * 0.018
                 let reach = pad.radius * inset * wobble
-                canvas.vertex(cos(angle) * reach, sin(angle) * reach)
+                target.vertex(cos(angle) * reach, sin(angle) * reach)
             }
-            canvas.endShape()
+            target.endShape()
         }
 
         // 葉脈
-        canvas.stroke(.display(red: 0.38, green: 0.50, blue: 0.28, alpha: 0.22))
-        canvas.strokeWeight(1.8)
+        target.stroke(.display(red: 0.38, green: 0.50, blue: 0.28, alpha: 0.22))
+        target.strokeWeight(1.8)
         for step in 0...9 {
             let angle = notch / 2 + Float(step) / 9 * (2 * Float.pi - notch)
-            canvas.line(0, 0, cos(angle) * pad.radius * 0.9, sin(angle) * pad.radius * 0.9)
+            target.line(0, 0, cos(angle) * pad.radius * 0.9, sin(angle) * pad.radius * 0.9)
         }
-        canvas.noStroke()
+        target.noStroke()
 
-        if pad.flower { bloom(on: canvas, radius: pad.radius) }
-        canvas.pop()
+        if pad.flower { bloom(on: target, radius: pad.radius) }
+        target.pop()
     }
 
     /// 睡蓮の花。細い花弁を 3 重に回して置く。

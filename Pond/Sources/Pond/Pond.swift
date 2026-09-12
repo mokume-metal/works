@@ -73,19 +73,23 @@ final class Pond: Sketch {
 
         guard
             let bedCanvas = try? createGraphics(Int(span.x / 2), Int(span.y / 2)),
-            let fishCanvas = try? createGraphics(Int(span.x), Int(span.y))
+            let fishCanvas = try? createGraphics(Int(span.x), Int(span.y)),
+            let floatCanvas = try? createGraphics(Int(span.x), Int(span.y))
         else { return }
 
         bed = Bed(canvas: bedCanvas, span: span)
         school = School(canvas: fishCanvas, bounds: span)
         school?.sun = sun
-        pond = Surface(span: span)
+        pond = Surface(canvas: floatCanvas, span: span)
         field = try? makeNumbers(count: Water.slotCount)
         field?.fill(0)
 
         paint = try? makeShader(
             Water.field + Self.mirror, name: "water", values: startingValues,
-            surfaces: ["bed": .graphics(bedCanvas), "fish": .graphics(fishCanvas)])
+            surfaces: [
+                "bed": .graphics(bedCanvas), "fish": .graphics(fishCanvas),
+                "afloat": .graphics(floatCanvas),
+            ])
     }
 
     func draw() {
@@ -100,17 +104,20 @@ final class Pond: Sketch {
         stir(now: now)
         water.fade(now: now)
         pond.soak(now: now)
+        pond.wind = water.wind
         pond.drift(dt: step, wind: water.wind)
         move(school: school, pond: pond, now: now, step: step)
 
         // 池の底 — 砂と石と水草を敷き、その上へ影を落とす
         bed.draw(time: now)
         school.castShadows(onto: bed.canvas)
-        pond.castShadows(onto: bed.canvas, slide: -SIMD2(sun.x, sun.y), depth: bedDepth * 0.62)
+        pond.castShadows(
+            onto: bed.canvas, slide: -SIMD2(sun.x, sun.y), depth: bedDepth * 0.62, time: now)
         bed.finish()
 
-        // 鯉
+        // 鯉と、水の上のもの
         school.draw()
+        pond.draw(time: now)
 
         // 水面。**3 枚がここで 1 枚になる**
         field.set(water.pack(now: now, koi: school.koi))
@@ -124,8 +131,6 @@ final class Pond: Sketch {
         resetShader()
         resetNumbers()
 
-        // 水の上のもの
-        pond.draw(on: canvas, time: now)
         guide()
 
         effects([.bloom(amount: 0.46, threshold: 0.66, radius: 20), .vignette(amount: 0.24)])
@@ -361,8 +366,38 @@ final class Pond: Sketch {
             float cosine = clamp(dot(n, toEye), 0.0, 1.0);
             float fresnel = 0.02 + 0.98 * pow(1.0 - cosine, 5.0);
             float3 mirror = pond_sky(in, reflect(-toEye, n), values);
+            float3 colour = mix(under, mirror, fresnel);
 
-            return float4(mix(under, mirror, fresnel), 1.0);
+            // 浮いているもの。**水越しに見ていない**ので屈折も濁りも掛からない。
+            // 代わりに**長い波にだけ乗る** — 横へ流されるぶんだけずれ、面の傾きで
+            // 濡れた葉の照りが動く
+            float4 ride = pond_ride(in, p, t);
+            float4 afloat = mokume_sample(surfaces.afloat, (p + ride.zw) / size);
+            if (afloat.a > 0.001) {
+                float3 leaf = normalize(float3(-ride.xy, 1.0));
+                float3 star = normalize(float3(values.sun, values.sunUp));
+                float lambert = max(dot(leaf, star), 0.0);
+                // **日陰でも真っ黒にはならない。** 木洩れ日の影へ入った葉にも空からの
+                // 光は届くので、天頂の色を底上げとして足す (足さずに掛け算だけで
+                // 作っていたときは、隅の葉が穴のように黒く沈んだ)
+                float3 wet =
+                    values.zenith.rgb * 0.12 + values.sunlight.rgb * (dapple * lambert * 0.88);
+                colour = colour * (1.0 - afloat.a) + afloat.rgb * wet;
+
+                // 濡れた葉の照り。**足し算で乗せる** — 鏡面反射は下の色に染まらない
+                // ので、掛け算にすると葉が明るい緑になるだけで艶に見えない。
+                // **傾くと外れる**ので、照りが葉の上を流れていく
+                float3 between = normalize(star + toEye);
+                float aligned = max(dot(leaf, between), 0.0);
+                // **鋭い山を小さく乗せる。** 濡れた葉でも鏡面反射は数 % しかないので、
+                // 大きく足すと葉が白く飛ぶ (0.9 にしていたときは睡蓮が白い塊になった)
+                // **山を鋭くして小さく乗せる。** 広い山を大きく乗せると葉が一枚まるごと
+                // 灰色に飛ぶ — 濡れた葉の艶は、葉の上を流れる細い帯として出る
+                float gloss = pow(aligned, 260.0) * 0.16 + pow(aligned, 16.0) * 0.006;
+                colour += values.sunlight.rgb * (gloss * dapple * afloat.a);
+            }
+
+            return float4(colour, 1.0);
         }
         """
 }
