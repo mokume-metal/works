@@ -15,12 +15,13 @@ import simd
 ///    見えるのは**太陽だけ**である。それで十分に光る — 太陽の輝度が桁違いだからで、
 ///    水面がきらめく理由がそれである
 ///
-/// ## 風を 0 にすると、底が澄む
+/// ## 風は、たまに渡っていく
 ///
-/// スクロールで風波の振幅を 0 まで落とせる。**傾きが無くなるので屈折も焦線も消え**、
-/// 底の砂と石が歪みなく見える。残るのは鯉が自分で押し上げているふくらみと、置いた輪
-/// だけになる。上げていくと底が崩れ、代わりに面がきらめき始める — 池が「透けて見える
-/// もの」から「光を映すもの」へ変わる 1 点を、手で行き来できる。
+/// **風は手で回すつまみではない。** ふだんの面はほとんど凪いでいて、傾きが小さいので
+/// 屈折も焦線も薄く、底の砂と石が歪みなく見える。そこへ平均 35 秒に 1 度、細波の斑が
+/// 池を横切っていく (`Water.breathe`) — 通ったところだけ底が崩れ、代わりに面が
+/// きらめき、花びらと睡蓮が押される。抜ければまた澄む。**池が「透けて見えるもの」から
+/// 「光を映すもの」へ変わる瞬間**は、操作ではなく待っていると来る。
 ///
 /// ## 3 枚を 1 枚にする
 ///
@@ -103,8 +104,8 @@ final class Pond: Sketch {
         stir(now: now)
         water.fade(now: now)
         pond.soak(now: now)
-        pond.wind = water.wind
-        pond.drift(dt: step, wind: water.wind)
+        water.breathe(now: now, over: span)
+        pond.drift(dt: step) { water.airflow(at: $0, now: now) }
         move(school: school, pond: pond, now: now, step: step)
 
         // 池の底 — 砂と石と水草を敷き、その上へ影を落とす
@@ -132,7 +133,8 @@ final class Pond: Sketch {
 
         effects([.bloom(amount: 0.46, threshold: 0.66, radius: 20), .vignette(amount: 0.24)])
 
-        expose("wind", water.wind)
+        expose("wind", water.airflow(at: span * 0.5, now: now).strength)
+        expose("gusts", water.gustCount)
         expose("rings", water.rings.count)
         expose("pellets", pond.pellets.count)
         expose("koi", school.koi.count)
@@ -201,17 +203,12 @@ final class Pond: Sketch {
         touchedAt = -100
     }
 
-    /// スクロールは**風の強さ**。0 で波が止まる。
-    func mouseWheel(deltaX: Float, deltaY: Float) {
-        water.wind = min(max(water.wind + deltaY * 0.012, 0), 1.6)
-    }
-
     func keyPressed() {
         if keyCode == .space { pond?.clear() }
         if keyCode == .r {
             pond?.clear()
             water.clearRings()
-            water.wind = 0.55
+            water.calm(now: time)
             touchedAt = -100
         }
     }

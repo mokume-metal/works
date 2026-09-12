@@ -43,6 +43,9 @@ final class Surface {
         /// 茎の長さ (mm)。**振り子の半径**で、長いほど大きく振れて周期も遅い。
         var stem: Float
         var phase: Float
+        /// いまその葉に当たっている風 (向き × 強さ)。**根は動かないので、葉は
+        /// 流されるのではなく振れ幅で答える。**
+        var breeze = SIMD2<Float>(0, 0)
     }
 
     /// 散った花びら。
@@ -60,14 +63,10 @@ final class Surface {
     }
 
     private var pads: [Pad] = []
-    /// いまの風の強さ。**振れ幅に効く。**
-    var wind: Float = 0.55
     private var petals: [Petal] = []
     private(set) var pellets: [Pellet] = []
 
     private let span: SIMD2<Float>
-    /// 花びらを流す向き。**風と同じ向き**にしてある。
-    var flow = SIMD2<Float>(0.91, 0.41)
 
     init(canvas: Canvas, span: SIMD2<Float>) {
         self.canvas = canvas
@@ -137,16 +136,33 @@ final class Surface {
 
     // MARK: - 動かす
 
-    func drift(dt: Float, wind: Float) {
+    /// 風に押される。
+    ///
+    /// **風は場所ごとに違う。** 渡っていく斑の下にあるものだけが押されるので、
+    /// 一陣が通り抜けるあいだ花びらが一斉に流れ、抜けると緩む — 面の細波だけでは
+    /// 「いま風が吹いている」が読み取りにくいので、**風が見える証拠**はここが出す。
+    ///
+    /// 押すのは波ではなく空気なので、水面の断片ではなく CPU 側の風の場を読む
+    /// (`Water.airflow`)
+    func drift(dt: Float, airflow: (SIMD2<Float>) -> (flow: SIMD2<Float>, strength: Float)) {
         for index in petals.indices {
-            petals[index].place += flow * (6 + 26 * wind) * dt
-            petals[index].angle += petals[index].spin * dt * (0.3 + wind)
+            let air = airflow(petals[index].place)
+            petals[index].place += air.flow * (2 + 42 * air.strength) * dt
+            petals[index].angle += petals[index].spin * dt * (0.3 + air.strength)
             if petals[index].place.x > span.x + 40 { petals[index].place.x = -40 }
+            if petals[index].place.x < -40 { petals[index].place.x = span.x + 40 }
             if petals[index].place.y > span.y + 40 { petals[index].place.y = -40 }
+            if petals[index].place.y < -40 { petals[index].place.y = span.y + 40 }
         }
         // 餌もわずかに流される
         for index in pellets.indices {
-            pellets[index].place += flow * (3 + 9 * wind) * dt
+            let air = airflow(pellets[index].place)
+            pellets[index].place += air.flow * (1 + 15 * air.strength) * dt
+        }
+        // 葉は流れていかないので、**その場の風を覚えるだけ** (`swung` が読む)
+        for index in pads.indices {
+            let air = airflow(pads[index].place)
+            pads[index].breeze = air.flow * air.strength
         }
     }
 
@@ -176,7 +192,11 @@ final class Surface {
         let beat = (Water.gravity / 14 / pad.stem).squareRoot()
         let swing = sin(time * beat + pad.phase)
         let cross = sin(time * beat * 0.61 + pad.phase * 1.7)
-        let reach = (6 + 12 * wind) * (pad.stem / 300)
+        // **振れ幅はその葉に当たっている風で決まる。** 斑が渡ってくると大きく
+        // 傾いて風下へ寄り、抜けると静かな揺れへ戻る
+        let force = simd_length(pad.breeze)
+        let flow = force > 1e-5 ? pad.breeze / force : SIMD2<Float>(1, 0)
+        let reach = (4 + 16 * force) * (pad.stem / 300)
         let place =
             pad.place + flow * (swing * reach)
             + SIMD2(-flow.y, flow.x) * (cross * reach * 0.45)

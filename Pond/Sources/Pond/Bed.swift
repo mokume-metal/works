@@ -14,6 +14,19 @@ struct Scatter {
         return Float(state >> 40) / Float(1 << 24)
     }
     mutating func next(_ low: Float, _ high: Float) -> Float { low + next() * (high - low) }
+
+    /// 番号から引く並び。
+    ///
+    /// **連番をそのまま種にしない。** 線形合同法は隣り合う種からよく似た並びを返すので、
+    /// 「i 番目のもの」を素直に `Scatter(seed: base + i)` で作ると、引いた値が番号と
+    /// ともに一定の歩幅で動く — 風の斑でこれをやったときは、**間隔が 37 秒でほとんど
+    /// 揃った。** 番号を撹拌してから渡すと並びが独立する (splitmix64 の混ぜ方)
+    init(counting index: Int, salt: UInt64) {
+        var mixed = UInt64(bitPattern: Int64(index)) &+ salt &+ 0x9E37_79B9_7F4A_7C15
+        mixed = (mixed ^ (mixed >> 30)) &* 0xBF58_476D_1CE4_E5B9
+        mixed = (mixed ^ (mixed >> 27)) &* 0x94D0_49BB_1331_11EB
+        self.init(seed: mixed ^ (mixed >> 31))
+    }
 }
 
 /// 池の底。
