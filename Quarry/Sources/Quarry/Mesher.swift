@@ -10,6 +10,8 @@ struct Corner {
     var nx: Float
     var ny: Float
     var nz: Float
+    /// 面の向きで決まる明るさ。**Minecraft と同じ「上は明るく、下は暗い」。**
+    var shade: Float
 }
 
 /// チャンク 1 つを頂点の並びへ焼く。
@@ -43,6 +45,15 @@ enum Mesher {
         .north: [(1, 0, 0), (0, 0, 0), (0, 1, 0), (1, 1, 0)],
     ]
 
+    /// 面の向きで決まる明るさ。
+    ///
+    /// **光だけでは立方体が板に見える。** `directionalLight` は面の向きに応じて明暗を
+    /// つけるが、太陽が高いときは 4 つの側面が同じ明るさになり、角が消える。向きごとに
+    /// 固定の明るさを掛けると、光がどこにあっても**箱の 3 面が読める**
+    private static let shading: [Face: Float] = [
+        .up: 1.00, .south: 0.88, .north: 0.82, .east: 0.78, .west: 0.72, .down: 0.62,
+    ]
+
     /// 隅ごとの uv (タイルの左上からの texel)。**下の 2 つが絵の下、上の 2 つが絵の上。**
     private static let patch: [(Float, Float)] = [
         (0.5, 15.5), (15.5, 15.5), (15.5, 0.5), (0.5, 0.5),
@@ -74,6 +85,7 @@ enum Mesher {
 
                         let tile = Tiles.origin(of: here.tile(on: face))
                         let normal = face.normal
+                        let shade = shading[face] ?? 1
                         guard let offsets = corners[face] else { continue }
 
                         var quad: [Corner] = []
@@ -86,7 +98,7 @@ enum Mesher {
                                     y: Float(y + offset.1) * scale,
                                     z: Float(z + offset.2) * scale,
                                     u: tile.x + uv.0, v: tile.y + uv.1,
-                                    nx: normal.x, ny: normal.y, nz: normal.z))
+                                    nx: normal.x, ny: normal.y, nz: normal.z, shade: shade))
                         }
 
                         // 四角を三角 2 枚へ

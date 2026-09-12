@@ -54,7 +54,7 @@ enum Sky {
         // **環境光は低めに。** 上げると面の向きの差が消えて、立方体が板に見える。
         // ただし夜は別で、**真っ暗にすると掘る手が止まる** — 月明かりの青を残す
         let ambient = mix(
-            [(46, 56, 86), (54, 50, 62), (56, 62, 76)], night, dusk, noon)
+            [(52, 62, 94), (60, 56, 70), (66, 72, 86)], night, dusk, noon)
 
         return Weather(
             around: Surroundings(

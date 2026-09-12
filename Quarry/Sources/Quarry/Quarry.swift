@@ -201,11 +201,13 @@ final class Quarry: Sketch {
         guard !corners.isEmpty else { return .empty }
         return createShape {
             noStroke()
-            // 貼る絵は塗りに掛かるので白。**塗りを明示しないと 1 枚も置かれない**
-            fill(255, 255, 255)
             if let atlas { texture(atlas) }
             beginShape(.triangles)
             for corner in corners {
+                // **塗りは頂点ごとに置く。** 貼る絵は塗りに掛かるので、向きで決めた
+                // 明るさをここで乗せられる。塗りを明示しないと 1 枚も置かれない
+                let shade = corner.shade * 255
+                fill(shade, shade, shade)
                 normal(corner.nx, -corner.ny, corner.nz)
                 vertex(corner.x, -corner.y, corner.z, corner.u, corner.v)
             }
