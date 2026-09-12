@@ -65,10 +65,16 @@ final class Water {
     // **断片へ渡す数の並びは、ここが正本である。** 位置は Metal の原稿へ文字列として
     // 差し込むので、片方だけ動かすことができない
     static let maxWinds = 6
+    static let maxGusts = 2
     static let maxRings = 32
     static let maxKoi = 8
 
-    static let windSlot = 4
+    /// 見出しの語数。輪と鯉と尺度の数のほかに、**風の斑の本数・凪のそよぎ・風向き**
+    /// をここへ置く。
+    static let headWords = 8
+    static let gustSlot = headWords
+    static let gustStride = 7
+    static let windSlot = gustSlot + maxGusts * gustStride
     static let windStride = 6
     static let ringSlot = windSlot + maxWinds * windStride
     static let ringStride = 8
@@ -88,6 +94,8 @@ final class Water {
         var weight: Float
         /// 格子の種。尺度ごとに変える。
         var seed: Float
+        /// 風向きからのずれ (rad)。**尺度ごとに散らす。**
+        var spread: Float
     }
 
     /// 風波の尺度。
@@ -108,8 +116,19 @@ final class Water {
     /// 潰してある
     private var swells: [Swell] = []
 
-    /// 風の向き。
-    private let heading = SIMD2<Float>(cos(-0.42), sin(-0.42))
+    /// 風向きの中心 (rad)。
+    private let bearing: Float = -0.42
+
+    /// いまの風向き。
+    ///
+    /// **向きは止まっていない。** 固定した向きに波を立て続けると、面がいつまでも
+    /// 同じ斜めの畝を並べた布に見える。周期の噛み合わない 2 つの正弦を足して、
+    /// 繰り返しの読めない ±0.35 rad の首振りにしてある (最も速い成分でも 1 周 200 秒
+    /// なので、波の格子が横へ流れて見えるほどの速さにはならない)
+    func heading(now: Float) -> SIMD2<Float> {
+        let swing = 0.24 * sin(now * 0.031) + 0.11 * sin(now * 0.0117 + 1.9)
+        return SIMD2(cos(bearing + swing), sin(bearing + swing))
+    }
 
     /// 浮いているものが従う波長の下限 (mm)。
     ///
@@ -118,8 +137,142 @@ final class Water {
     /// このためである
     static let floatFollows: Float = 60
 
-    /// 風の強さ (0…1)。スクロールで動く。**0 なら面は完全な鏡になる。**
-    var wind: Float = 0.55
+    /// 凪のそよぎ。
+    ///
+    /// **0 にはしない。** 風の斑が渡っていないあいだの面は、鏡としては 0 が正しい
+    /// のだが、絵としては止まって見える。ここを残しておくと、底の砂は歪みなく
+    /// 見えたまま、面だけがかすかに生きている
+    static let breeze: Float = 0.05
+
+    // MARK: - 風の斑
+
+    /// 水面を渡っていく風の一陣。
+    ///
+    /// **風は数ではなく斑である。** 凪いだ面に弱い風が当たると、当たったところだけが
+    /// 細波で暗くざらつき、その斑が風下へ渡っていく (英語で cat's paw と呼ぶ)。面
+    /// いっぱいに同じ強さの波を立ててしまうと、この「渡っていく」が消えて、どこを見ても
+    /// 同じ織り目の布になる — 風が吹いていることは分かるが、**風が吹いた瞬間が無い。**
+    ///
+    /// **斑は風速そのもので渡る。** 猫の足跡が出るのは Beaufort 1 (0.3〜1.5 m/s) の
+    /// 弱い風なので、渡る速さは 300〜520 mm/s になる。細波の峰はそれより速い (22 mm の
+    /// 波で 232 mm/s、長い波はもっと速い) ので、**斑の中で生まれた波が前縁から抜けて
+    /// いく** — 速さを置いたのではなく、分散関係と風速を別々に入れた帰結である
+    private struct Gust {
+        /// 生まれた場所。**画面の外の風上。**
+        var origin: SIMD2<Float>
+        var heading: SIMD2<Float>
+        /// 渡る速さ (mm/s)。**風速そのもの。**
+        var travel: Float
+        var born: Float
+        var life: Float
+        /// 進行方向の半長 (mm)。
+        var reach: Float
+        /// 風に直交する向きの半幅 (mm)。**帯は横に長い。**
+        var width: Float
+        /// いちばん強いときの風。
+        var peak: Float
+
+        /// いまの中心。**寿命のあいだ、まっすぐ風下へ渡る。**
+        func centre(now: Float) -> SIMD2<Float> {
+            origin + heading * (travel * (now - born))
+        }
+
+        /// いまの頂点の強さ。**吹き寄せて、衰えて消える。**
+        func crest(now: Float) -> Float {
+            let phase = min(max((now - born) / life, 0), 1)
+            return peak * pow(sin(.pi * phase), 0.55)
+        }
+
+        /// その場所へ届いている強さ。
+        ///
+        /// **前縁は狭く、後縁は長い。** 風が当たった面はすぐざらつくが、風が抜けた
+        /// 後の細波は減衰に時間がかかるので、斑は後ろへ尾を引く (輪の包絡 `pond_ring`
+        /// が前後で幅を変えているのと同じ理由である)。
+        ///
+        /// **同じ式が断片の `pond_wind` にもある。** 高さ場と違って、形を決めるのは
+        /// この構造体の値だけで、それは CPU が正本のまま断片へ渡っている — 浮いて
+        /// いるものは Swift のこれを、水面は断片のあれを読む
+        func strength(at place: SIMD2<Float>, now: Float) -> Float {
+            let side = SIMD2(-heading.y, heading.x)
+            let rel = place - centre(now: now)
+            let along = simd_dot(rel, heading)
+            let across = simd_dot(rel, side)
+            let span = along > 0 ? reach * 0.55 : reach * 1.6
+            return crest(now: now)
+                * exp(-0.5 * (along * along / (span * span) + across * across / (width * width)))
+        }
+    }
+
+    /// いま生きている斑。**毎フレーム組み直す** (下記のとおり、持ち越す状態が無い)。
+    private var gusts: [Gust] = []
+    var gustCount: Int { gusts.count }
+
+    /// 斑が生まれる間隔の目安 (秒)。**この中のどこかで 1 つ生まれる。**
+    static let gustSpacing: Float = 35
+
+    /// 風の時計の原点 (秒)。**R で押し戻す。**
+    private var epoch: Float = 0
+
+    /// 何番目かの斑。**時刻だけから決まる。**
+    ///
+    /// **賽を振って溜めない。** 「たまたま引いた乱数を状態として持ち越す」形にすると、
+    /// いつ引くかがフレームの刻みで変わり、**同じ時刻からいつも同じ絵が出る**という
+    /// この作品の前提 (砂利も睡蓮も種を持った `Scatter` が決めている) が風にだけ
+    /// 通らなくなる。番号で種を作れば、風は時刻の関数のままでいられる
+    private func gust(_ index: Int, over span: SIMD2<Float>) -> Gust? {
+        guard index >= 0 else { return nil }
+        var draw = Scatter(counting: index, salt: 3_150_927)
+        // **間隔そのものが散る。** 番の中のどこで生まれるかを引くので、続けて 2 つ
+        // 来ることも 1 分空くこともある — 次にいつ来るかが読めないのが風である
+        let born = epoch + Float(index) * Self.gustSpacing + draw.next(0, Self.gustSpacing * 0.92)
+        let course = heading(now: born)
+        let angle = atan2(course.y, course.x) + draw.next(-0.5, 0.5)
+        let forward = SIMD2(cos(angle), sin(angle))
+        let side = SIMD2(-forward.y, forward.x)
+        let reach = draw.next(380, 780)
+        let travel = draw.next(300, 520)
+        // **画面の外で生まれ、外で消える。** 池の対角の半分だけ風上へ下がったところを
+        // 起点にして、渡り切るまでを寿命にする
+        let far = simd_length(span) * 0.5 + reach + 240
+        return Gust(
+            origin: span * 0.5 - forward * far + side * draw.next(-far * 0.5, far * 0.5),
+            heading: forward, travel: travel, born: born, life: 2 * far / travel,
+            reach: reach, width: draw.next(480, 1050), peak: draw.next(0.50, 1.00))
+    }
+
+    /// いま渡っている斑を数え直す。**平均 35 秒に 1 度、1 つが池を横切る。**
+    ///
+    /// 寿命は長くても 15 秒ほどで間隔より短いので、**重なりうるのは隣り合う 2 番**
+    /// だけである
+    func breathe(now: Float, over span: SIMD2<Float>) {
+        let turn = Int(((now - epoch) / Self.gustSpacing).rounded(.down))
+        gusts = [turn - 1, turn].compactMap { gust($0, over: span) }
+            .filter { now >= $0.born && now - $0.born <= $0.life }
+    }
+
+    /// その場所の風。**浮いているものが読む。**
+    ///
+    /// 水面の波は断片が持つが、花びらや葉を押すのは波ではなく空気そのものなので、
+    /// こちらは CPU 側に要る。**向きは斑ごとに違う** — 強さで加重して混ぜる
+    func airflow(at place: SIMD2<Float>, now: Float) -> (flow: SIMD2<Float>, strength: Float) {
+        let course = heading(now: now)
+        var strength = Self.breeze
+        var flow = course * Self.breeze
+        for gust in gusts {
+            let gain = gust.strength(at: place, now: now)
+            strength += gain
+            flow += gust.heading * gain
+        }
+        let length = simd_length(flow)
+        return (length > 1e-5 ? flow / length : course, strength)
+    }
+
+    /// 風を凪へ戻す。**時計の原点をいまへ動かす**ので、起動したときと同じ順で
+    /// 風が来るようになる。
+    func calm(now: Float) {
+        epoch = now
+        gusts.removeAll(keepingCapacity: true)
+    }
 
     // MARK: - 輪
 
@@ -182,13 +335,17 @@ final class Water {
         // それだと長い波の振幅が 3 mm ほどしかなく、浮いているものがほとんど
         // 動かなかった (水粒子が描く円の半径は波の振幅そのものである)
         let weights: [Float] = [0.62, 0.80, 0.95, 1.12, 1.18, 1.10]
+        // **尺度ごとに向きをずらす。** 実際の風波は向きに広がりを持っていて、
+        // 全部が風向きにきっちり揃っているのは、絵としては畝の並んだ布である
+        let spreads: [Float] = [0.34, -0.21, 0.13, -0.37, 0.08, -0.16]
         for index in 0..<Self.maxWinds {
             swells.append(
                 Swell(
                     wavelength: lengths[index],
                     speed: Self.phaseSpeed(lengths[index]),
                     weight: weights[index] * 0.30,
-                    seed: Float(index) * 37.19 + 4.7))
+                    seed: Float(index) * 37.19 + 4.7,
+                    spread: spreads[index]))
         }
     }
 
@@ -205,12 +362,35 @@ final class Water {
         // **浮いているものが従う波の下限。** 自分より短い波は、下をすり抜ける
         slots[3] = Float(swells.firstIndex { $0.wavelength >= Self.floatFollows } ?? 0)
 
+        slots[4] = Float(min(gusts.count, Self.maxGusts))
+        slots[5] = Self.breeze
+        let course = heading(now: now)
+        slots[6] = course.x
+        slots[7] = course.y
+
+        // 斑は**中心も強さの頂点も CPU 側で進めてある。** 断片が読むのは「いま
+        // どこに、どれだけの強さで在るか」だけで、生まれた時刻を渡さない
+        for (index, gust) in gusts.prefix(Self.maxGusts).enumerated() {
+            let base = Self.gustSlot + index * Self.gustStride
+            let centre = gust.centre(now: now)
+            slots[base + 0] = centre.x
+            slots[base + 1] = centre.y
+            slots[base + 2] = gust.heading.x
+            slots[base + 3] = gust.heading.y
+            slots[base + 4] = gust.reach
+            slots[base + 5] = gust.width
+            slots[base + 6] = gust.crest(now: now)
+        }
+
+        // **風の強さはここでは掛けない。** 振幅は場所ごとに違うので、断片が
+        // `pond_wind` を読んでから掛ける
+        let bearing = atan2(course.y, course.x)
         for (index, swell) in swells.enumerated() {
             let base = Self.windSlot + index * Self.windStride
-            slots[base + 0] = heading.x
-            slots[base + 1] = heading.y
+            slots[base + 0] = cos(bearing + swell.spread)
+            slots[base + 1] = sin(bearing + swell.spread)
             slots[base + 2] = swell.wavelength
-            slots[base + 3] = swell.weight * wind
+            slots[base + 3] = swell.weight
             slots[base + 4] = swell.speed
             slots[base + 5] = swell.seed
         }
@@ -251,6 +431,8 @@ final class Water {
     static var field: String {
         """
         // 波源の並び。位置は Swift の `Water` が正本で、ここへ差し込まれている
+        #define POND_GUST_SLOT   \(gustSlot)
+        #define POND_GUST_STRIDE \(gustStride)
         #define POND_WIND_SLOT   \(windSlot)
         #define POND_WIND_STRIDE \(windStride)
         #define POND_RING_SLOT   \(ringSlot)
@@ -286,6 +468,41 @@ final class Water {
                 a + k1 * u.x + k2 * u.y + k3 * u.x * u.y,
                 du.x * (k1 + k3 * u.y),
                 du.y * (k2 + k3 * u.x));
+        }
+
+        /// その場所の風の強さ。**風波の振幅はこれに比例する。**
+        ///
+        /// 凪のそよぎに、渡っていく斑を足したもの。斑の形の元は Swift の `Gust` で、
+        /// 中心も強さの頂点も CPU 側で進めてあるので、ここは「いまどこに在るか」から
+        /// 包絡を引くだけになる。**前縁は狭く、後縁は長い。**
+        ///
+        /// **向きは返さない。** 波の向きまで斑ごとに変えると、位相の掃引に使う長い
+        /// ベクトル (速さ × 時間) が画素ごとに違う向きへ回り、格子が砕けて砂嵐になる。
+        /// 風の向きが場所で違うことは、空気に押される浮いているもの (`airflow`) の
+        /// 側で受け持つ — 波は吹いた先の面が生むもので、斑と一緒に向きを変えない
+        static inline float pond_wind(device const float *n, float2 p, float t) {
+            float2 course = float2(n[6], n[7]);
+            float w = n[5];
+
+            int gusts = int(n[4]);
+            for (int i = 0; i < gusts; ++i) {
+                int b = POND_GUST_SLOT + i * POND_GUST_STRIDE;
+                float2 d = float2(n[b + 2], n[b + 3]);
+                float2 side = float2(-d.y, d.x);
+                float2 rel = p - float2(n[b], n[b + 1]);
+                float along = dot(rel, d);
+                float across = dot(rel, side);
+                float la = (along > 0.0) ? n[b + 4] * 0.55 : n[b + 4] * 1.6;
+                float lb = n[b + 5];
+                w += n[b + 6]
+                    * exp(-0.5 * (along * along / (la * la) + across * across / (lb * lb)));
+            }
+
+            // **斑の中はむらである。** 一様に強い帯は縁が定規で引いたように見える
+            // ので、ゆっくり流れる長い格子 (620 mm) で削る。凪のそよぎにも掛かるから、
+            // 鏡のような面にも「わずかにざらついたところ」が漂う
+            float3 mottle = pond_swell((p - course * (46.0 * t)) / 620.0, 91.3);
+            return w * (0.52 + 0.96 * mottle.x);
         }
 
         /// 輪 1 本の傾き。
@@ -349,16 +566,17 @@ final class Water {
             float2 slope = float2(0.0);
             float2 slide = float2(0.0);
 
+            float air = pond_wind(n, p, t);
             int winds = int(n[2]);
             for (int i = int(n[3]); i < winds; ++i) {
                 int b = POND_WIND_SLOT + i * POND_WIND_STRIDE;
+                float gain = n[b + 3] * air;
+                if (gain < 1e-5) { continue; }
                 float2 d = float2(n[b], n[b + 1]);
                 float2 side = float2(-d.y, d.x);
                 float lambda = n[b + 2];
-                float gain = n[b + 3];
-                if (gain < 1e-5) { continue; }
-                float2 q = p - d * (n[b + 4] * t);
-                float2 r = float2(dot(q, d), dot(q, side) * 0.62) / lambda;
+                float2 r = float2(dot(p, d), dot(p, side) * 0.62) / lambda;
+                r.x -= n[b + 4] * t / lambda;
                 float3 s = pond_swell(r, n[b + 5]);
                 float2 g = (d * s.y + side * (s.z * 0.62)) * (gain * 0.62);
                 slope += g;
@@ -393,18 +611,23 @@ final class Water {
             device const float *n = in.numbers;
             float2 g = float2(0.0);
 
+            // **振幅はその場所の風で決まる。** 斑の中だけが荒れる
+            float air = pond_wind(n, p, t);
             int winds = int(n[2]);
             for (int i = 0; i < winds; ++i) {
                 int b = POND_WIND_SLOT + i * POND_WIND_STRIDE;
+                float gain = n[b + 3] * air;
+                if (gain < 1e-5) { continue; }
                 float2 d = float2(n[b], n[b + 1]);
                 float2 side = float2(-d.y, d.x);
                 float lambda = n[b + 2];
-                float gain = n[b + 3];
-                if (gain < 1e-5) { continue; }
-                // **その尺度の波長が要求する速さで流れる。** 長い波ほど速い
-                float2 q = p - d * (n[b + 4] * t);
                 // 風向きへ回し、峰を風に直交して伸ばす
-                float2 r = float2(dot(q, d), dot(q, side) * 0.62) / lambda;
+                float2 r = float2(dot(p, d), dot(p, side) * 0.62) / lambda;
+                // **その尺度の波長が要求する速さで流れる。** 長い波ほど速い。
+                // 掃引を軸に沿ったスカラーとして引くのは、**風向きが時間で振れても
+                // 格子が横へ飛ばないため** — `p - d·(速さ·t)` の形だと、向きが少し
+                // 回っただけで長いベクトルの先が大きく振られる
+                r.x -= n[b + 4] * t / lambda;
                 float3 s = pond_swell(r, n[b + 5]);
                 g += (d * s.y + side * (s.z * 0.62)) * (gain * 0.62);
             }
