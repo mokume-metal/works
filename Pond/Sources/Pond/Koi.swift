@@ -164,9 +164,11 @@ final class Koi {
     private(set) var pose: [SIMD2<Float>]
 
     private var tailPhase: Float
-    private var beats: Float = 0
+    /// 打った尾の数。**`tailPhase` と同じ速さで増える。**
+    private var beats: Float
     private let wanderSeed: Float
-    private var lastBeat: Float = -1
+    /// 最後に鳴らした打ちの番号。
+    private var lastBeat: Float
     /// 出来事の籤に使う塩。**個体ごとに違う予定表になる。**
     private let stirSalt: UInt64
     /// いま突進しているか。**近くの仲間はこれに驚く。**
@@ -186,6 +188,11 @@ final class Koi {
         self.heading = SIMD2(cos(angle), sin(angle))
         self.speed = length * 0.45
         self.tailPhase = phase
+        // **打ちの数も尾の位相から数え始める。** 0 から数えて `lastBeat` を −1 に
+        // 置いていたときは、`floor(0) ≠ −1` が起動 1 フレーム目に 6 匹ぶん同時に
+        // 成立し、**池が最初の 1 枚で波紋に埋まった**
+        self.beats = phase
+        self.lastBeat = floor(phase)
         self.wanderSeed = seed.x * 6.1
         self.stirSalt = UInt64(seed.x * 97 + seed.y * 31) &+ 6_120_713
         self.depthHome = depth
@@ -647,18 +654,32 @@ final class Koi {
     }
 
     /// 尾を打つ。**1 打ちで体長の 0.45 倍だけ進む**ので、速さから打つ回数が決まる。
+    ///
+    /// ## 水面へ届くかは深さが決める
+    ///
+    /// 尾が置いていく渦は体の幅ほどの大きさしかないので、**体 1 つぶん沈めば
+    /// 水面はもう動かない。** 深さを見ずに置いていたときは、240 mm 潜った鯉も
+    /// 水面直下の鯉と同じ輪を立て、**指で撫でた輪 (1.3) より強いものが常に 18 本**
+    /// 浮いていた — 起動してしばらくは風が凪いでいて、面で動くものがこれしか
+    /// 無いので、池が沸いて見える。
+    ///
+    /// 薄まり方の尺度は**体長**である。大きい鯉ほど大きな渦を置いていくので、
+    /// 同じ深さでも遠くまで届く
     private func beat(dt: Float, now: Float, water: Water) {
         // **1 打ちで体長の 0.45 倍だけ進む。** 鯉は効率のよい泳ぎ手ではない
         let rate = max(0.42, speed / (0.45 * length))
         tailPhase += rate * dt
         beats += rate * dt
         // 速く泳いでいるときだけ水を蹴る。流しているときの尾は水を置いていかない
-        if speed > length * 0.38, floor(beats) != lastBeat {
-            lastBeat = floor(beats)
-            water.ripple(
-                at: pose[Self.samples - 1], now: now,
-                amplitude: 0.75 + speed * 0.0045, wavelength: 78, life: 0.85)
-        }
+        guard speed > length * 0.38, floor(beats) != lastBeat else { return }
+        lastBeat = floor(beats)
+        let amplitude = (0.75 + speed * 0.0045) * exp(-depth / (length * 0.45))
+        // **立たない輪は置かない。** 輪の枠は 32 本しかないので、見えないものが
+        // 埋めると、餌を落とした輪のほうが押し出される
+        guard amplitude > 0.30 else { return }
+        water.ripple(
+            at: pose[Self.samples - 1], now: now,
+            amplitude: amplitude, wavelength: 78, life: 0.85)
     }
 
     /// 鎖へ泳ぎの波を足して、描くための背骨にする。
