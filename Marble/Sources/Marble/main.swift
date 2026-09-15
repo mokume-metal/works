@@ -1,0 +1,3 @@
+import mokume
+
+Marble.main()
