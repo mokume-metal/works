@@ -52,14 +52,17 @@ struct Race {
         if phase == .waiting, clock >= 0 { phase = .running }
     }
 
-    /// 待っている間に出る合図 (3 / 2 / 1 / GO)。**残り秒からそのまま決まる。**
+    /// 待っている間に出る合図。**残り秒からそのまま決まる。**
+    ///
+    /// **数字だけで書く。** `GO` の 2 文字は手元の表示のどこにも出ていない字なので、
+    /// ここで初めて使うとその瞬間から GPU が描き切れなくなる (mokume#1273)
     var light: (text: String, age: Float)? {
         switch clock {
         case ..<(-3): return ("3", -3 - clock)
         case ..<(-2): return ("3", -2 - clock)
         case ..<(-1): return ("2", -1 - clock)
         case ..<0: return ("1", -clock)
-        case ..<1.4: return ("GO", 1.4 - clock)
+        case ..<1.4: return ("1", 1.4 - clock)
         default: return nil
         }
     }

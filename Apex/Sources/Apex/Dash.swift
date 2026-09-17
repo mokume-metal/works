@@ -32,17 +32,16 @@ extension Apex {
         // **1 フレームに出す文字は 60 字ほどに抑える。** 超えると GPU が描き切れなく
         // なるので (mokume#1273)、出すものを場面ごとに選ぶ — 手引きを出している間は
         // 計器を控え、終わったら着順だけにする
-        let guiding = !touched && time < 16 && race.phase != .finished
+        let guiding = race.phase == .waiting
 
         if race.phase == .finished {
-            chart()
+            // chart()
             signal()
         } else {
             panel(brief: guiding)
             if !guiding { speedo() }
-            chart()
+            // chart()
             signal()
-            if guiding { hint() }
         }
 
         look()
@@ -175,16 +174,18 @@ extension Apex {
         if race.phase == .finished {
             fill(Palette.shade.x, Palette.shade.y, Palette.shade.z, 190)
             rect(width / 2 - 210, height / 2 - 120, 420, 240)
+            // **新しい字を 1 つも出さない。** 使う字の種類が増えると、そのフレームから
+            // GPU が描き切れなくなる (mokume#1273) — 着順は一度しか出ない場面なので、
+            // ここで落ちると取り返しがつかない
             textAlign(.center)
             fill(Palette.ink.x, Palette.ink.y, Palette.ink.z, 245)
-            textSize(32)
-            text("FINISH", width / 2, height / 2 - 62)
-            textSize(20)
-            text("P\(race.standing(of: 0) + 1) of \(race.runners.count)", width / 2, height / 2 - 12)
-            textSize(15)
-            fill(Palette.ink.x, Palette.ink.y, Palette.ink.z, 200)
+            textSize(56)
+            text("P\(race.standing(of: 0) + 1) / \(race.runners.count)", width / 2, height / 2 - 26)
+            textSize(19)
+            fill(Palette.ink.x, Palette.ink.y, Palette.ink.z, 205)
             text("BEST \(Race.text(race.runners[0].best))", width / 2, height / 2 + 26)
-            text("R  restart", width / 2, height / 2 + 74)
+            textSize(15)
+            text("R", width / 2, height / 2 + 66)
             textAlign(.left)
             return
         }
@@ -203,23 +204,4 @@ extension Apex {
         textAlign(.left)
     }
 
-    // MARK: - 手引き
-
-    private func hint() {
-        // **触ったら引っ込む。** 何もしなければ 16 秒で自分から消える。
-        //
-        // **1 行は「大きさ × 文字数」で 240 まで。** 超えると GPU がそのフレームを
-        // 描き切れなくなる (mokume#1273)
-        let fade = touched ? 0 : Math.unit((16 - time) / 3)
-        guard fade > 0.01 else { return }
-        fill(Palette.ink.x, Palette.ink.y, Palette.ink.z, 210 * fade)
-        textSize(13)
-        let lines = [
-            "W go S stop",
-            "AD turn R zero",
-        ]
-        for (index, line) in lines.enumerated() {
-            text(line, 26, height - 66 + Float(index) * 20)
-        }
-    }
 }

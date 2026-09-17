@@ -50,8 +50,6 @@ final class Apex: Sketch {
     private static let maxSteps = 8
     /// 影を焼く四角の一辺 (単位)。**140 m** — 車のまわりと、前の車の影が入る広さ。
     private static let shadowSpan: Float = 1400
-    /// 切り分け用 — 自分の車も相手と同じ運転に任せる。
-    static let autoPilot = ProcessInfo.processInfo.environment["APEX_AUTO"] != nil
     private var pending: Float = 0
 
     // MARK: - 数えるもの
@@ -60,12 +58,6 @@ final class Apex: Sketch {
     /// コースを組んで焼くのにかかった時間 (ミリ秒)。
     private var bakeMs: Float = 0
     private var steps = 0
-    private var brokenVerts = 0
-    private var brokenNormals = 0
-    private var reach: Float = 0
-    private var restarts = 0
-    /// 最後に届いたキー。**入力が届いているかを外から見るため。**
-    private var lastKey = -1
 
     func setup() {
         // **画面の性質なのでフレームを越える。** `setup()` で積んだ描画のスタイルは
@@ -112,7 +104,7 @@ final class Apex: Sketch {
         castShadow(false)
         receiveShadow(false)
         // **木は 1 回の描画で全部置く。** 置き場所ごとに向きと大きさが効く
-        // shape(tree, at: grove)
+        shape(tree, at: grove)
 
         // **車だけが影を落とす。** 受ける側に入れると、凸な立体でも縞 (シャドウアクネ) が出る
         castShadow(true)
@@ -132,8 +124,6 @@ final class Apex: Sketch {
         expose("s", car.s / 10)
         expose("d", car.lateral / 10)
         expose("steps", steps)
-        expose("restarts", restarts)
-        expose("lastKey", lastKey)
         expose("lapMeters", track.length / 10)
         expose("verts", verts)
         expose("trees", grove.count)
@@ -143,19 +133,10 @@ final class Apex: Sketch {
         // 相手の走り。**外から見て、AI がちゃんと回っているかを確かめるため**
         expose("leadLap", race.runners.map(\.lap).max() ?? 0)
         expose("leadBest", race.runners.compactMap(\.best).min() ?? -1)
-        expose("rival1kmh", cars.count > 1 ? cars[1].kmh : 0)
-        expose("rival1s", cars.count > 1 ? cars[1].s / 10 : 0)
-        expose("rival1d", cars.count > 1 ? cars[1].lateral / 10 : 0)
-        expose("rival1surface", cars.count > 1 ? cars[1].surface.name : "-")
         expose("clock", race.clock)
         expose("phase", "\(race.phase)")
         expose("best", race.runners[0].best ?? -1)
         expose("bakeMs", bakeMs)
-        expose("brokenVerts", brokenVerts)
-        expose("brokenNormals", brokenNormals)
-        expose("reach", reach)
-        expose("carFinite", car.place.x.isFinite && car.place.y.isFinite && car.yaw.isFinite)
-        expose("eyeFinite", chaseEyeFinite)
     }
 
     // MARK: - 立てる
@@ -174,16 +155,6 @@ final class Apex: Sketch {
         let corners = Road.bake(track) { s in 0.94 + 0.12 * self.noise(s * 0.004) }
         road = form(corners)
         verts = corners.count
-        // **焼いた頂点を検める。** 壊れた値が 1 つでも混ざると、GPU がその面を
-        // 描くところで止まる — 絵は出ないのに警告は「描きすぎ」と言うので、
-        // 数で先に捕まえておく
-        for corner in corners {
-            let point = SIMD3(corner.x, corner.y, corner.z)
-            let normal = SIMD3(corner.nx, corner.ny, corner.nz)
-            if !point.x.isFinite || !point.y.isFinite || !point.z.isFinite { brokenVerts += 1 }
-            if !normal.x.isFinite || !normal.y.isFinite || !normal.z.isFinite { brokenNormals += 1 }
-            reach = max(reach, max(abs(corner.x), max(abs(corner.y), abs(corner.z))))
-        }
 
         var middle = SIMD2<Float>(repeating: 0)
         for sample in track.samples { middle += sample.point }
@@ -201,7 +172,6 @@ final class Apex: Sketch {
 
     /// スタートラインの手前へ並べ直す。
     func restart() {
-        restarts += 1
         race = Race(count: 1 + rivals.count)
         // **ラインの手前の直線に並べる。** 制御点を組み直して、スタートラインの
         // 前後が直線になるようにしてある。左右へ振り分けるのは実際のグリッドと同じ
@@ -254,11 +224,7 @@ final class Apex: Sketch {
             // 計時の始まりが人によって変わってしまう
             var wishes = [Controls](repeating: Controls(), count: cars.count)
             if race.phase == .running {
-                // 切り分け用 — 自分の車も相手と同じ運転に任せる
-                wishes[0] = Apex.autoPilot
-                    ? rivals[0].drive(cars[0], on: track, others: cars, at: time) {
-                        self.noise($0)
-                    } : pedals
+                wishes[0] = pedals
                 for index in 1..<cars.count {
                     wishes[index] = rivals[index - 1].drive(
                         cars[index], on: track, others: cars, at: time) { self.noise($0) }
@@ -337,8 +303,7 @@ final class Apex: Sketch {
 
     func keyPressed() {
         touched = true
-        lastKey = keyCode?.rawValue ?? -1
-        if lastKey == Key.r.rawValue { restart() }
+        if keyCode?.rawValue == Key.r.rawValue { restart() }
     }
 
     // MARK: - 見る
@@ -360,12 +325,6 @@ final class Apex: Sketch {
         let span = high - low
         // **地図の枠に収める。** 縦横のきつい方に合わせる
         mapScale = min(168 / max(span.x, 1), 168 / max(span.y, 1)) * 0.92
-    }
-
-    /// カメラの値が壊れていないか。
-    var chaseEyeFinite: Bool {
-        chase.eye.x.isFinite && chase.eye.y.isFinite && chase.eye.z.isFinite
-            && chase.look.x.isFinite && chase.lens.isFinite
     }
 
     func look() {
