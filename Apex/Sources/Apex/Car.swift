@@ -110,6 +110,8 @@ struct Car {
     /// いま描いている円の半径 (単位)。**速いほど大きくなる** — これが
     /// 「全開では曲がれない」の正体で、上限に当たっている間は速さの 2 乗で伸びる
     var turnRadius: Float { abs(turning) < 1e-4 ? 99999 : speed / abs(turning) }
+    /// 前の車の後ろに付いているか。**空気抵抗が 4 割減る** (誰にでも等しく効く)。
+    var drafting = false
     /// 車輪の回り・傾き・沈み。**どれも見た目だけ。**
     var spin: Float = 0
     var lean: Float = 0
@@ -155,8 +157,7 @@ struct Car {
         steer += Math.clamp(controls.steer - steer, -rate * h, rate * h)
         // **速いほど舵角を絞る。** 高速で舵を一杯に切れると、上限に当たるだけの
         // 無駄な操作になり、手応えが消える
-        let lock = Math.mix(radiansOf(34), radiansOf(9), Math.ramp(abs(pace), 0, 420))
-        let wheel = steer * lock
+        let wheel = steer * Car.lock(at: pace)
 
         // 3. 自転車モデルが命じる角速度を、タイヤの上限で頭打ちにする
         let wanted = pace * tan(wheel) / Car.wheelbase
@@ -183,7 +184,9 @@ struct Car {
         }
         // 転がりと空気。**止まりかけでは効かせない** (0 のまわりで震えるため)
         if abs(pace) > 1 {
-            let resist = 0.00012 * pace * abs(pace) + 2 + surface.drag
+            // **前の車の後ろでは空気が薄い。** 速さの 2 乗に効く項だけが減る
+            let air = 0.00012 * pace * abs(pace) * (drafting ? 0.55 : 1)
+            let resist = air + 2 + surface.drag
             along -= resist * (pace > 0 ? 1 : -1)
         } else if controls.throttle < 0.01 && controls.brake < 0.01 {
             pace = 0
@@ -237,6 +240,11 @@ struct Car {
         velocity *= 0.997
         // **壁沿いに向き直らせる。** これが無いと壁を向いたまま空回りする
         yaw += Track.wrap(here.heading - yaw) * 0.2
+    }
+
+    /// その速さで切れる舵角の上限 (ラジアン)。**人も AI も同じ口を通る。**
+    static func lock(at pace: Float) -> Float {
+        Math.mix(Math.radians(34), Math.radians(9), Math.ramp(abs(pace), 0, 420))
     }
 
     private func radiansOf(_ degrees: Float) -> Float { degrees * Float.pi / 180 }

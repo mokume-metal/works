@@ -24,8 +24,14 @@ final class Apex: Sketch {
 
     // MARK: - 走るもの
 
-    var car = Car(place: .zero, yaw: 0)
-    var race = Race(count: 1)
+    /// 走っている車。**0 番が自分。**
+    var cars: [Car] = []
+    /// 相手の運転。
+    let rivals = Rival.field
+    var race = Race(count: 1 + Rival.field.count)
+
+    /// 自分の車。
+    var car: Car { cars.first ?? Car(place: .zero, yaw: 0) }
     private var chase = Chase()
 
     /// 地図に描く中心線 (間引いたもの) と、その外接と縮尺。
@@ -80,7 +86,9 @@ final class Apex: Sketch {
         shape(road)
         // **木は 1 回の描画で全部置く。** 置き場所ごとに向きと大きさが効く
         shape(tree, at: grove)
-        put(car, colour: Palette.cars[0], on: track)
+        for (index, car) in cars.enumerated() {
+            put(car, colour: Palette.cars[index % Palette.cars.count], on: track)
+        }
         dash()
 
         expose("kmh", car.kmh)
@@ -96,6 +104,8 @@ final class Apex: Sketch {
         expose("verts", verts)
         expose("trees", grove.count)
         expose("lap", race.shownLap(of: 0))
+        expose("pos", race.standing(of: 0) + 1)
+        expose("drafting", car.drafting)
         expose("clock", race.clock)
         expose("phase", "\(race.phase)")
         expose("best", race.runners[0].best ?? -1)
@@ -133,14 +143,25 @@ final class Apex: Sketch {
         restart()
     }
 
-    /// スタートラインの手前へ置き直す。
+    /// スタートラインの手前へ並べ直す。
     func restart() {
-        // **いまは直線の途中から始める。** グリッドに並べるのは計時を入れてから
-        let grid = track.frame(at: 200)
         restarts += 1
-        car = Car(place: grid.point, yaw: grid.heading)
-        car.settle(on: track)
-        chase.snap(to: car, on: track)
+        race = Race(count: 1 + rivals.count)
+        // **ラインの手前の直線に並べる。** 制御点を組み直して、スタートラインの
+        // 前後が直線になるようにしてある。左右へ振り分けるのは実際のグリッドと同じ
+        cars = (0...rivals.count).map { index in
+            let grid = track.frame(at: track.length - (70 + Float(index) * 95))
+            let hand: Float = index % 2 == 0 ? -28 : 28
+            var car = Car(place: grid.point + Track.side(grid.heading) * hand, yaw: grid.heading)
+            car.settle(on: track)
+            return car
+        }
+        // **並べた場所を先に知らせておく。** 周回は距離の巻き戻りで数えるので、
+        // 始まりの距離が入っていないと 1 歩目で誤って数える
+        for index in cars.indices {
+            race.note(index, s: cars[index].s, length: track.length)
+        }
+        chase.snap(to: cars[0], on: track)
         pending = 0
     }
 
@@ -175,15 +196,69 @@ final class Apex: Sketch {
             race.advance(Apex.tick)
             // **待っている間は踏んでも進まない。** 合図より前に踏み始められると、
             // 計時の始まりが人によって変わってしまう
-            let wish = race.phase == .running ? pedals : Controls()
-            car.advance(Apex.tick, controls: wish, on: track)
-            car.bounce(on: track)
-            race.note(0, s: car.s, length: track.length)
+            var wishes = [Controls](repeating: Controls(), count: cars.count)
+            if race.phase == .running {
+                wishes[0] = pedals
+                for index in 1..<cars.count {
+                    wishes[index] = rivals[index - 1].drive(
+                        cars[index], on: track, others: cars, at: time) { self.noise($0) }
+                }
+            }
+            // **待っている間は動かさない。** 物理を進めると、グリッドが坂にかかって
+            // いるだけで転がり出す (合図の前に 15 km/h まで出た)
+            if race.phase != .waiting {
+                // **後ろに付くと空気が薄くなる。** 誰にでも等しく効くので、相手の性能を
+                // 順位で上下させる (いわゆるラバーバンド) を持たずに追い抜きが起きる
+                for index in cars.indices { cars[index].drafting = drafting(index) }
+                for index in cars.indices {
+                    cars[index].advance(Apex.tick, controls: wishes[index], on: track)
+                    cars[index].bounce(on: track)
+                }
+                bump()
+            }
+            // **待っている間も位置は知らせる。** 知らせないと「前のフレームの距離」が
+            // 0 のまま走り出し、最初の 1 歩が「1 周ぶん戻った」と数えられる
+            for index in cars.indices {
+                race.note(index, s: cars[index].s, length: track.length)
+            }
             pending -= Apex.tick
             steps += 1
         }
         if steps == Apex.maxSteps { pending = 0 }
         race.settle()
+    }
+
+    /// 前の車の後ろに付いているか。
+    private func drafting(_ index: Int) -> Bool {
+        let me = cars[index]
+        for (other, car) in cars.enumerated() where other != index {
+            let gap = Rival.gap(from: me.s, to: car.s, length: track.length)
+            if gap > 14, gap < 200, abs(car.lateral - me.lateral) < 30 { return true }
+        }
+        return false
+    }
+
+    /// 車同士の当たり。**半径 2.2 m の円で見て、重なりを押し戻す。**
+    ///
+    /// 後ろから当たれば前後の、並走で当たれば横の運動量が移る — どちらも
+    /// 押し戻す向き 1 つから出る
+    private func bump() {
+        for a in cars.indices {
+            for b in (a + 1)..<cars.count {
+                let apart = cars[b].place - cars[a].place
+                let distance = simd_length(apart)
+                let overlap = Car.radius * 2 - distance
+                guard overlap > 0, distance > 0.01 else { continue }
+                let axis = apart / distance
+                cars[a].place -= axis * (overlap / 2)
+                cars[b].place += axis * (overlap / 2)
+                let closing = simd_dot(cars[b].velocity - cars[a].velocity, axis)
+                guard closing < 0 else { continue }
+                let shove = -closing * 0.35
+                cars[a].velocity -= axis * shove
+                cars[b].velocity += axis * shove
+            }
+        }
     }
 
     /// いま押されているものを操作へ直す。

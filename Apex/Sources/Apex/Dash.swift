@@ -56,17 +56,21 @@ extension Apex {
         let me = race.runners[0]
 
         fill(Palette.shade.x, Palette.shade.y, Palette.shade.z, 150)
-        rect(x - 12, y - 30, 232, brief ? 82 : 106)
+        rect(x - 12, y - 30, 232, brief ? 50 : 106)
 
         fill(Palette.ink.x, Palette.ink.y, Palette.ink.z, 236)
         textSize(30)
         text("LAP \(race.shownLap(of: 0)) / \(Race.laps)", x, y)
+        // **手引きを出している間はここまで。** 1 フレームに描ける文字の総量に
+        // 上限があるので (mokume#1273)、出すものを場面ごとに選ぶ
+        guard !brief else { return }
         y += 34
 
         textSize(19)
         let running = race.phase == .running ? race.clock - me.lapBegan : 0
         text(Race.text(race.phase == .waiting ? nil : running), x, y)
-        guard !brief else { return }
+        textSize(22)
+        text("P\(race.standing(of: 0) + 1)/\(race.runners.count)", x + 150, y)
         y += 24
         fill(Palette.ink.x, Palette.ink.y, Palette.ink.z, 172)
         textSize(15)
@@ -131,11 +135,15 @@ extension Apex {
         fill(238, 238, 236, 230)
         rect(line.x - 5, line.y - 5, 10, 10)
 
-        let spot = chartPoint(car.place, origin: origin, box: box)
-        fill(Palette.shade.x, Palette.shade.y, Palette.shade.z, 220)
-        circle(spot.x, spot.y, 14)
-        fill(Palette.cars[0].x, Palette.cars[0].y, Palette.cars[0].z, 250)
-        circle(spot.x, spot.y, 10)
+        // **相手を先に、自分を最後に置く。** 重なったとき自分が見えるように
+        for (index, other) in cars.enumerated().reversed() {
+            let spot = chartPoint(other.place, origin: origin, box: box)
+            let tint = Palette.cars[index % Palette.cars.count]
+            fill(Palette.shade.x, Palette.shade.y, Palette.shade.z, 220)
+            circle(spot.x, spot.y, index == 0 ? 15 : 12)
+            fill(tint.x, tint.y, tint.z, 250)
+            circle(spot.x, spot.y, index == 0 ? 11 : 8)
+        }
     }
 
     /// 地図の線。**`line` を 1 本ずつ引く。**
@@ -190,7 +198,7 @@ extension Apex {
         let age = Math.unit(light.age)
         textAlign(.center)
         fill(Palette.ink.x, Palette.ink.y, Palette.ink.z, 250 * age)
-        textSize(104)
+        textSize(84)
         text(light.text, width / 2, height / 2 - 40)
         textAlign(.left)
     }
@@ -198,7 +206,10 @@ extension Apex {
     // MARK: - 手引き
 
     private func hint() {
-        // **触ったら引っ込む。** 何もしなければ 16 秒で自分から消える
+        // **触ったら引っ込む。** 何もしなければ 16 秒で自分から消える。
+        //
+        // **1 行は「大きさ × 文字数」で 240 まで。** 超えると GPU がそのフレームを
+        // 描き切れなくなる (mokume#1273)
         let fade = touched ? 0 : Math.unit((16 - time) / 3)
         guard fade > 0.01 else { return }
         fill(Palette.ink.x, Palette.ink.y, Palette.ink.z, 210 * fade)
