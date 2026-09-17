@@ -24,8 +24,17 @@ final class Apex: Sketch {
 
     // MARK: - 走るもの
 
-    private var car = Car(place: .zero, yaw: 0)
+    var car = Car(place: .zero, yaw: 0)
+    var race = Race(count: 1)
     private var chase = Chase()
+
+    /// 地図に描く中心線 (間引いたもの) と、その外接と縮尺。
+    var mapLine: [SIMD2<Float>] = []
+    var mapLow = SIMD2<Float>(repeating: 0)
+    var mapHigh = SIMD2<Float>(repeating: 0)
+    var mapScale: Float = 0
+    /// 何か触ったか。**触ったら手引きを引っ込める。**
+    var touched = false
 
     /// 物理の刻み (秒)。**フレームの長さではなく固定**にするのは、同じ操作から
     /// 同じ走りが出るようにするため
@@ -72,6 +81,7 @@ final class Apex: Sketch {
         // **木は 1 回の描画で全部置く。** 置き場所ごとに向きと大きさが効く
         shape(tree, at: grove)
         put(car, colour: Palette.cars[0], on: track)
+        dash()
 
         expose("kmh", car.kmh)
         expose("slip", car.slip * 180 / Float.pi)
@@ -85,6 +95,10 @@ final class Apex: Sketch {
         expose("lapMeters", track.length / 10)
         expose("verts", verts)
         expose("trees", grove.count)
+        expose("lap", race.shownLap(of: 0))
+        expose("clock", race.clock)
+        expose("phase", "\(race.phase)")
+        expose("best", race.runners[0].best ?? -1)
         expose("bakeMs", bakeMs)
     }
 
@@ -110,6 +124,7 @@ final class Apex: Sketch {
         middle /= Float(track.count)
         ground = form(Scenery.ground(centre: middle, reach: 9000))
         tree = form(Scenery.tree())
+        drawChart()
         grove = Scenery.trees(along: track) { a, b in self.noise(a, b) }
         shell = bakeShell()
         trim = bakeTrim()
@@ -151,18 +166,24 @@ final class Apex: Sketch {
 
     /// 固定の刻みで物理を進める。
     private func drive() {
-        let wish = wheelAndPedals()
+        let pedals = wheelAndPedals()
         // **窓を掴んで離したときの巨大な間隔を捨てる。** `mokume watch` の作り直しの
         // 直後も 1 フレームが長い
         pending += min(deltaTime, 0.25)
         steps = 0
         while pending >= Apex.tick, steps < Apex.maxSteps {
+            race.advance(Apex.tick)
+            // **待っている間は踏んでも進まない。** 合図より前に踏み始められると、
+            // 計時の始まりが人によって変わってしまう
+            let wish = race.phase == .running ? pedals : Controls()
             car.advance(Apex.tick, controls: wish, on: track)
             car.bounce(on: track)
+            race.note(0, s: car.s, length: track.length)
             pending -= Apex.tick
             steps += 1
         }
         if steps == Apex.maxSteps { pending = 0 }
+        race.settle()
     }
 
     /// いま押されているものを操作へ直す。
@@ -180,13 +201,33 @@ final class Apex: Sketch {
     }
 
     func keyPressed() {
+        touched = true
         lastKey = keyCode?.rawValue ?? -1
         if lastKey == Key.r.rawValue { restart() }
     }
 
     // MARK: - 見る
 
-    private func look() {
+    /// 地図に描く中心線を間引いて持つ。**毎フレーム 600 点を引くのは重いので。**
+    private func drawChart() {
+        mapLine = []
+        var low = SIMD2<Float>(repeating: .greatestFiniteMagnitude)
+        var high = SIMD2<Float>(repeating: -.greatestFiniteMagnitude)
+        let step = max(track.count / 180, 1)
+        for index in stride(from: 0, to: track.count, by: step) {
+            let point = track.samples[index].point
+            mapLine.append(point)
+            low = simd_min(low, point)
+            high = simd_max(high, point)
+        }
+        mapLow = low
+        mapHigh = high
+        let span = high - low
+        // **地図の枠に収める。** 縦横のきつい方に合わせる
+        mapScale = min(168 / max(span.x, 1), 168 / max(span.y, 1)) * 0.92
+    }
+
+    func look() {
         // **世界は y 上向き、渡すのは下向き。**
         camera(
             chase.eye.x, -chase.eye.y, chase.eye.z,
