@@ -20,3 +20,17 @@ enum Math {
     /// `mix(a, b, 0.1)` と書くと、速さの違う機械でカメラの硬さが変わる
     static func chase(_ dt: Float, _ tau: Float) -> Float { 1 - exp(-dt / max(tau, 1e-4)) }
 }
+
+extension Math {
+    /// 2 つの点の間を混ぜる。
+    static func mix(_ a: SIMD2<Float>, _ b: SIMD2<Float>, _ f: Float) -> SIMD2<Float> {
+        a + (b - a) * f
+    }
+
+    /// 角を最短の弧で混ぜる。**素朴に混ぜると ±π をまたぐところで 1 周する。**
+    static func mixAngle(_ a: Float, _ b: Float, _ f: Float) -> Float {
+        a + Track.wrap(b - a) * f
+    }
+
+    static func radians(_ degrees: Float) -> Float { degrees * Float.pi / 180 }
+}

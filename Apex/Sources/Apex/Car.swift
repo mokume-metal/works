@@ -105,6 +105,11 @@ struct Car {
 
     /// 進んでいる向きと車体の向きの差 (ラジアン)。**滑りの量。**
     var slip: Float = 0
+    /// いまの角速度 (ラジアン/s)。**タイヤの上限で頭打ちにした後の値。**
+    var turning: Float = 0
+    /// いま描いている円の半径 (単位)。**速いほど大きくなる** — これが
+    /// 「全開では曲がれない」の正体で、上限に当たっている間は速さの 2 乗で伸びる
+    var turnRadius: Float { abs(turning) < 1e-4 ? 99999 : speed / abs(turning) }
     /// 車輪の回り・傾き・沈み。**どれも見た目だけ。**
     var spin: Float = 0
     var lean: Float = 0
@@ -157,7 +162,7 @@ struct Car {
         let wanted = pace * tan(wheel) / Car.wheelbase
         let limit = gripNow / max(abs(pace), 1)
         // **引き手はこの上限を外す。** 尻が出るのは、横のタイヤを諦めたときだけである
-        let turning = controls.handbrake ? wanted : Math.clamp(wanted, -limit, limit)
+        turning = controls.handbrake ? wanted : Math.clamp(wanted, -limit, limit)
         yaw += turning * h
 
         // 4. 回した**後**の軸で測り直す。ここで横向きの成分が残る = 滑り
@@ -219,13 +224,19 @@ struct Car {
     mutating func bounce(on track: Track) {
         guard abs(lateral) > Track.wallWidth else { return }
         let here = track.frame(at: s)
+        let outward = Track.side(here.heading) * (lateral > 0 ? 1 : -1)
         lateral = lateral > 0 ? Track.wallWidth : -Track.wallWidth
         place = here.point + Track.side(here.heading) * lateral
-        let pace = simd_dot(velocity, Track.forward(yaw))
-        // 壁へ向かう横の成分を捨て、前へ進む力も削る
-        velocity = Track.forward(yaw) * pace * 0.55
-        // **壁沿いに向き直らせる。** これが無いと壁に貼り付いたまま止まる
-        yaw += Track.wrap(here.heading - yaw) * 0.25
+
+        // **壁へ向かう成分だけを消す。** 速度そのものを削ると、擦っている間ずっと
+        // 減速がかかって**壁に貼り付いたまま動けなくなる** (実際にそうなった)
+        let into = simd_dot(velocity, outward)
+        if into > 0 { velocity -= outward * into }
+        // 擦っている間の罰は軽く。**1 歩ぶん**なので、強くすると 1 秒で 8 割方削れて
+        // 壁から出られなくなる (0.985 にしたら実際にそうなった)
+        velocity *= 0.997
+        // **壁沿いに向き直らせる。** これが無いと壁を向いたまま空回りする
+        yaw += Track.wrap(here.heading - yaw) * 0.2
     }
 
     private func radiansOf(_ degrees: Float) -> Float { degrees * Float.pi / 180 }

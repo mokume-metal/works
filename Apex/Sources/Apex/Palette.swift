@@ -1,3 +1,4 @@
+import mokume
 import simd
 
 /// 色。**0…255 で持つ** — `fill` / `ambientLight(数値の口)` と同じ尺度である。
@@ -25,4 +26,14 @@ enum Palette {
     /// 手元の表示の色。
     static let ink = SIMD3<Float>(244, 246, 248)
     static let shade = SIMD3<Float>(16, 17, 20)
+}
+
+extension Palette {
+    /// 0…255 の色を、置き場所へ掛ける色 (`LinearRGBA`) へ直す。
+    ///
+    /// **`Placement.fill` は 0…1 の表示値で受ける。** 塗りと同じ 0…255 のつもりで
+    /// 渡すと、色が飽和して真っ白になる
+    static func linear(_ colour: SIMD3<Float>) -> LinearRGBA {
+        LinearRGBA.display(red: colour.x / 255, green: colour.y / 255, blue: colour.z / 255)
+    }
 }

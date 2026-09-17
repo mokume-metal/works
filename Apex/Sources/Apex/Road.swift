@@ -18,19 +18,6 @@ import simd
 /// 縮小の段を持たない)。ここは頂点の色だけで組み、速度感は**縁石の縞** (2 m 周期)・
 /// リングごとの陰の揺らぎ・視野角の広がりで出している
 enum Road {
-    /// 焼いた頂点 1 つ。
-    struct Corner {
-        var x: Float
-        var y: Float
-        var z: Float
-        var nx: Float
-        var ny: Float
-        var nz: Float
-        var r: Float
-        var g: Float
-        var b: Float
-    }
-
     /// 断面の帯の種類。
     enum Kind {
         case skirt  // 遠くの地面へ繋ぐ裾
