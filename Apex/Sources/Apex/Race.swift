@@ -102,10 +102,13 @@ struct Race {
         runner.progress = Float(runner.lap) * length + s
     }
 
-    /// 全員が終わったか。
+    /// 終わったか。
+    ///
+    /// **自分がゴールしたら終わりにする。** 全員を待つと、後ろの車が転んでいる間
+    /// 結果が出ないままになる (相手はゴールの後も惰性で走り続ける)
     mutating func settle() {
         guard phase == .running else { return }
-        if runners.allSatisfy({ $0.finishedAt != nil }) { phase = .finished }
+        if runners[0].finishedAt != nil { phase = .finished }
     }
 
     /// 順位 (0 が先頭)。**走った総距離の降順、終えた者はその順。**

@@ -177,11 +177,11 @@ extension Apex {
             rect(width / 2 - 210, height / 2 - 120, 420, 240)
             textAlign(.center)
             fill(Palette.ink.x, Palette.ink.y, Palette.ink.z, 245)
-            textSize(40)
+            textSize(32)
             text("FINISH", width / 2, height / 2 - 62)
-            textSize(22)
+            textSize(20)
             text("P\(race.standing(of: 0) + 1) of \(race.runners.count)", width / 2, height / 2 - 12)
-            textSize(17)
+            textSize(15)
             fill(Palette.ink.x, Palette.ink.y, Palette.ink.z, 200)
             text("BEST \(Race.text(race.runners[0].best))", width / 2, height / 2 + 26)
             text("R  restart", width / 2, height / 2 + 74)
@@ -213,13 +213,13 @@ extension Apex {
         let fade = touched ? 0 : Math.unit((16 - time) / 3)
         guard fade > 0.01 else { return }
         fill(Palette.ink.x, Palette.ink.y, Palette.ink.z, 210 * fade)
-        textSize(17)
+        textSize(13)
         let lines = [
             "W go S stop",
             "AD turn R zero",
         ]
         for (index, line) in lines.enumerated() {
-            text(line, 26, height - 76 + Float(index) * 26)
+            text(line, 26, height - 66 + Float(index) * 20)
         }
     }
 }

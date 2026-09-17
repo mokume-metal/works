@@ -164,7 +164,8 @@ struct Car {
         let limit = gripNow / max(abs(pace), 1)
         // **引き手はこの上限を外す。** 尻が出るのは、横のタイヤを諦めたときだけである
         turning = controls.handbrake ? wanted : Math.clamp(wanted, -limit, limit)
-        yaw += turning * h
+        // **向きは −π…π へ畳む。** 回り続けると増え続け、渡す角が際限なく大きくなる
+        yaw = Track.wrap(yaw + turning * h)
 
         // 4. 回した**後**の軸で測り直す。ここで横向きの成分が残る = 滑り
         pace = simd_dot(velocity, Track.forward(yaw))
@@ -202,7 +203,8 @@ struct Car {
         velocity = Track.forward(yaw) * pace + Track.side(yaw) * sway
         place += velocity * h
         slip = atan2(sway, max(abs(pace), 1))
-        spin += pace / 16 * h
+        // **車輪の回りも畳む。** 畳まないと 1 分で 1,600 ラジアンを超える
+        spin = Track.wrap(spin + pace / 16 * h)
 
         // 見た目の傾き。**横 G で外へ傾き、前後 G で沈む**
         lean += (Math.clamp(turning * pace / Car.grip, -1, 1) * radiansOf(4.5) - lean)
