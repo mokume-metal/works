@@ -115,7 +115,7 @@ final class Apex: Sketch {
 
         // **描き終わりに 1 回。** 昼の屋外なので光の滲みは控えめにし、
         // 四隅を落として画面の中央へ目を寄せる
-        // effects([.bloom(amount: 0.32, threshold: 0.74, radius: 16), .vignette(amount: 0.22)])
+        effects([.bloom(amount: 0.32, threshold: 0.74, radius: 16), .vignette(amount: 0.22)])
 
         expose("kmh", car.kmh)
         expose("slip", car.slip * 180 / Float.pi)

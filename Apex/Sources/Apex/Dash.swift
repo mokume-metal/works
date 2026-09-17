@@ -35,12 +35,12 @@ extension Apex {
         let guiding = race.phase == .waiting
 
         if race.phase == .finished {
-            // chart()
+            chart()
             signal()
         } else {
             panel(brief: guiding)
             if !guiding { speedo() }
-            // chart()
+            chart()
             signal()
         }
 
