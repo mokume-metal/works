@@ -27,23 +27,39 @@ enum Road {
         case tarmac
     }
 
+    /// 断面の帯 1 本。
+    struct Band {
+        /// 内側と外側の横ずれ・高さ足し。**左から右へ並べる。**
+        var d0: Float
+        var y0: Float
+        var d1: Float
+        var y1: Float
+        var kind: Kind
+        /// 外端をコースの高さに追従させず、**一定の高さへ落とす**か。
+        ///
+        /// 遠景の地面は平らなので、ここで繋がないと**丘のところだけ地面と裾の間に
+        /// 隙間が開いて空が見える**
+        var flatOuter = false
+    }
+
     /// 断面 (内側の横ずれ・高さ足し → 外側の横ずれ・高さ足し)。**左から右へ並べる。**
     ///
     /// 縁石は路面の端 (±60) と路肩 (±70) の間を埋め、**外側が 3 単位高い**。
     /// 実車の縁石より高くしてあるのは、踏んだことが画面で分かるようにするため
-    private static let bands:
-        [(d0: Float, y0: Float, d1: Float, y1: Float, kind: Kind)] = [
-            (-450, -30, -110, 0, .skirt),
-            (-110, 0, -70, 0, .apron),
-            (-70, 3, -60, 0.5, .kerb),
-            (-60, 0, 60, 0, .tarmac),
-            (60, 0.5, 70, 3, .kerb),
-            (70, 0, 110, 0, .apron),
-            (110, 0, 450, -30, .skirt),
-        ]
+    private static let bands: [Band] = [
+        Band(d0: -1500, y0: 0, d1: -450, y1: -30, kind: .skirt, flatOuter: true),
+        Band(d0: -450, y0: -30, d1: -110, y1: 0, kind: .skirt),
+        Band(d0: -110, y0: 0, d1: -70, y1: 0, kind: .apron),
+        Band(d0: -70, y0: 1.8, d1: -60, y1: 0.4, kind: .kerb),
+        Band(d0: -60, y0: 0, d1: 60, y1: 0, kind: .tarmac),
+        Band(d0: 60, y0: 0.4, d1: 70, y1: 1.8, kind: .kerb),
+        Band(d0: 70, y0: 0, d1: 110, y1: 0, kind: .apron),
+        Band(d0: 110, y0: 0, d1: 450, y1: -30, kind: .skirt),
+        Band(d0: 450, y0: -30, d1: 1500, y1: 0, kind: .skirt, flatOuter: true),
+    ]
 
-    /// 裾の外端が下がる量 (単位)。**遠景の地面はここへ繋ぐ。**
-    static let skirtDrop: Float = -30
+    /// 遠景の地面の高さ (単位)。**平らな面なので、裾の外端をここへ落として繋ぐ。**
+    static let groundLevel: Float = -220
 
     /// スタートラインの市松の目 (横 × 縦)。
     private static let checkers = (across: 12, along: 2)
@@ -69,10 +85,8 @@ enum Road {
                     startLine(track, into: &corners)
                     continue
                 }
-                let colour = tint(band.kind, ring: ring, dim: dim)
-                quad(
-                    track, from: s0, to: s1, near: near, far: far, band: band, colour: colour,
-                    into: &corners)
+                let colour = tint(band.kind, ring: ring, dim: dim, bend: near.curvature)
+                quad(near: near, far: far, band: band, colour: colour, into: &corners)
             }
         }
         return corners
@@ -82,14 +96,17 @@ enum Road {
 
     /// 帯 1 枚を四角として置く。
     private static func quad(
-        _ track: Track, from s0: Float, to s1: Float, near: Track.Sample, far: Track.Sample,
-        band: (d0: Float, y0: Float, d1: Float, y1: Float, kind: Kind), colour: SIMD3<Float>,
+        near: Track.Sample, far: Track.Sample, band: Band, colour: SIMD3<Float>,
         into corners: inout [Corner]
     ) {
-        let a = point(near, d: band.d0, lift: band.y0, kind: band.kind)
-        let b = point(near, d: band.d1, lift: band.y1, kind: band.kind)
-        let c = point(far, d: band.d1, lift: band.y1, kind: band.kind)
-        let d = point(far, d: band.d0, lift: band.y0, kind: band.kind)
+        // **どちらの端が「外」かは符号で決まる。** 左右どちらの裾でも、
+        // 中心から遠いほうを地面の高さへ落とす
+        let flatA = band.flatOuter && abs(band.d0) > abs(band.d1)
+        let flatB = band.flatOuter && abs(band.d1) > abs(band.d0)
+        let a = point(near, d: band.d0, lift: band.y0, flat: flatA)
+        let b = point(near, d: band.d1, lift: band.y1, flat: flatB)
+        let c = point(far, d: band.d1, lift: band.y1, flat: flatB)
+        let d = point(far, d: band.d0, lift: band.y0, flat: flatA)
         let normal = face(near: near, d0: band.d0, y0: band.y0, d1: band.d1, y1: band.y1)
         emit(a, b, c, d, normal: normal, colour: colour, into: &corners)
     }
@@ -107,10 +124,10 @@ enum Road {
                 let d1 = -Track.halfWidth + width * Float(column + 1) / Float(checkers.across)
                 let pale = (column + row) % 2 == 0
                 let colour = pale ? Palette.line : Palette.asphaltDark
-                let a = point(near, d: d0, lift: 0, kind: .tarmac)
-                let b = point(near, d: d1, lift: 0, kind: .tarmac)
-                let c = point(far, d: d1, lift: 0, kind: .tarmac)
-                let e = point(far, d: d0, lift: 0, kind: .tarmac)
+                let a = point(near, d: d0, lift: 0, flat: false)
+                let b = point(near, d: d1, lift: 0, flat: false)
+                let c = point(far, d: d1, lift: 0, flat: false)
+                let e = point(far, d: d0, lift: 0, flat: false)
                 let normal = face(near: near, d0: d0, y0: 0, d1: d1, y1: 0)
                 emit(a, b, c, e, normal: normal, colour: colour, into: &corners)
             }
@@ -131,11 +148,11 @@ enum Road {
     }
 
     /// 断面の 1 点を世界の点へ。
-    private static func point(_ frame: Track.Sample, d: Float, lift: Float, kind: Kind)
+    private static func point(_ frame: Track.Sample, d: Float, lift: Float, flat: Bool)
         -> SIMD3<Float>
     {
-        let flat = frame.point + Track.side(frame.heading) * d
-        return SIMD3(flat.x, frame.height + lift, flat.y)
+        let across = frame.point + Track.side(frame.heading) * d
+        return SIMD3(across.x, flat ? groundLevel : frame.height + lift, across.y)
     }
 
     /// 帯の法線。**横の傾きと縦の勾配の両方から起こす。**
@@ -149,12 +166,19 @@ enum Road {
         return simd_normalize(simd_cross(forward, across))
     }
 
+    /// 曲率がこれより小さいところは「直線」として扱う (半径 167 m)。
+    private static let straight: Float = 0.0006
+
     /// 帯の色。
-    private static func tint(_ kind: Kind, ring: Int, dim: Float) -> SIMD3<Float> {
+    private static func tint(_ kind: Kind, ring: Int, dim: Float, bend: Float) -> SIMD3<Float> {
         switch kind {
         case .tarmac: return Palette.tarmac * dim
-        // **縁石はリングごとに交替する。** 2 m 周期 — 実車より粗いが、180 km/h ではこれくらいが読める
-        case .kerb: return ring % 2 == 0 ? Palette.kerbWarm : Palette.kerbPale
+        case .kerb:
+            // **縞になるのは曲がっているところだけ。** 直線の両脇までずっと縞だと、
+            // どこが曲がっているのかが遠目に読めなくなる
+            guard abs(bend) > straight else { return Palette.line * 0.92 }
+            // 2 m 周期。実車の縁石より粗いが、180 km/h ではこれくらいが読める
+            return ring % 2 == 0 ? Palette.kerbWarm : Palette.kerbPale
         case .apron: return Palette.apron * dim
         case .grass: return Palette.grass * dim
         case .skirt: return Palette.field * dim

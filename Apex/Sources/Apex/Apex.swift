@@ -14,6 +14,9 @@ final class Apex: Sketch {
 
     var track = Track.build()
     var road: Shape = .empty
+    var ground: Shape = .empty
+    var tree: Shape = .empty
+    private var grove: [Placement] = []
     var shell: Shape = .empty
     var trim: Shape = .empty
     var wheel: Shape = .empty
@@ -53,7 +56,7 @@ final class Apex: Sketch {
     func draw() {
         if !raised { raise() }
 
-        background(Surroundings.sky)
+        background(Scenery.sky)
 
         drive()
         chase.follow(car, on: track, dt: deltaTime, jitter: noise(time * 23) - 0.5)
@@ -64,7 +67,10 @@ final class Apex: Sketch {
         directionalLight(255, 246, 232, -0.42, -0.78, 0.46)
 
         noStroke()
+        shape(ground)
         shape(road)
+        // **木は 1 回の描画で全部置く。** 置き場所ごとに向きと大きさが効く
+        shape(tree, at: grove)
         put(car, colour: Palette.cars[0], on: track)
 
         expose("kmh", car.kmh)
@@ -78,6 +84,7 @@ final class Apex: Sketch {
         expose("lastKey", lastKey)
         expose("lapMeters", track.length / 10)
         expose("verts", verts)
+        expose("trees", grove.count)
         expose("bakeMs", bakeMs)
     }
 
@@ -97,6 +104,13 @@ final class Apex: Sketch {
         let corners = Road.bake(track) { s in 0.94 + 0.12 * self.noise(s * 0.004) }
         road = form(corners)
         verts = corners.count
+
+        var middle = SIMD2<Float>(repeating: 0)
+        for sample in track.samples { middle += sample.point }
+        middle /= Float(track.count)
+        ground = form(Scenery.ground(centre: middle, reach: 9000))
+        tree = form(Scenery.tree())
+        grove = Scenery.trees(along: track) { a, b in self.noise(a, b) }
         shell = bakeShell()
         trim = bakeTrim()
         wheel = bakeWheel()

@@ -6,10 +6,10 @@ import simd
 /// **光の強さを `LinearRGBA` で渡す口だけは 0…1** なので、そちらは使う場所で書く
 /// (取り違えると画面が真っ黒になる。mokume#1152)
 enum Palette {
-    static let tarmac = SIMD3<Float>(58, 60, 66)
+    static let tarmac = SIMD3<Float>(88, 90, 97)
     static let kerbWarm = SIMD3<Float>(198, 66, 54)
     static let kerbPale = SIMD3<Float>(236, 232, 222)
-    static let apron = SIMD3<Float>(134, 122, 102)
+    static let apron = SIMD3<Float>(148, 136, 114)
     static let grass = SIMD3<Float>(76, 108, 58)
     static let field = SIMD3<Float>(88, 118, 66)
     static let line = SIMD3<Float>(238, 238, 236)
