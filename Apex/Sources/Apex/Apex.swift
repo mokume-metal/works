@@ -48,6 +48,8 @@ final class Apex: Sketch {
     /// 1 フレームに進める歩数の上限。**追いつけないときは時間を捨てる** —
     /// 捨てないと「遅れているから多く歩く → もっと遅れる」の螺旋に入る
     private static let maxSteps = 8
+    /// 影を焼く四角の一辺 (単位)。**140 m** — 車のまわりと、前の車の影が入る広さ。
+    private static let shadowSpan: Float = 1400
     private var pending: Float = 0
 
     // MARK: - 数えるもの
@@ -78,12 +80,31 @@ final class Apex: Sketch {
         look()
 
         ambientLight(96, 104, 118)
-        // **光の向きも y を反転して渡す。** 世界の上から差す光が、絵でも上から差すように
-        directionalLight(255, 246, 232, -0.42, -0.78, 0.46)
+        // **光の向きも y を反転して渡す。** 世界の上から差す光が、絵でも上から差すように。
+        // **影を落とすのは向きを持つ光の 1 本目だけ**なので、これがその 1 本になる。
+        // 真上に近いと影が車の真下に潰れるので、**太陽は低く置く** (仰角 33 度)
+        directionalLight(255, 244, 228, -0.58, -0.54, 0.61)
+
+        // **影の切り取りは、いまの注視点を中心に取られる。** 追うカメラでは注視点が
+        // 車の少し先にあるので、車のまわりだけを高い細かさで焼ける。範囲が足りないと
+        // 暗くなるのではなく**四角く切れる**
+        shadows(true)
+        shadowDetail(2048)
+        shadowRange(Apex.shadowSpan)
+        // **世界での太さは bias × 2 × range。** 範囲が広いほど同じ値が太く効くので、
+        // 0.0016 (= 45 cm) では車の影が消えた。0.0005 は 1.4 単位 (14 cm)
+        shadowBias(0.0005)
 
         noStroke()
+        // **地面と路面は受けるだけ。** 落とす側に入れると自分の影で暗くなる
+        castShadow(false)
+        receiveShadow(true)
         shape(ground)
         shape(road)
+
+        // **木と車は落とすだけ。** 受ける側に入れると、凸な立体でも縞 (シャドウアクネ) が出る
+        castShadow(true)
+        receiveShadow(false)
         // **木は 1 回の描画で全部置く。** 置き場所ごとに向きと大きさが効く
         shape(tree, at: grove)
         for (index, car) in cars.enumerated() {
@@ -106,6 +127,13 @@ final class Apex: Sketch {
         expose("lap", race.shownLap(of: 0))
         expose("pos", race.standing(of: 0) + 1)
         expose("drafting", car.drafting)
+        // 相手の走り。**外から見て、AI がちゃんと回っているかを確かめるため**
+        expose("leadLap", race.runners.map(\.lap).max() ?? 0)
+        expose("leadBest", race.runners.compactMap(\.best).min() ?? -1)
+        expose("rival1kmh", cars.count > 1 ? cars[1].kmh : 0)
+        expose("rival1s", cars.count > 1 ? cars[1].s / 10 : 0)
+        expose("rival1d", cars.count > 1 ? cars[1].lateral / 10 : 0)
+        expose("rival1surface", cars.count > 1 ? cars[1].surface.name : "-")
         expose("clock", race.clock)
         expose("phase", "\(race.phase)")
         expose("best", race.runners[0].best ?? -1)
