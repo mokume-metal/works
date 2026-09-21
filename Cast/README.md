@@ -216,6 +216,16 @@ Apple M3 Max / macOS 26 / mokume `v0.7.1` / 1920 × 1080。
 | フレームの終わりの `noLights()` で、そのフレームの影が黙って消える | [#1151](https://github.com/mokume-metal/mokume/issues/1151) | docs |
 | 光の強さの尺度が口によって 0…255 と 0…1 で、間違えると真っ黒な絵になる | [#1152](https://github.com/mokume-metal/mokume/issues/1152) | docs |
 
+**11 本目の [Tempo](../Tempo/) と並べて、モーショングラフィックス 2 本ぶんをまとめて戻した** (2026-09-21)。どれも 2 本が**同じものを別々に書いた**ことが根拠である:
+
+| 踏んだもの | 戻した先 | 種別 |
+| --- | --- | --- |
+| 固定の fps で動きを書き出す口が無く、証跡を観測から並べ直している | [#1282](https://github.com/mokume-metal/mokume/issues/1282) | feat |
+| 時刻を制御する口が無く、再生位置 (`playhead`) を作品が自作している | [#1286](https://github.com/mokume-metal/mokume/issues/1286) | feat |
+| `lerp` / `constrain` が無い (`Stage.mix` と各所の `min(max(…))` を書いた) | [#1281](https://github.com/mokume-metal/mokume/issues/1281) | feat |
+| イージングと「窓を 0…1 へ写す」口が無い (`Score.window` / `Turn.ease` を書いた。**`Turn.ease` は Tempo の `expoInOut` と 1 字違わず同じ**) | [#1283](https://github.com/mokume-metal/mokume/issues/1283) | feat |
+| 観測の `every` の説明が、実際の時計 (実時計) と食い違う | [#1285](https://github.com/mokume-metal/mokume/issues/1285) | fix |
+
 **閉じても消さない** — 何を踏んで、どの版で塞がったかは記録である。
 
 ## 中身の並び

@@ -198,6 +198,17 @@ Apple M3 Max / macOS 26 / mokume `v0.7.1` / release / 1920 × 1080。観測を 4
 | 辺の上に頂点が載る凹多角形で、塗りが形の外へはみ出す | [#1148](https://github.com/mokume-metal/mokume/issues/1148) | fix |
 | `textOutline` が返す周の構造が書体で変わることが説明から読めない | [#1149](https://github.com/mokume-metal/mokume/issues/1149) | docs |
 
+**12 本目の Cast と並べて、モーショングラフィックス 2 本ぶんをまとめて戻した** (2026-09-21)。どれも「書けたが、作品の側で同じものを 2 度書いた」ことが根拠である:
+
+| 踏んだもの | 戻した先 | 種別 |
+| --- | --- | --- |
+| 固定の fps で動きを書き出す口が無く、証跡を観測から並べ直している | [#1282](https://github.com/mokume-metal/mokume/issues/1282) | feat |
+| 時刻を制御する口が無く、再生位置 (`playhead`) を作品が自作している | [#1286](https://github.com/mokume-metal/mokume/issues/1286) | feat |
+| `lerp` / `constrain` が無い (`Ease.mix` / `Ease.clamp` を書いた) | [#1281](https://github.com/mokume-metal/mokume/issues/1281) | feat |
+| イージングと「窓を 0…1 へ写す」口が無い (`Ease` 一式を書いた) | [#1283](https://github.com/mokume-metal/mokume/issues/1283) | feat |
+| 字ごとの輪郭と墨の範囲が取れない (`Glyphs` で 1 字ずつ切り出した) | [#1284](https://github.com/mokume-metal/mokume/issues/1284) | feat |
+| 観測の `every` の説明が、実際の時計 (実時計) と食い違う | [#1285](https://github.com/mokume-metal/mokume/issues/1285) | fix |
+
 **閉じても消さない** — 何を踏んで、どの版で塞がったかは記録である。
 
 ## 中身の並び
