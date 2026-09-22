@@ -105,7 +105,9 @@ final class Solids: Sketch {
         rotateWithFrameCount()
 
         // 原典はここで `stroke(0)` を置き、動きを見せるための黒い線を出す。
-        // **組み込みの立体は線を持たない** ので、置いても何も変わらない (README)
+        // **mokume v0.9.0 から、これが原典どおりに効く** — 球に緯線と経線が出る。
+        // v0.7.0 までは組み込みの立体が線を持たず、置いても何も変わらなかった
+        // ([mokume#850](https://github.com/mokume-metal/mokume/issues/850) / README)
         stroke(0)
         sphere(50)
         noStroke()

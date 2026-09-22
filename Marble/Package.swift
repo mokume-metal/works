@@ -12,7 +12,7 @@ let package = Package(
         // **works で 0.8 系を引く 1 本目。** 既存 12 本は 0.7 系で、追随は #49 が追う。
         // どの版で描いたかは Package.resolved が持つので、この作品のコミットへ戻れば
         // 当時の mokume に戻る
-        .package(url: "https://github.com/mokume-metal/mokume.git", from: "0.8.1")
+        .package(url: "https://github.com/mokume-metal/mokume.git", from: "0.9.0")
     ],
     targets: [
         .executableTarget(

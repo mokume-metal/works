@@ -11,7 +11,7 @@ let package = Package(
     dependencies: [
         // 既存の作品と同じ版で固定する。**どの版で描いたかは
         // Package.resolved が持つ**ので、この作品のコミットへ戻れば当時の mokume に戻る
-        .package(url: "https://github.com/mokume-metal/mokume.git", from: "0.8.1")
+        .package(url: "https://github.com/mokume-metal/mokume.git", from: "0.9.0")
     ],
     targets: [
         .executableTarget(
