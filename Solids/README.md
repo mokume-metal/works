@@ -1,6 +1,6 @@
 # Solids — p5.js の 3D Geometries を mokume へ
 
-![8 つの立体が並んで回る (frame 200)](https://i.gyazo.com/9511d705106a31fa01e769664eee2fef.png)
+<img width="710" height="400" alt="8 つの立体が並んで回る (frame 200)" src="https://github.com/user-attachments/assets/17848dea-b5f9-4f5a-b739-c13218328160" />
 
 制作トラック ([mokume ADR-0022](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0022-production-track.md)) の 4 本目。Garden と同じく、これは作品であると同時に**物差し**である。
 
@@ -42,7 +42,9 @@ mokume mcp .      # 走っているスケッチを外から観測する
 
 **この作品は毎回まったく同じ絵を出す**ので、上の数はすべて版差である (同じ `v0.9.0` で 2 回撮って 1 ビットも違わないことを確かめた)。
 
-**上の絵は貼り替えていない。** 球に線が出たぶんは貼り替えるべきだが、いま撮り直すと**矢じり (8 つ目) が写らない** — [#74](https://github.com/mokume-metal/works/issues/74) の別件で、版上げとは関係なく `v0.7.0` の絵にも出ていない。2 つを 1 枚に混ぜないため、貼り替えは #74 を直してから行う。
+**上の絵は `v0.9.0` の frame 200 で撮り直したものへ貼り替えた。** 球の緯線・経線が出たぶんと、貼り替えを止めていた**矢じり (8 つ目) が写らない**件 ([#74](https://github.com/mokume-metal/works/issues/74)) が、これで 1 枚にそろった。矢じりの件は版上げとは無関係で、`v0.7.0` の絵にも出ていなかった — 原因は起こし方のほうにある ([4. 同梱した資産が symlink 越しの起動で見つからない](#4-同梱した資産が-symlink-越しの起動で見つからない))。
+
+**上げ先は Gyazo ではなく GitHub の添付である。** Upload API が 502 を返し続けているうえ、**それまでに上げた 67 枚が全部 404 になっている** ([#80](https://github.com/mokume-metal/works/issues/80) が追っている)。[Ring](../Ring/README.md) が先に退避した経路と同じもので、手元のファイルをブラウザから Issue のコメント欄へ貼って `github.com/user-attachments/…` を得ている ([#81](https://github.com/mokume-metal/works/pull/81))。**すぐ下のアニメーション WebP はまだ Gyazo のままで、いまは表示されない。**
 
 ## p5.js との対応
 
@@ -105,6 +107,23 @@ mokume では**何も出ない。** `stroke()` を置いても置かなくても
 
 Swift 側には `LinearRGBA.display(red:green:blue:)` があるので、**同じ式が断片の側にだけ無い**という形の欠けである。Issue にはしていない — 5 行で書けるうえ、断片へ渡す `values` を `.color(.display(...))` にすれば変換済みで届くので、本当に要るのは今回のように**断片の中で数から色を作るとき**に限られる。
 
+#### 4. 同梱した資産が symlink 越しの起動で見つからない
+
+**8 つ目の矢じりだけが描かれない、という形で出た** ([#74](https://github.com/mokume-metal/works/issues/74))。他の 7 つは組み込みの立体なので、絵を見ただけでは「モデルが読めていない」と分からない。
+
+原因は**どのパスで実行ファイルを起こしたか**である。`loadModel()` が探すのは作業ディレクトリと、実行ファイルの隣に並ぶ `*.bundle` の中だが、mokume はその隣を `FileManager.contentsOfDirectory(at:)` (URL 版) で列挙しており、**この API はディレクトリへの symlink を開けない** (`Code=20 "Not a directory"`)。SwiftPM が作る `.build/release` はまさに `out/Products/Release` への symlink なので、**そこから起こすと包みが候補列から丸ごと落ちる。**
+
+| 起こしたパス | `loadModel("assets/arrowhead.obj")` |
+| --- | --- |
+| `.build/out/Products/Release/Solids` (実体) | 読める (14 面) |
+| `.build/release/Solids` (symlink 越し) | `.notFound` — 探した 3 か所に包みが 1 つも入らない |
+
+**`mokume run` も `swift run` も実体のパスを起こす**ので、上の[走らせる](#走らせる)に書いた道からは起きない。踏むのは、絵を撮るときのように実行ファイルを手で叩いたときである。
+
+**この作品の側で直せたのは、読めなかったと分かるようにするところだけだった。** `try? loadModel(...)` と `if let` の組み合わせだと、読めなくても絵が 1 つ欠けるだけで診断も出ない — 実際、起票から原因に辿り着くまでに版を戻して撮り比べる回り道になっている。`do` / `catch` にして、mokume の説明 (**探した場所が並ぶ**) をそのまま標準エラーへ流すようにした。
+
+→ [mokume#1330](https://github.com/mokume-metal/mokume/issues/1330)
+
 ### 詰まらなかったが、違うところ
 
 - **`plane()` の断片にも面の向きが届く。** `Fragment.shapeNormal` の但し書きは「平面では 0」と言っているが、これは 2D の描画のことで、立体としての `plane()` は向きを持つ (実測: `#0000ff` 一色 = 法線 `(0, 0, 1)`)
@@ -121,9 +140,11 @@ Swift 側には `LinearRGBA.display(red:green:blue:)` があるので、**同じ
 | | 実質の行数 (コメント・空行を除く) |
 | --- | --- |
 | 原典 (p5.js) | 60 |
-| Solids (`Solids.swift` + `NormalPaint.swift`) | 93 |
+| Solids (`Solids.swift` + `NormalPaint.swift`) | 97 |
 
-差の 33 行のうち **19 行は `normalMaterial()` の代わりの断片**である。残りは中央へ寄せる 1 行・度をラジアンへ直す 1 行・`ellipsoid` を作る 1 行・色を 3 つ書き下すぶん・`Model` と `Shader` を持つ格納プロパティと `try?` の受け。**移植で「別の書き方に組み替えた」箇所は 1 つだけ** (`ellipsoid` → `scale` + `sphere`)。
+> **この数は 93 のまま古くなっていた。** 93 は作った時点 ([#6](https://github.com/mokume-metal/works/pull/6)) の実測で、`v0.6.0` の語彙で書き直したとき ([#23](https://github.com/mokume-metal/works/pull/23)) に色を作る 3 行が消えて 90 になっている。今回の 7 行を足して 97 で、**数え方は当時と同じ** (コメントと空行を除いた行)。
+
+差の 37 行のうち **19 行は `normalMaterial()` の代わりの断片**である。残りは中央へ寄せる 1 行・度をラジアンへ直す 1 行・`ellipsoid` を作る 1 行・色を 3 つ書き下すぶん・`Model` と `Shader` を持つ格納プロパティ・**モデルを読めなかったことを伝える 7 行** ([#74](https://github.com/mokume-metal/works/issues/74) で `try?` の受けから `do` / `catch` + 1 行の書き出しへ変えたぶん)。**移植で「別の書き方に組み替えた」箇所は 1 つだけ** (`ellipsoid` → `scale` + `sphere`)。
 
 ### 書き出しの口を写すのは、これで 3 度目だった
 
@@ -141,3 +162,4 @@ Swift 側には `LinearRGBA.display(red:green:blue:)` があるので、**同じ
 | 原形が 7 つのうち 6 つで、`ellipsoid()` が無い | [mokume#849](https://github.com/mokume-metal/mokume/issues/849) | 開いたまま。`scale` + `sphere(1)` の回避を続けている |
 | 組み込みの立体に `stroke()` が効かない | [mokume#850](https://github.com/mokume-metal/mokume/issues/850) | **閉じた。`v0.9.0` から効く** — 原典どおり球に線が出るようになった ([v0.9.0 で動いたもの](#v090-で動いたもの)) |
 | `rotateX(.pi)` が `v0.7.0` で通らなくなった — 総称の引数では暗黙メンバ参照が解決できない。`Float.pi` へ書き換えた | [mokume#1017](https://github.com/mokume-metal/mokume/issues/1017) | 閉じた。works 側は [#36](https://github.com/mokume-metal/works/pull/36) で `Float.pi` へ書き換え済み |
+| 同梱した資産が symlink 越しの起動で見つからない — 置き場の列挙が URL 版の API で投げ、`try?` で空に畳まれる | [mokume#1330](https://github.com/mokume-metal/mokume/issues/1330) | 開いたまま。**正規の走らせ方 (`mokume run` / `swift run`) では踏まない**ので、この作品は回避を持たない ([4. 同梱した資産が symlink 越しの起動で見つからない](#4-同梱した資産が-symlink-越しの起動で見つからない)) |
