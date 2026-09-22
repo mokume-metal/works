@@ -282,13 +282,14 @@ python3 scripts/ledger.py    # ledger/ を組み直す
 | | |
 | --- | --- |
 | works | この作品のコミット (`Package.resolved` が同じツリーにある) |
-| mokume | `v0.7.0` / `86b6fa147e6bd38b24768fbc5890c0ee5031298c` (`Package.resolved` が固定している) |
+| mokume | `v0.9.0` / `d88a280b0569f922612ff85dbc9e9f91bbaf6dc2` (`Package.resolved` が固定している) |
 | 原典 | `processing/processing-examples` @ `b10c9e9a05a0d6c20d233ca7f30d315b5047720e` ([`ledger/sources.json`](ledger/sources.json) が刻む) |
 <!-- verify:end -->
 
 **絵は測らない。** `checks.json` の `renders` は空で、検証が見るのは**ビルドが通るか**と**版の刻印が合っているか**だけである。
 
 <!-- verify:renders -->
+
 <!-- verify:end -->
 
 **先に上流を取る** (`python3 scripts/fetch.py`)。取っていないと**資材を読む 21 本が絵を出せない** — 画像・データ・OBJ を読む例は、資材が無いと原典と違うものを描く。
@@ -347,6 +348,20 @@ git diff --stat ledger/    # 差分が出なければ、同じ版から同じ台
 
 **155 枚の指紋は `v0.6.0` のまま更新されなかった。** 撮り直しに語彙の再判定とブラウザ撮影という人手が要り、版上げとは別の PR へ回していたところで、指紋ごと畳んだ (「測るのをやめたもの」)。**上の 3 枚が、この作品が絵の変化を捕まえた最後の記録である。**
 
+## 版を上げたときに動いたもの — `v0.7.0` → `v0.9.0`
+
+**157 枚とも 1 行も直さずに建った。** `v0.7.0` のときに 22 箇所を `Float.pi` へ書き換えたような手直しは、この版上げでは 1 つも要らなかった。`scripts/api-diff.py` が挙げた「直さないと通らないもの」23 件は、どれも `@MainActor` の隔離が外れた変化で、Atlas が触れている口には当たっていない。
+
+```
+建った 157 / 157  失敗 0
+```
+
+**絵が動いたかどうかは測っていない。** 指紋は [#39](https://github.com/mokume-metal/works/pull/39) で畳んであるので、ここで言えるのは**建つことと版の刻印が揃っていること**だけである — それがこの作品の検証の全部になったのは、承知のうえの決定である (「測るのをやめたもの」)。
+
+**動いているはずではある。** `v0.9.0` は[下の 4 つ](#mokume-へ戻したもの)をまとめて塞いでおり、そのうち 3 つは Atlas 自身が 157 本を並べて見つけたものである — 色 ([#911](https://github.com/mokume-metal/mokume/issues/911)・32 本が「形は合うが色が違う」に落ちていた)、太さ 1 の線 ([#912](https://github.com/mokume-metal/mokume/issues/912)・9 本)、光の明るさ ([#913](https://github.com/mokume-metal/mokume/issues/913)・13 本)。**一致率が上がったことを数で言うには、語彙の台帳を `v0.9.0` で見直す必要がある** ([#77](https://github.com/mokume-metal/works/issues/77))。
+
+**作品の側では、この版上げで何が動いたかを画素まで追ってある。** 時計を読まない 4 本 (Garden / Grain / Ring / Solids) は同じ版で 2 回撮ると 1 ビットも違わないので、版差をまるごと取り出せた — [Garden](../Garden/README.md#v090-で動いたもの) が背景 1 画素で色の変化を、[Solids](../Solids/README.md#v090-で動いたもの) が球に出た線を記録している。
+
 ## mokume へ戻したもの
 
 台帳が出した重みは、既に立っている実需の**順位**の材料になる。新しく起票するのは、実測で 1 本以上踏んだものに限る — 机上の数字だけで起票すると「一般にそういう API があるから」に落ちる (ADR-0022 決定 6 が禁じている)。
@@ -364,12 +379,16 @@ git diff --stat ledger/    # 差分が出なければ、同じ版から同じ台
 
 157 本を並べて撮って、**台帳では原理的に見えなかった差が 4 つ出た**。どれも語彙の名前は当たっていて、絵だけが違う。
 
-| 踏んだもの | |
-| --- | --- |
-| **書き出しが Display P3 で刻まれ、同じ数から違う色が出る** — `background(204,153,0)` が `213,150,0` になる。灰色は 1 画素も違わないので気付かれにくい。**32 本が「形は合うが色が違う」に落ちる** | [mokume#911](https://github.com/mokume-metal/mokume/issues/911) |
-| **太さ 1 の線が半画素ずれた画素に載る** — p5 は 2 列に 77+77、mokume は 1 列に 153。**半画素ずらすと 99.9% 合う**ので、正体は言い切れる。9 本がこれだけで落ちる | [mokume#912](https://github.com/mokume-metal/mokume/issues/912) |
-| **同じ光の指定で、Processing より明るい陰影が出る** — `directionalLight` で 59 対 103。立体を扱う 13 本がまとめて落ちる | [mokume#913](https://github.com/mokume-metal/mokume/issues/913) |
-| **半透明の合成が線形空間で起きる** — `fill(255, 204)` が 214 ではなく 232 になる | [mokume#669](https://github.com/mokume-metal/mokume/issues/669) へ材料として |
+**この 4 つは、`v0.9.0` までに全部閉じた。** 閉じた日がどのリリースの間に挟まるかで、効き始める版が決まる (`v0.8.0` = 2026-09-12 / `v0.8.1` = 09-14 04:39 / `v0.9.0` = 09-21)。
+
+| 踏んだもの | | いま |
+| --- | --- | --- |
+| **書き出しが Display P3 で刻まれ、同じ数から違う色が出る** — `background(204,153,0)` が `213,150,0` になる。灰色は 1 画素も違わないので気付かれにくい。**32 本が「形は合うが色が違う」に落ちる** | [mokume#911](https://github.com/mokume-metal/mokume/issues/911) | **閉じた** (09-15 → `v0.9.0`)。数を sRGB の原色として受けるようになった。works の作品側では [Garden](../Garden/README.md#v090-で動いたもの) が背景 1 画素で追えている |
+| **太さ 1 の線が半画素ずれた画素に載る** — p5 は 2 列に 77+77、mokume は 1 列に 153。**半画素ずらすと 99.9% 合う**ので、正体は言い切れる。9 本がこれだけで落ちる | [mokume#912](https://github.com/mokume-metal/mokume/issues/912) | **閉じた** (09-14 17:41 → `v0.9.0`)。画素の格子が「塗りは角、線は中心」へ揃った ([ADR-0039](https://github.com/mokume-metal/mokume/blob/main/docs/decisions/0039-pixel-grid-and-edge-antialiasing.md)) |
+| **同じ光の指定で、Processing より明るい陰影が出る** — `directionalLight` で 59 対 103。立体を扱う 13 本がまとめて落ちる | [mokume#913](https://github.com/mokume-metal/mokume/issues/913) | **閉じた** (09-14 17:59 → `v0.9.0`)。`v0.9.0` のリリースノートは破壊的変更として挙げていない |
+| **半透明の合成が線形空間で起きる** — `fill(255, 204)` が 214 ではなく 232 になる | [mokume#669](https://github.com/mokume-metal/mokume/issues/669) へ材料として | **閉じた** (09-08 → `v0.8.0`) |
+
+**どれも「一致率が上がったはず」であって、上がったことは測っていない。** 原典との画素の一致を出す仕組みは [#39](https://github.com/mokume-metal/works/pull/39) で畳んであり、この版上げでは**ビルドが通ることと版の刻印しか見ていない**。下の 107 本の表は `v0.6.0` までの記録である。
 
 出来事の口 ([#723](https://github.com/mokume-metal/mokume/issues/723)) と進行を止める口 ([#900](https://github.com/mokume-metal/mokume/issues/900)) には、157 本を移して分かった**段階の違い**を書き足した — 同じ「口が無い」でも、ポーリングで書き直せるもの・前のフレームを覚えれば作れるもの・**例そのものが移せない**ものの 3 段階がある。
 
