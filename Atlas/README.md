@@ -216,18 +216,21 @@ Processing にあって mokume に無い語彙のうち、**面の外に書け�
 
 **完成していない例がある。止まった形のまま残してある。** ADR-0022 決定 4 の言うとおり、作ろうとして止まったこと自体が実需だからである。
 
-**`v0.6.0` で 27 本が動くようになった。** 残っているのは次のとおり。
+**`v0.6.0` で 27 本・`v0.9.0` でさらに 3 本が動くようになった。** 残っているのは次のとおり。
 
 | 例 | 何が無くて止まっているか |
 | --- | --- |
-| `Basics/Structure/NoLoop` / `Loop` / `Redraw` | 進行を握る 3 本。止める口も動かす口も描き直しを頼む口も無い ([#900](https://github.com/mokume-metal/mokume/issues/900))。**`Loop` は押される側だけ埋まった** — 押されても呼ぶ先が無い |
+| ~~`Basics/Structure/NoLoop` / `Loop` / `Redraw`~~ | 進行を握る 3 本。**`v0.9.0` で動くようになった** ([#900](https://github.com/mokume-metal/mokume/issues/900) — 閉じた)。止める口・動かす口・描き直しを頼む口が同じ版でまとめて入った |
 | `Basics/Web/LoadingImages` | `loadImage()` に URL を渡す口が無い。読めないので面が黒いまま |
-| `Basics/Lights/Reflection` | 鏡の反射 (`lightSpecular` / `specular`) を書く口が無い。2 行を落とした。**`v0.6.0` にも無い** (あるのは `shininess` / `metalness`) |
+| `Basics/Lights/Reflection` | 鏡の反射 (`lightSpecular` / `specular`) を書く口が無い。2 行を落とした。**`v0.9.0` にも無い** (あるのは材質の側の `shininess` / `metalness` で、光の側へ色を渡す口が無い) |
 | `Basics/Web/EmbeddedLinks` | 押されたことは受け取れるが、`link()` でページを開く口が無い。**口が 1 つ埋まっても主題が移らない例** |
 | `Basics/Shape` の 5 本 | `loadShape` に口が無い。**移していない** — 形が来ないので面が空になる |
 
 **「段階の違い」がここに出ている。** 同じ `blocked` でも、口が 1 つ増えれば動く例 (27 本)・
 2 つ揃わないと動かない例 (`Loop`)・別の口を待っている例 (`EmbeddedLinks`) がある。
+**`Loop` は `v0.9.0` で 2 つ目が入って動いた** — 押される側だけが `v0.6.0` で埋まっていた
+3 版のあいだ、この例は押す前から線が流れていて主題が移らなかった。**口の数を数えるだけでは
+「あと何割で届くか」は出ない**ということが、この 1 本に残っている。
 
 ## 走らせる
 

@@ -142,7 +142,7 @@
 {"checked": "0.9.0", "mokume": "String(contentsOf:) を行で割る", "name": "loadStrings", "note": "mokume に読み書きの口は無い。Foundation を直に使う", "verdict": "host"}
 {"checked": "0.9.0", "mokume": null, "name": "loadTable", "note": "CSV を読む型が Foundation にも無いので、自分で書く", "verdict": "write"}
 {"checked": "0.9.0", "mokume": "log", "name": "log", "verdict": "host"}
-{"checked": "0.9.0", "evidence": "Atlas", "mokume": "loop()", "name": "loop", "note": "v0.9.0 で入った。**止まっている間に呼べるのは入力の呼び出しからだけ** — draw() の中や別の Task から呼んでも効かない", "verdict": "same"}
+{"checked": "0.9.0", "evidence": "Atlas", "mokume": "loop()", "name": "loop", "note": "v0.9.0 で入った。**止まっている間に呼べるのは入力の呼び出しからだけ** — mousePressed() から呼ぶと毎フレームへ戻ることを実測した。draw() の中や別の Task から呼んでも効かない", "verdict": "same"}
 {"checked": "0.9.0", "mokume": null, "name": "mag", "verdict": "write"}
 {"checked": "0.9.0", "evidence": "Ring", "mokume": "map(_:_:_:_:_:)", "name": "map", "note": "v0.6.0 で入った。原典と同じく範囲を締めない", "verdict": "same"}
 {"blocks": "structure", "checked": "0.9.0", "mokume": null, "name": "mask", "note": "画像を切り抜く口が無い", "verdict": "none"}
@@ -170,7 +170,7 @@
 {"checked": "0.9.0", "mokume": null, "name": "random2D", "verdict": "write"}
 {"checked": "0.9.0", "mokume": null, "name": "random3D", "verdict": "write"}
 {"checked": "0.9.0", "mokume": null, "name": "randomGaussian", "verdict": "write"}
-{"checked": "0.9.0", "evidence": "Atlas", "mokume": "redraw()", "name": "redraw", "note": "v0.9.0 で入った。呼べる場所の縛りは loop() と同じ。**呼び出しの外から頼むと「the sketch is not running」と断られる** — 走っている最中でもそう言う", "verdict": "same"}
+{"checked": "0.9.0", "evidence": "Atlas", "mokume": "redraw()", "name": "redraw", "note": "v0.9.0 で入った。呼べる場所の縛りは loop() と同じで、mousePressed() から呼ぶと**1 枚だけ進んでまた止まる**ことを実測した。**呼び出しの外から頼むと「the sketch is not running」と断られる** — 走っている最中でもそう言う", "verdict": "same"}
 {"checked": "0.9.0", "mokume": "Array.remove", "name": "remove", "verdict": "host"}
 {"checked": "0.9.0", "mokume": null, "name": "removeRow", "note": "表を読む型が無い", "verdict": "write"}
 {"checked": "0.9.0", "evidence": "Ring", "mokume": ".rounded()", "name": "round", "verdict": "host"}
