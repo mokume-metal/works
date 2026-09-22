@@ -32,6 +32,18 @@ mokume mcp .      # 走っているスケッチを外から観測する
 
 **`v0.5.0` → `v0.6.0` で、この絵は 1 ビットも動かなかった。** 同じ版上げで Garden の円の縁と Grain の重ね塗りは動いている ([Garden](../Garden/README.md#v060-で動いたもの) / [Grain](../Grain/README.md)) — 動いたのは**塗りの縁が半端な画素に載るとき**の被覆の置き方で、この作品が置くのは原形の立体だけなので当たらない。
 
+### v0.9.0 で動いたもの
+
+**`v0.7.0` → `v0.9.0` で、この作品でいちばん大きい欠けが埋まった。** 球に**黒い緯線・経線が出るようになった** — [下記の「2. 組み込みの立体に `stroke()` が効かない」](#2-組み込みの立体に-stroke-が効かない)で「置いても何も変わらない」と記録した `stroke(0)` が、**原典どおりに効くようになった**。[mokume#850](https://github.com/mokume-metal/mokume/issues/850) が塞がった結果である。
+
+**線が出るのは球だけである。** 他の 7 つは `noStroke()` の中にあり、原典も球にだけ線を置く — つまり**この 1 本だけが原典と同じ絵になった**。
+
+動いた画素は 710x400 のうち 7.9〜12.2% (4 枚)。**背景の 250 は動いていない** (動いた 34617 画素のうち、前後どちらかが背景と同色だったのは 1219 画素だけ)。灰色が動かないのは新しい作業空間の約束どおりで、残りは立体の塗りが sRGB の原色で解き直されたぶんと、新しく載った線である。
+
+**この作品は毎回まったく同じ絵を出す**ので、上の数はすべて版差である (同じ `v0.9.0` で 2 回撮って 1 ビットも違わないことを確かめた)。
+
+**上の絵は貼り替えていない。** 球に線が出たぶんは貼り替えるべきだが、いま撮り直すと**矢じり (8 つ目) が写らない** — [#74](https://github.com/mokume-metal/works/issues/74) の別件で、版上げとは関係なく `v0.7.0` の絵にも出ていない。2 つを 1 枚に混ぜないため、貼り替えは #74 を直してから行う。
+
 ## p5.js との対応
 
 **原形は 7 つのうち 6 つが同名で当たる。** 綴りも引数の順も同じで、置くところまでは機械的に進んだ。詰まったのは**形ではなく、面の塗り方と線**である。
@@ -50,7 +62,7 @@ mokume mcp .      # 走っているスケッチを外から観測する
 | `angleMode(DEGREES)` | `radians(_:)` | **単位を切り替える状態は持たない**作りなので、度は呼ぶ 1 行で直す (`v0.6.0` から面にある) |
 | `ellipsoid(a, b, c)` | **無い** | `scale(a, b, c)` + `sphere(1)` で作る。→ [mokume#849](https://github.com/mokume-metal/mokume/issues/849) |
 | `normalMaterial()` | **無い** | 断片で書く。ただし**原典と同じ絵にはならない**。下記 |
-| `stroke(0)` + `sphere(50)` | **効かない** | 組み込みの立体は線を持たない。下記 |
+| `stroke(0)` + `sphere(50)` | **`v0.9.0` から当たる** | `v0.7.0` までは組み込みの立体が線を持たず、置いても何も変わらなかった。下記 |
 | `describe(...)` | **無い** | 落とした |
 
 ### 踏んだもの
@@ -85,7 +97,7 @@ mokume では**何も出ない。** `stroke()` を置いても置かなくても
 
 線を引く仕掛け自体はある (`Canvas+Solid.swift` の `strokeSolidRing` — 視線に正対する帯として世界の座標で組む) が、**そこへ入るのは `beginShape()` で自分で並べた頂点だけ**で、`box` / `sphere` などが通る `place()` は塗りしか置かない。
 
-→ [mokume#850](https://github.com/mokume-metal/mokume/issues/850)
+→ [mokume#850](https://github.com/mokume-metal/mokume/issues/850) — **`v0.9.0` で塞がった。** 組み込みの立体と読み込んだモデルに `stroke()` の線が引かれるようになり、**この作品の `stroke(0)` はいま効いている** (球に緯線と経線が出る)。上の「1 ビットも変わらない」は `v0.7.0` までの実測として残す。[v0.9.0 で動いたもの](#v090-で動いたもの)
 
 #### 3. 表示値と線形の値を行き来する関数が断片に無い
 
@@ -121,9 +133,11 @@ Swift 側には `LinearRGBA.display(red:green:blue:)` があるので、**同じ
 
 ## mokume へ戻したもの
 
-| 踏んだもの | |
-| --- | --- |
-| 面の向きを世界／視点の座標で受け取れず、`normalMaterial()` に当たるものが書けない | [mokume#847](https://github.com/mokume-metal/mokume/issues/847) |
-| 原形が 7 つのうち 6 つで、`ellipsoid()` が無い | [mokume#849](https://github.com/mokume-metal/mokume/issues/849) |
-| 組み込みの立体に `stroke()` が効かない | [mokume#850](https://github.com/mokume-metal/mokume/issues/850) |
-| `rotateX(.pi)` が `v0.7.0` で通らなくなった — 総称の引数では暗黙メンバ参照が解決できない。`Float.pi` へ書き換えた | [mokume#1017](https://github.com/mokume-metal/mokume/issues/1017) |
+**閉じた行も消さない。** 何を踏んで、どの版で塞がったかは記録である。
+
+| 踏んだもの | | いま |
+| --- | --- | --- |
+| 面の向きを世界／視点の座標で受け取れず、`normalMaterial()` に当たるものが書けない | [mokume#847](https://github.com/mokume-metal/mokume/issues/847) | **閉じた** (2026-09-15 = `v0.8.1` の後・`v0.9.0` の前なので `v0.9.0` から効く)。**この作品はまだ使っていない** — 自分で書いた [`NormalPaint.swift`](Sources/Solids/NormalPaint.swift) のままで、置き換えは書き直しなので別の PR |
+| 原形が 7 つのうち 6 つで、`ellipsoid()` が無い | [mokume#849](https://github.com/mokume-metal/mokume/issues/849) | 開いたまま。`scale` + `sphere(1)` の回避を続けている |
+| 組み込みの立体に `stroke()` が効かない | [mokume#850](https://github.com/mokume-metal/mokume/issues/850) | **閉じた。`v0.9.0` から効く** — 原典どおり球に線が出るようになった ([v0.9.0 で動いたもの](#v090-で動いたもの)) |
+| `rotateX(.pi)` が `v0.7.0` で通らなくなった — 総称の引数では暗黙メンバ参照が解決できない。`Float.pi` へ書き換えた | [mokume#1017](https://github.com/mokume-metal/mokume/issues/1017) | 閉じた。works 側は [#36](https://github.com/mokume-metal/works/pull/36) で `Float.pi` へ書き換え済み |
