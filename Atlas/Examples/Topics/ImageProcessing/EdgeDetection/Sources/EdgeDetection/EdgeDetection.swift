@@ -14,7 +14,7 @@ final class EdgeDetection: Sketch {
 
     func setup() {
         img = try? loadImage(asset("Topics/Image Processing/EdgeDetection", "moon.jpg"))
-        // 原典はここで `noLoop()` を呼ぶ。**書けない**
+        noLoop()
     }
 
     func draw() {

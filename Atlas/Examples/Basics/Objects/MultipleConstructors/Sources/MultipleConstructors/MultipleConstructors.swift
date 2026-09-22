@@ -2,7 +2,8 @@ import mokume
 
 /// Processing の [Multiple Constructors](https://processing.org/examples/multipleconstructors/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `blocked` と言った。当たっている** — `noLoop()` が無い。絵は変わらない。
+/// **台帳は `blocked` と言った。当たっていた。`v0.9.0` で埋まった** — 進行を止める口が
+/// 入った ([#900](https://github.com/mokume-metal/mokume/issues/900) — 閉じた)。止めても絵は変わらない。
 /// **引数の無い作り方が面の大きさを読む**ので、`width` を渡す形になった (mokume では
 /// クラスの側から面が見えない)。
 final class MultipleConstructors: Sketch {
@@ -37,7 +38,7 @@ final class MultipleConstructors: Sketch {
 
     func setup() {
         background(204)
-        // 原典はここで `noLoop()` を呼ぶ。**書けない**
+        noLoop()
         sp1 = Spot(width: width, height: height)
         sp2 = Spot(width * 0.5, height * 0.5, 120)
     }

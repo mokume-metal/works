@@ -13,7 +13,8 @@ import Support
 ///    **戻さずに畳み込むと絵が暗くなる**
 /// 3. **`updatePixels()` が無い** — 書き戻しの合図が要らない
 ///
-/// `noLoop()` も無いので、毎フレーム 200 万回の畳み込みを回し続ける。
+/// **`v0.9.0` で `noLoop()` が入った** ([#900](https://github.com/mokume-metal/mokume/issues/900) — 閉じた)。
+/// 原典どおり 1 度だけ畳み込んで止まるので、**毎フレーム 200 万回を回し続けることがなくなった。**
 final class Blur: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Blur")
 
@@ -23,7 +24,7 @@ final class Blur: Sketch {
 
     func setup() {
         img = try? loadImage(asset("Topics/Image Processing/Blur", "moon.jpg"))
-        // 原典はここで `noLoop()` を呼ぶ。**書けない**
+        noLoop()
     }
 
     func draw() {

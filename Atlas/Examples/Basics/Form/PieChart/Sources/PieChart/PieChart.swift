@@ -2,7 +2,8 @@ import mokume
 
 /// Processing の [Pie Chart](https://processing.org/examples/piechart/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `blocked` と言った。当たっている** — `noLoop()` が無い。絵は変わらない。
+/// **台帳は `blocked` と言った。当たっていた。`v0.9.0` で埋まった** — 進行を止める口が
+/// 入った ([#900](https://github.com/mokume-metal/mokume/issues/900) — 閉じた)。止めても絵は変わらない。
 /// `map()` と `radians()` も無いので面の外に書く ([#883](https://github.com/mokume-metal/mokume/issues/883))。
 final class PieChart: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Pie Chart")
@@ -11,7 +12,7 @@ final class PieChart: Sketch {
 
     func setup() {
         noStroke()
-        // 原典はここで `noLoop()` を呼ぶ (「1 度だけ走らせて止める」)。**書けない**
+        noLoop()
     }
 
     func draw() {

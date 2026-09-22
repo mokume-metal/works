@@ -2,14 +2,15 @@ import mokume
 
 /// Processing の [Mandelbrot](https://processing.org/examples/mandelbrot/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `blocked` と言った。半分だけ — 絵は出る。**`noLoop()` と `updatePixels()`
-/// が無く、面の `pixels` は 2 次元の添字を取る (原典は `pixels[i+j*width]`)。
+/// **台帳は `blocked` と言った。半分だけ — 絵は出る。**`noLoop()` は `v0.9.0` で入った
+/// ([#900](https://github.com/mokume-metal/mokume/issues/900) — 閉じた)。残るのは `updatePixels()` が無いことと、
+/// 面の `pixels` が 2 次元の添字を取ること (原典は `pixels[i+j*width]`)。
 /// `map()` も無いので面の外に書く。原典は静止形。
 final class Mandelbrot: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Mandelbrot")
 
     func setup() {
-        // 原典はここで `noLoop()` を呼ぶ。**書けない**
+        noLoop()
         background(255)
         let w: Float = 4
         let h = (w * height) / width

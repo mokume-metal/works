@@ -6,9 +6,10 @@ import mokume
 /// **型の名前だけ原典と違う。** 例の名前は `Array` だが、Swift の `Array` とぶつかるので
 /// `ArrayCosine` にしてある (例名は置き場が持つので、台帳との対応は崩れない)。
 ///
-/// **台帳は `blocked` と言った。当たっている** — `noLoop()` の口が無い。ただし止まるのは
-/// 進行だけで、`draw()` は毎フレーム同じ線を同じ場所へ引き直すので**絵は変わらない**。
-/// 「口が無い」には、絵が出せないものと、構造だけ壊れるものの 2 つがある。
+/// **台帳は `blocked` と言った。当たっていた。`v0.9.0` で埋まった** — 進行を止める口が
+/// 入った ([#900](https://github.com/mokume-metal/mokume/issues/900) — 閉じた)。止まるのは進行だけで、
+/// `draw()` は毎フレーム同じ線を同じ場所へ引き直していたので**絵は変わらない**。
+/// 「口が無い」には、絵が出せないものと、構造だけ壊れるものの 2 つがあり、これは後者だった。
 final class ArrayCosine: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Array")
 
@@ -21,8 +22,7 @@ final class ArrayCosine: Sketch {
             return abs(cos(amount))
         }
         background(255)
-        // 原典はここで `noLoop()` を呼ぶ。**書けない** — 進行を止める口が無いので、
-        // draw() は毎フレーム呼ばれ続ける
+        noLoop()
     }
 
     func draw() {
