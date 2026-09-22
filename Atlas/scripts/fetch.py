@@ -8,8 +8,8 @@
 
     python3 scripts/fetch.py
 
-版を上げるときは下の PIN を書き換える。ledger/sources.json の差分がそのまま
-「何が変わって台帳を組み直したか」の記録になる。
+版を上げるときは下の PIN を書き換える (**上流は sha で釘を打ってある**)。
+ledger/sources.json の差分がそのまま「何が変わって台帳を組み直したか」の記録になる。
 """
 
 import json
@@ -20,13 +20,19 @@ import tarfile
 import tempfile
 
 # 取ってくる版。**ここだけが上流への参照**で、他のスクリプトは upstream/ しか読まない
+#
+# **ref は枝ではなく sha で打つ。** 台帳は 2 つの軸で見直す — mokume が上がったら
+# vocabulary.jsonl、Processing が上がったら examples.jsonl (README「2 つに割ってあるのは、
+# 片方だけ見直せるようにするため」)。ref を "main" にしておくと、mokume の版を上げただけの
+# つもりで回しても Processing 側が一緒に進み、**動いたのがどちらの版差なのか言えなくなる**。
+# 上げるときは、ここを新しい sha へ書き換えるのが上げる意思表示になる。
 PIN = {
     # 例の正本。processing-docs は非推奨 (README が「will be archived soon」と名乗る)
-    "examples": {"repo": "processing/processing-examples", "ref": "main"},
+    "examples": {"repo": "processing/processing-examples", "ref": "b10c9e9a05a0d6c20d233ca7f30d315b5047720e"},
     # リファレンスの項目名。組み込みの語彙かどうかの判定に使う
-    "reference": {"repo": "processing/processing-website", "ref": "main"},
+    "reference": {"repo": "processing/processing-website", "ref": "1fce63d07182becca614b95ab76b3b1416424d8d"},
     # 定数の正本。リファレンスに項目が無いので (PI ほか 5 つを除く) ここから引く
-    "constants": {"repo": "processing/processing4", "ref": "main"},
+    "constants": {"repo": "processing/processing4", "ref": "0d8bde55f71764f4c6091beab7881fcb00738d20"},
 }
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
