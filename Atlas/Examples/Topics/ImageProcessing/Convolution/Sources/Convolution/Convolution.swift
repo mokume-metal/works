@@ -8,9 +8,10 @@ import Support
 /// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)、押して効き目を
 /// 切り替えられる。
 ///
-/// **`redraw()` はまだ無い** ([#900](https://github.com/mokume-metal/mokume/issues/900))。
-/// 原典は `noLoop()` で止めておいて出来事のたびに `redraw()` するが、こちらは止まらないので
-/// 毎フレーム描き直している — **結果は同じで、無駄が多い形になる。**
+/// **`v0.9.0` で `noLoop()` / `redraw()` が入り、原典の形に戻った**
+/// ([#900](https://github.com/mokume-metal/mokume/issues/900) — 閉じた)。止めておいて
+/// 出来事のたびに描き直すので、**毎フレーム 3×3 の畳み込みを回し続けることがなくなった**
+/// (`v0.7.0` までは止まらないので回し続けていた。結果は同じで、無駄が多い形だった)。
 /// 画素の読み書きは `Blur` と同じで、1 次元の並びが無く、色の空間を戻す必要がある。
 final class Convolution: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "Convolution")
@@ -36,19 +37,27 @@ final class Convolution: Sketch {
 
     func setup() {
         img = try? loadImage(asset("Topics/Image Processing/Convolution", "moon-wide.jpg"))
-        // 原典はここで `noLoop()` を呼ぶ。**書けない**
+        noLoop()
     }
 
     /// 原典の `void mousePressed()` — 押すたびに次の効き目へ送る。
     func mousePressed() {
         effect += 1
         if effect >= effectNames.count { effect = 0 }
-        // 原典はここで `redraw()` を呼ぶ。**書けない**が、止まっていないので次の
-        // フレームで描き直される
+        redraw()
     }
 
-    // 原典は `mouseMoved()` / `mouseDragged()` も持つが、どちらも `redraw()` を呼ぶだけ。
-    // **どの口も無い**ので、効き目の切り替えが落ちる
+    /// 原典の `void mouseMoved()` / `void mouseDragged()` — どちらも `redraw()` を呼ぶだけ。
+    ///
+    /// **`noLoop()` で止めている以上、この 2 つが要る。** `draw()` は `mouseX` / `mouseY` を
+    /// 読んで畳み込む窓の位置を決めるので、動かしたことを誰かが伝えないと窓が凍る。
+    func mouseMoved() {
+        redraw()
+    }
+
+    func mouseDragged() {
+        redraw()
+    }
 
     func draw() {
         guard let img else { return }

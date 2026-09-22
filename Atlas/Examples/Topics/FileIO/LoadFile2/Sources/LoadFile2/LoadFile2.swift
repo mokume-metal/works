@@ -9,9 +9,9 @@ import Support
 /// ([#723](https://github.com/mokume-metal/mokume/issues/723) — 閉じた)、押して次の 9 件へ
 /// 送れるようになった。
 ///
-/// 残る歪みは 2 つ — `loadFont("...vlw")` (**書体ファイルを読む口が無い**) と、
-/// `noLoop()` / `redraw()` ([#900](https://github.com/mokume-metal/mokume/issues/900))。
-/// 止まらないので毎フレーム描き直しているが、**出る絵は同じ**である。
+/// `v0.9.0` で `noLoop()` / `redraw()` も入ったので ([#900](https://github.com/mokume-metal/mokume/issues/900) — 閉じた)、
+/// **止めておいて押されたときだけ描き直す**という原典の形になった。
+/// 残る歪みは `loadFont("...vlw")` (**書体ファイルを読む口が無い**) だけである。
 ///
 /// **字形は環境で変わる**ので、原典と画素では比べられない。
 final class LoadFile2: Sketch {
@@ -43,7 +43,7 @@ final class LoadFile2: Sketch {
 
     func setup() {
         fill(255)
-        // 原典はここで `noLoop()` を呼ぶ。**書けない**
+        noLoop()
         // 原典は `loadFont("TheSans-Plain-12.vlw")`。**書体ファイルを読む口が無い**
         textFont("Menlo")
         textSize(20)
@@ -72,7 +72,6 @@ final class LoadFile2: Sketch {
         if startingEntry > records.count {
             startingEntry = 0    // 先頭へ戻る
         }
-        // 原典はここで `redraw()` を呼ぶ。**書けない**が、止まっていないので次の
-        // フレームで描き直される
+        redraw()
     }
 }
