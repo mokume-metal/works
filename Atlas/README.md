@@ -393,7 +393,7 @@ git diff --stat ledger/    # 差分が出なければ、同じ版から同じ台
 
 台帳が出した重みは、既に立っている実需の**順位**の材料になる。新しく起票するのは、実測で 1 本以上踏んだものに限る — 机上の数字だけで起票すると「一般にそういう API があるから」に落ちる (ADR-0022 決定 6 が禁じている)。
 
-**戻した 6 本は全部閉じた** (4 本が `v0.6.0`・1 本が `v0.8.0`・1 本が `v0.9.0`)。**消さずに残す** — 何を踏んで、どの版で塞がったかは記録である。
+**初めに戻した 6 本は全部閉じた** (4 本が `v0.6.0`・1 本が `v0.8.0`・1 本が `v0.9.0`)。**消さずに残す** — 何を踏んで、どの版で塞がったかは記録である。下の 2 本は `v0.9.0` の再判定で実測して足したもの。
 
 | 踏んだもの | | いま |
 | --- | --- | --- |
@@ -403,6 +403,8 @@ git diff --stat ledger/    # 差分が出なければ、同じ版から同じ台
 | 色空間を切り替える口が無い — `colorMode` 12 例 | [mokume#778](https://github.com/mokume-metal/mokume/issues/778) | **入った** (`v0.6.0`)。ただし**目盛りは張り替えられない**ので `colorMode` は `bend` のまま |
 | **`SketchApplication` が投げる失敗を、外から人に見せられない** — `RenderFailure.message` が internal なので、`Sketch.main()` と同じ文面が書けない | [mokume#899](https://github.com/mokume-metal/mokume/issues/899) | **閉じた** (09-08 → `v0.8.0`) |
 | **進行を止める口が無い** — `noLoop` 18 例・`redraw`。`Basics/Structure/NoLoop` がここで止まった | [mokume#900](https://github.com/mokume-metal/mokume/issues/900) | **閉じた** (09-15 → `v0.9.0`)。`noLoop` / `loop` / `redraw` が同名で入り、**12 本が `blocked` から出た** |
+| **走っている最中に枚数を変える口が無い** — `frameRate` **20 例**。`settings.frameRate` への代入は通って値も残るが、枚数だけ変わらない | [mokume#1323](https://github.com/mokume-metal/mokume/issues/1323) | 開いたまま。`frameRate` は `bend` のまま |
+| **`redraw()` / `loop()` を呼び出しの外から頼むと、走っている最中でも「the sketch is not running」と断られる** — 断り方が事実と違う | [mokume#1322](https://github.com/mokume-metal/mokume/issues/1322) | 開いたまま。判定には効かない (口はある) |
 
 157 本を並べて撮って、**台帳では原理的に見えなかった差が 4 つ出た**。どれも語彙の名前は当たっていて、絵だけが違う。
 
