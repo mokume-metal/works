@@ -5,7 +5,8 @@ import mokume
 /// **台帳は `out-of-scope` と言った。実際にはここで止まっている。**
 /// 原典の主題は **`loadImage()` に URL を渡してネットワークから読む**ことで、
 /// mokume の `loadImage` は手元のパスしか探さない (`ImageFile.candidates` は作業
-/// ディレクトリと束の中を見るだけ)。`noLoop()` も無い。
+/// ディレクトリと束の中を見るだけ)。**止まっているのはここだけ**で、`noLoop()` は
+/// `v0.9.0` で入った ([#900](https://github.com/mokume-metal/mokume/issues/900) — 閉じた)。
 ///
 /// **動くように書き替えていない** — 読めないので面は背景の黒のままになる。
 final class LoadingImages: Sketch {
@@ -17,7 +18,7 @@ final class LoadingImages: Sketch {
         // 原典は `loadImage("https://processing.org/img/processing-web.png")`。
         // **URL を渡す口が無い** — 手元のパスしか探さない
         img = nil
-        // 原典はここで `noLoop()` を呼ぶ。**書けない**
+        noLoop()
     }
 
     func draw() {

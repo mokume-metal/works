@@ -3,7 +3,8 @@ import Support
 
 /// Processing の [Linear Gradient](https://processing.org/examples/lineargradient/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `blocked` と言った。当たっている** — `noLoop()` が無い。絵は変わらない。
+/// **台帳は `blocked` と言った。当たっていた。`v0.9.0` で埋まった** — 進行を止める口が
+/// 入った ([#900](https://github.com/mokume-metal/mokume/issues/900) — 閉じた)。止めても絵は変わらない。
 /// `lerpColor()` も `map()` も無いので面の外に書く。**混ぜる空間が違う**ので、
 /// 原典 (表示値のまま混ぜる) と中間の色がずれる。
 final class LinearGradient: Sketch {
@@ -21,7 +22,7 @@ final class LinearGradient: Sketch {
         b2 = color(0)
         c1 = color(204, 102, 0)
         c2 = color(0, 102, 153)
-        // 原典はここで `noLoop()` を呼ぶ。**書けない**
+        noLoop()
     }
 
     func draw() {

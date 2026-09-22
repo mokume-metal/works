@@ -2,7 +2,8 @@ import mokume
 
 /// Processing の [Variable Scope](https://processing.org/examples/variablescope/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `blocked` と言った。当たっている** — `noLoop()` が無い。絵は変わらない。
+/// **台帳は `blocked` と言った。当たっていた。`v0.9.0` で埋まった** — 進行を止める口が
+/// 入った ([#900](https://github.com/mokume-metal/mokume/issues/900) — 閉じた)。止めても絵は変わらない。
 ///
 /// 例の主題である**内側の名前が外側を隠す**ところは Swift でもそのまま書ける。
 final class VariableScope: Sketch {
@@ -14,7 +15,7 @@ final class VariableScope: Sketch {
     func setup() {
         background(0)
         stroke(255)
-        // 原典はここで `noLoop()` を呼ぶ。**書けない**
+        noLoop()
     }
 
     func draw() {

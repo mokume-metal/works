@@ -1,16 +1,18 @@
 import mokume
 
-/// Processing の [No Loop](https://processing.org/examples/noloop/) を移そうとしたもの。
+/// Processing の [No Loop](https://processing.org/examples/noloop/) を 1 行ずつ移したもの。
 ///
-/// **台帳は `blocked` と言った。当たっている。ここで止まっている。**
+/// **台帳は `blocked` と言い、`v0.7.0` まではここで止まっていた。`v0.9.0` で動く。**
 ///
 /// 原典は `setup()` で `noLoop()` を呼び、`draw()` を 1 度だけ走らせて 1 本の線を引く。
-/// mokume に進行を止める口が無いので `draw()` は毎フレーム呼ばれ、**原典が見せようと
-/// している「1 度だけ描く」がそのまま消える** — 線は上へ流れ、`y` が 0 を切ると下へ戻る。
+/// 進行を止める口が無かったので `draw()` は毎フレーム呼ばれ、**原典が見せようとしている
+/// 「1 度だけ描く」がそのまま消えていた** — 線は上へ流れ、`y` が 0 を切ると下へ戻った。
+/// いまは同じ綴りの `noLoop()` が書けるので、線は 1 本引かれたまま止まる
+/// ([#900](https://github.com/mokume-metal/mokume/issues/900) — 閉じた)。
 ///
-/// 動かないものを動くように書き替えていない。ADR-0022 決定 4 の言うとおり、
-/// **作ろうとして止まったこと自体が実需**なので、止まった形のまま残す。
-/// 台帳によれば `noLoop` を要求する例は 18 本ある。
+/// **`draw()` の中の `y` を減らす 2 行は原典にもある。** 1 度しか走らないので効かないが、
+/// 原典がそう書いている以上そのまま残す — 止めるのをやめれば線が流れ出すことが、
+/// この例の「1 度だけ」の意味でもある。
 final class NoLoop: Sketch {
     var settings = SketchSettings(width: 640, height: 360, title: "No Loop")
 
@@ -24,7 +26,7 @@ final class NoLoop: Sketch {
 
     func setup() {
         stroke(Self.ink)
-        // 原典はここで noLoop() を呼ぶ。**書けない**
+        noLoop()
     }
 
     func draw() {
