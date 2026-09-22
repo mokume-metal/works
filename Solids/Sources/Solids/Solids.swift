@@ -42,8 +42,17 @@ final class Solids: Sketch {
         //
         // **`normalize` の既定が原典と逆である。** p5 は整えないのが既定、mokume は
         // 整えるのが既定 (いちばん長い辺を面の短いほうの半分 = 200 画素へ) なので、
-        // 既定のままだと区画 (175 画素おき) からはみ出す。原典に合わせて切る
-        arrowhead = try? loadModel("assets/arrowhead.obj", normalize: false)
+        // 既定のままだと区画 (175 画素おき) からはみ出す。原典に合わせて切る。
+        //
+        // **`try?` で受けない。** 読めなかったときに `draw()` の `if let` が黙って
+        // 何も置かないので、「8 つ目の区画だけ空いている」以外の手掛かりがどこにも
+        // 残らない ([#74](https://github.com/mokume-metal/works/issues/74) が実際に
+        // そうなった)。mokume の説明には**探した場所**が並ぶので、そのまま流す
+        do {
+            arrowhead = try loadModel("assets/arrowhead.obj", normalize: false)
+        } catch {
+            complain("矢じりを読めない — \(error)")
+        }
     }
 
     func draw() {
@@ -149,5 +158,14 @@ final class Solids: Sketch {
         rotateZ(degree)
         rotateX(degree)
         rotateY(degree)
+    }
+
+    /// 読めなかったことを人へ伝える。
+    ///
+    /// **標準エラーへ書く。** 標準出力はスケッチが自分の用途で使うものであり、
+    /// mokume 自身の診断 (`mokume: ` の前置き) とも名乗りを分けておくと、
+    /// 出どころが行を見ただけで分かる (Marble の `Fluid.complain` と同じ形)。
+    private func complain(_ message: String) {
+        FileHandle.standardError.write(Data("solids: \(message)\n".utf8))
     }
 }
