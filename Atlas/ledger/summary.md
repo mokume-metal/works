@@ -1,9 +1,9 @@
 | 区分 | 例数 | |
 | --- | ---: | --- |
-| `clean` | 90 | そのまま届く |
-| `write-only` | 8 | 書けば届く |
+| `clean` | 100 | そのまま届く |
+| `write-only` | 10 | 書けば届く |
 | `bend` | 54 | 書けるが歪む |
-| `blocked` | 51 | 口が無くて止まる |
+| `blocked` | 39 | 口が無くて止まる |
 | `out-of-scope` | 51 | 測らないと決めた |
 | **合計** | **254** | |
 
@@ -11,8 +11,8 @@
 
 | 並べられるか | 例数 | |
 | --- | ---: | --- |
-| `draws` | 122 | そのまま絵が出る |
-| `bent` | 34 | 歪めれば絵は出る |
+| `draws` | 135 | そのまま絵が出る |
+| `bent` | 21 | 歪めれば絵は出る |
 | `none` | 6 | 絵が出せない |
 | **合計** | **162** | |
 
@@ -22,7 +22,6 @@
 | ---: | --- | --- | --- |
 | 25 | `PVector` | `bend` | SIMD2<Float> / SIMD3<Float> |
 | 20 | `frameRate` | `bend` | SketchSettings.frameRate |
-| 18 | `noLoop` | `none` | — |
 | 12 | `colorMode` | `bend` | color(hue:saturation:brightness:) |
 | 10 | `dist` | `write` | — |
 | 10 | `updatePixels` | `none` | — |
@@ -39,4 +38,5 @@
 | 4 | `getVertexCount` | `bend` | — |
 | 4 | `millis` | `none` | — |
 | 4 | `setFill` | `none` | — |
-| 3 | `DOWN` | `bend` ([#723](https://github.com/mokume-metal/mokume/issues/723)) | isKeyDown(code:) |
+| 3 | `fromAngle` | `write` | — |
+| 3 | `getVertex` | `none` | — |

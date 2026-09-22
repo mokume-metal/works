@@ -8,18 +8,23 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 
 ## 台帳
 
-| 区分 | 例数 | `v0.5.0` のとき | |
-| --- | ---: | ---: | --- |
-| `clean` | **90** | 64 | そのまま届く |
-| `write-only` | **8** | 23 | 書けば届く |
-| `bend` | **54** | 63 | 書けるが歪む |
-| `blocked` | **51** | 53 | 口が無くて止まる |
-| `out-of-scope` | 51 | 51 | 測らないと決めた |
-| **合計** | **254** | **254** | |
+| 区分 | 例数 | `v0.6.0` のとき | `v0.5.0` のとき | |
+| --- | ---: | ---: | ---: | --- |
+| `clean` | **100** | 90 | 64 | そのまま届く |
+| `write-only` | **10** | 8 | 23 | 書けば届く |
+| `bend` | **54** | 54 | 63 | 書けるが歪む |
+| `blocked` | **39** | 51 | 53 | 口が無くて止まる |
+| `out-of-scope` | 51 | 51 | 51 | 測らないと決めた |
+| **合計** | **254** | **254** | **254** | |
 
 **`v0.6.0` で 26 本が `clean` へ移った。** works が戻した Issue が 3 本まとめて閉じたためで、
 これは**台帳が予測した重みの答え合わせ**にあたる — 下の表で `map` (33 例) と `radians`
 (23 例) と `mousePressed` (18 例) と `keyPressed` (11 例) が上位から消えている。
+
+**`v0.9.0` で動いたのは 1 つの穴だけで、12 本が `blocked` から出た。** 進行を止める口
+([#900](https://github.com/mokume-metal/mokume/issues/900)) が入り、`noLoop` / `loop` /
+`redraw` の 3 行が `none` から `same` になった。**ここでも台帳が「いちばん重い」と数えて
+いた穴が先に埋まっている** — `noLoop` は 18 例を止めていて、`none` の中で最多だった。
 
 `out-of-scope` は GLSL を書く例 (`Topics/Shaders` ほか)・性能測定と処理系の試験 (`Demos/Performance` / `Demos/Tests`)・ファイル入出力とネットワークが主題の例。**台帳から消さずに理由を持たせて残している** — 消すと「測っていない」と「測ったが届かない」の区別が付かなくなる。
 
@@ -28,8 +33,7 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 | 何本の例を止めるか | 語彙 | 判定 | mokume では |
 | ---: | --- | --- | --- |
 | 25 | `PVector` | `bend` | SIMD2\<Float\> / SIMD3\<Float\> |
-| 20 | `frameRate` | `bend` | SketchSettings.frameRate (起動時だけ) |
-| 18 | `noLoop` | `none` ([#900](https://github.com/mokume-metal/mokume/issues/900)) | — |
+| 20 | `frameRate` | `bend` | SketchSettings.frameRate — 起動時だけ。**代入は黙って無視される** |
 | 12 | `colorMode` | `bend` | color(hue:saturation:brightness:) — **目盛りは張り替えられない** |
 | 10 | `dist` | `write` | — |
 | 10 | `updatePixels` | `none` | — |
@@ -37,6 +41,7 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 | 8 | `QUADS` | `bend` ([#882](https://github.com/mokume-metal/mokume/issues/882)) | — |
 | 7 | `mag` | `write` | — |
 | 6 | `QUAD_STRIP` | `bend` ([#882](https://github.com/mokume-metal/mokume/issues/882)) | — |
+| 6 | `createFont` | `none` | — |
 
 全 20 行は [`ledger/summary.md`](ledger/summary.md)。
 
@@ -48,6 +53,12 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 | `radians` | `write` ([#883](https://github.com/mokume-metal/mokume/issues/883)) | 23 | `same` |
 | `mousePressed` | `bend` ([#723](https://github.com/mokume-metal/mokume/issues/723)) | 18 | `same` — 出来事の口が入った |
 | `keyPressed` | `bend` ([#723](https://github.com/mokume-metal/mokume/issues/723)) | 11 | `same` |
+
+**`v0.9.0` でもう 1 つ消えた。**
+
+| 語彙 | `v0.6.0` の判定 | 止めていた例数 | `v0.9.0` |
+| --- | --- | ---: | --- |
+| `noLoop` | `none` ([#900](https://github.com/mokume-metal/mokume/issues/900)) | 18 | `same` — 同名・引数なし。`loop` / `redraw` も一緒に入った |
 
 **台帳がいちばん重いと数えたものから順に埋まった。** 1 本ずつの移植では出なかった重みが、
 実際に直す順番と一致していたことになる。
@@ -64,7 +75,7 @@ Garden・Solids・Ring は p5.js の例を 1 本ずつ写し、その 1 本で�
 | `drop` | 原典にはあるが mokume では要らない (`P3D` — 描き方のモードを持たない) |
 | `write` | 面に無いが、面の外に書けば済む (`map` / `radians` / `dist`) |
 | `bend` | 書けるが歪む。原典の形が保てない (`TRIANGLE_STRIP` / `mousePressed()`) |
-| `none` | 口が無い (`loadFont` / `noLoop`) |
+| `none` | 口が無い (`loadFont` / `loadShape`) |
 
 **`write` と `bend` を分けるのが肝。** どちらも「mokume に無い」だが、前者は不便なだけで、後者は原典の構造が壊れる。ADR-0022 決定 3 が Feature Issue に求める「書けなかったか、書けたが歪んだか」がこの区別そのものである。
 
@@ -310,13 +321,13 @@ git diff --stat ledger/    # 差分が出なければ、同じ版から同じ台
 | ファイル | 何を持つ | どの版に依存するか |
 | --- | --- | --- |
 | [`ledger/examples.jsonl`](ledger/examples.jsonl) | 例 → 使う語彙・区分・権利 (254 行) | Processing |
-| [`ledger/vocabulary.jsonl`](ledger/vocabulary.jsonl) | 語彙 → mokume の対応 (189 行) | mokume |
+| [`ledger/vocabulary.jsonl`](ledger/vocabulary.jsonl) | 語彙 → mokume の対応 (213 行) | mokume |
 | [`ledger/demand.jsonl`](ledger/demand.jsonl) | まだ判定していない語彙と、それを使う例 | 両方 |
 | [`ledger/sources.json`](ledger/sources.json) | 上流 3 リポのコミットと mokume の版 | — |
 
 **2 つに割ってあるのは、片方だけ見直せるようにするため。** mokume が上がったら `vocabulary.jsonl` の `checked` が古い行だけを、Processing が上がったら `examples.jsonl` だけを見直す。
 
-`vocabulary.jsonl` に**行が無い語彙は未判定**である。番人の値 (`"unknown"`) を置いていないのは、集計側が数え忘れて静かに嘘の数字を出すのを防ぐため — 未判定を含む例は届く / 届かないのどちらにも数えない。いま未判定が 48 語あるが、どれも `out-of-scope` の例にしか出ないので区分には効いていない。
+`vocabulary.jsonl` に**行が無い語彙は未判定**である。番人の値 (`"unknown"`) を置いていないのは、集計側が数え忘れて静かに嘘の数字を出すのを防ぐため — 未判定を含む例は届く / 届かないのどちらにも数えない。いま未判定が 25 語あるが、どれも `out-of-scope` の例にしか出ないので区分には効いていない。
 
 ### 引数で例を選ぶのをやめた
 
@@ -362,11 +373,27 @@ git diff --stat ledger/    # 差分が出なければ、同じ版から同じ台
 
 **作品の側では、この版上げで何が動いたかを画素まで追ってある。** 時計を読まない 4 本 (Garden / Grain / Ring / Solids) は同じ版で 2 回撮ると 1 ビットも違わないので、版差をまるごと取り出せた — [Garden](../Garden/README.md#v090-で動いたもの) が背景 1 画素で色の変化を、[Solids](../Solids/README.md#v090-で動いたもの) が球に出た線を記録している。
 
+### 語彙の台帳を `v0.9.0` で見直した
+
+213 行が全部 `checked: "0.6.0"` のままだったので、[#77](https://github.com/mokume-metal/works/issues/77) で 1 行ずつ見直した。**届いている 145 行は API 一覧との突き合わせで足り**、`same` 14 行は同名が全部残り、`renamed` / `drop` の指し先も全部残っていた (退行ゼロ)。
+
+**動いたのは 7 行。**
+
+| 行 | | |
+| --- | --- | --- |
+| `noLoop` / `loop` / `redraw` | `none` → `same` | [#900](https://github.com/mokume-metal/mokume/issues/900) が塞がった。**止まってから `loop()` / `redraw()` を呼べるのは入力の呼び出しからだけ**で、`draw()` の中や別の Task から頼んでも効かない (最小のスケッチで実測) |
+| `DOWN` / `UP` / `ENTER` | `bend` → `renamed` | `Key.arrowDown` ほか。`v0.6.0` で Int から Key 型になったことへの追随 ([#30](https://github.com/mokume-metal/works/issues/30)) |
+| `CODED` | `bend` → `drop` | `keyCode` が `Key?` を直に返すので、文字にならないキーの印を挟む形そのものが要らない |
+
+**色・太さ 1 の線・光の明るさで判定は動かなかった。** [#911](https://github.com/mokume-metal/mokume/issues/911) / [#912](https://github.com/mokume-metal/mokume/issues/912) / [#913](https://github.com/mokume-metal/mokume/issues/913) が塞いだのは**同じ名前から出てくる絵**であって、名前が届くかどうかではない。`colorMode` は `v0.9.0` でも口が無く (#911 が変えたのは数と色の対応で、目盛りではない)、`lightSpecular` / `specular` も光の側へ鏡面反射の色を渡す口が無いままである。**台帳は「語彙が届くか」しか測らないので、一致率が上がったことはここからは言えない。**
+
+**据え置いた行にも実測の根拠を足した。** `frameRate` は走っている最中に `settings.frameRate` へ代入しても黙って無視される — 値は書き換わるが枚数は 60 のままである。
+
 ## mokume へ戻したもの
 
 台帳が出した重みは、既に立っている実需の**順位**の材料になる。新しく起票するのは、実測で 1 本以上踏んだものに限る — 机上の数字だけで起票すると「一般にそういう API があるから」に落ちる (ADR-0022 決定 6 が禁じている)。
 
-**戻したもののうち 3 本が `v0.6.0` で閉じた。消さずに残す** — 何を踏んで、どの版で塞がったかは記録である。
+**初めに戻した 6 本は全部閉じた** (4 本が `v0.6.0`・1 本が `v0.8.0`・1 本が `v0.9.0`)。**消さずに残す** — 何を踏んで、どの版で塞がったかは記録である。下の 2 本は `v0.9.0` の再判定で実測して足したもの。
 
 | 踏んだもの | | いま |
 | --- | --- | --- |
@@ -374,8 +401,10 @@ git diff --stat ledger/    # 差分が出なければ、同じ版から同じ台
 | 帯・扇・四角の並べ方が無い — `QUADS` 8 例・`QUAD_STRIP` 6 例 | [mokume#882](https://github.com/mokume-metal/mokume/issues/882) | **閉じた** (`v0.6.0`)。ただし入ったのは**帯と扇だけ**で、四角の 14 例は止まったまま |
 | 入力が出来事として届かない — `mousePressed` 18 例・`keyPressed` 11 例・`mouseDragged` 6 例 | [mokume#723](https://github.com/mokume-metal/mokume/issues/723) | **閉じた** (`v0.6.0`)。27 本が動くようになった |
 | 色空間を切り替える口が無い — `colorMode` 12 例 | [mokume#778](https://github.com/mokume-metal/mokume/issues/778) | **入った** (`v0.6.0`)。ただし**目盛りは張り替えられない**ので `colorMode` は `bend` のまま |
-| **`SketchApplication` が投げる失敗を、外から人に見せられない** — `RenderFailure.message` が internal なので、`Sketch.main()` と同じ文面が書けない | [mokume#899](https://github.com/mokume-metal/mokume/issues/899) | 開いたまま |
-| **進行を止める口が無い** — `noLoop` 18 例・`redraw`。`Basics/Structure/NoLoop` がここで止まった | [mokume#900](https://github.com/mokume-metal/mokume/issues/900) | 開いたまま。**いまいちばん重い欠け** |
+| **`SketchApplication` が投げる失敗を、外から人に見せられない** — `RenderFailure.message` が internal なので、`Sketch.main()` と同じ文面が書けない | [mokume#899](https://github.com/mokume-metal/mokume/issues/899) | **閉じた** (09-08 → `v0.8.0`) |
+| **進行を止める口が無い** — `noLoop` 18 例・`redraw`。`Basics/Structure/NoLoop` がここで止まった | [mokume#900](https://github.com/mokume-metal/mokume/issues/900) | **閉じた** (09-15 → `v0.9.0`)。`noLoop` / `loop` / `redraw` が同名で入り、**12 本が `blocked` から出た** |
+| **走っている最中に枚数を変える口が無い** — `frameRate` **20 例**。`settings.frameRate` への代入は通って値も残るが、枚数だけ変わらない | [mokume#1323](https://github.com/mokume-metal/mokume/issues/1323) | 開いたまま。`frameRate` は `bend` のまま |
+| **`redraw()` / `loop()` を呼び出しの外から頼むと、走っている最中でも「the sketch is not running」と断られる** — 断り方が事実と違う | [mokume#1322](https://github.com/mokume-metal/mokume/issues/1322) | 開いたまま。判定には効かない (口はある) |
 
 157 本を並べて撮って、**台帳では原理的に見えなかった差が 4 つ出た**。どれも語彙の名前は当たっていて、絵だけが違う。
 
