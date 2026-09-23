@@ -44,6 +44,8 @@ struct Rival {
         Rival(skill: 0.86, reach: 0.62, bias: 14, topFraction: 0.94, seed: 77),
     ]
 
+    /// コーナーで使う横 G の割合 (腕前に掛ける)。
+    private static let cornerMargin: Float = 0.9
     /// どれだけ先を見て、どれだけ手前から緩めるか。
     private static let horizon: Float = 700
 
@@ -62,25 +64,35 @@ struct Rival {
         // 1. 目標点 — 速いほど遠くを見る
         let look = Math.clamp(60 + reach * pace, 80, 420)
         let ahead = track.frame(at: car.s + look)
-        let offset = pass(car, others: others, on: track, around: line(ahead.drift) + drift)
+        // **狙う横ずれは路面の端から 2.5 m 内に収める。** 癖と揺らぎとライン取りを足すと
+        // 路面の端を越え、縁石と路肩でタイヤの効きが落ちたところで外へ押し出された。
+        // 限界近くでは線から 2 m ほど外へ膨らむので、そのぶんを残しておく
+        let room = Track.halfWidth - 25
+        let usual = Math.clamp(line(ahead.drift) + drift, -room, room)
+        let offset = pass(car, others: others, on: track, around: usual)
         let target = ahead.point + Track.side(ahead.heading) * offset
 
         // 2. 舵 — 純追従。**先読みが速さに比例するので、これで速度適応になる**
+        //
+        // 目標点を通る円の曲率を出し、その円を回る舵角に、タイヤがずれるぶん
+        // (アンダーステア) を先に足す。**車は舵で直には回らない** (タイヤが回す) ので、
+        // 狙いの角速度と実際の角速度の差も返す — これが無いと高速で蛇行する
         let toward = target - car.place
         let sideways = simd_dot(toward, Track.side(car.yaw))
-        let forward = max(simd_dot(toward, Track.forward(car.yaw)), 1)
-        let want = atan2(sideways, forward)
-        // 角速度の項を引いて、高速での蛇行を抑える
-        let damp = 0.25 * car.turning * look / max(pace, 1)
+        let bend = 2 * sideways / max(simd_length_squared(toward), 1)
+        let feed = atan(Car.wheelbase * bend) + 1.5e-4 * pace * pace * bend
+        let wheel = feed + 0.06 * (pace * bend - car.turning)
         var controls = Controls()
-        controls.steer = Math.clamp(want / Car.lock(at: pace) - damp, -1, 1)
+        controls.steer = Math.clamp(wheel / Car.lock(at: pace), -1, 1)
 
         // 3. 速さ。**前の車の後ろで止まれる速さを越えない**
         let goal = min(
             targetSpeed(from: car.s, on: track, skill: nowSkill),
             yield(car, others: others, on: track))
         let error = goal - car.pace
-        controls.throttle = Math.clamp(error / 60, 0, 1)
+        // **横の力を使い切っているときは踏まない。** 踏むと摩擦円のぶん横が減り、鼻が逃げる
+        let usedSide = abs(car.sideForce) / (Car.grip * car.surface.grip)
+        controls.throttle = min(Math.clamp(error / 60, 0, 1), Math.unit((1 - usedSide) * 2.5 + 0.2))
         controls.brake = Math.clamp(-error / 45, 0, 1)
         return controls
     }
@@ -92,9 +104,14 @@ struct Rival {
 
     /// そこを回れる速さから、手前の制動を織り込んだ上限を出す。
     private func targetSpeed(from s: Float, on track: Track, skill: Float) -> Float {
-        let grip = Car.grip * skill
-        // **人より甘い制動を使う。** 限界で踏ませると、わずかな揺らぎで飛び出す
-        let braking = Car.braking * 0.8 * skill
+        // **横 G の上限いっぱいは狙わない。** タイヤはピークの手前から押し出しが始まるので、
+        // 上限ちょうどで回ると線から 2 m 外へ膨らみ、縁石で効きが落ちて流れた
+        let grip = Car.grip * skill * Rival.cornerMargin
+        // **人より甘い制動を使う。** 限界で踏ませると、わずかな揺らぎで飛び出す。
+        // この走査は「制動をまるごと使える」と見込むが、曲がりながら止めると摩擦円の
+        // ぶん横が減る — 8 割の見込みでは、ヘアピン手前の折れを横 G の上限で回ったまま
+        // 制動に入り、止める余力が無くて壁まで行った。6 割にして折れの手前から緩める
+        let braking = Car.braking * 0.6 * skill
         var best = Car.ceiling * topFraction
         var ahead: Float = 0
         while ahead <= Rival.horizon {
