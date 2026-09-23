@@ -163,12 +163,12 @@ import simd
             "擦った車 \(scraping.kmh) km/h・触れない車 \(free.kmh) km/h")
     }
 
-    @Test("遅く鼻から壁に当たっても、壁に向いたまま止まらない")
-    func noseInDoesNotStall() {
+    @Test("鼻から壁に当たっても、壁に向いたまま止まらない", arguments: [45, 85] as [Float])
+    func noseInDoesNotStall(angle: Float) {
         let track = Track.build()
-        var car = atWall(on: track, speed: 30, into: Math.radians(45))
+        var car = atWall(on: track, speed: 30, into: Math.radians(angle))
         drive(&car, on: track, seconds: 4, controls: Controls(throttle: 1))
-        #expect(car.kmh > 10, "4 秒後の速さが \(car.kmh) km/h")
+        #expect(car.kmh > 10, "\(angle)° で当たって 4 秒後の速さが \(car.kmh) km/h")
     }
 
     // **番号は定数で渡す。** 引数は隔離の外で組まれるので、`Rival.field` (main actor) を読めない
