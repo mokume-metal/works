@@ -29,9 +29,10 @@ struct Surface {
         case ..<Track.halfWidth: return Surface(grip: 1, power: 1, drag: 0, name: "舗装")
         case ..<70: return Surface(grip: 0.82, power: 1, drag: 6, name: "縁石")
         case ..<110: return Surface(grip: 0.55, power: 0.85, drag: 22, name: "路肩")
-        // **草では 36 km/h までしか出ない** (下の釣り合いを解いた値)。
-        // 落ちたら終わりだが、戻ってはこられる
-        default: return Surface(grip: 0.34, power: 0.6, drag: 55, name: "草")
+        // **草では 60 km/h までしか出ない** (踏み続けたときの釣り合いを解いた値)。
+        // 落ちたら損をするが、戻ってはこられる。36 km/h (抵抗 55) にしていたころは、
+        // 押し出されたあと戻るまでが長すぎて「全然進まない」になった (#88)
+        default: return Surface(grip: 0.34, power: 0.6, drag: 48, name: "草")
         }
     }
 }
@@ -178,6 +179,10 @@ struct Car {
     var sideForce: Float = 0
     /// 後輪の滑り角 (ラジアン)。
     var rearSlip: Float = 0
+    /// 壁に当たって付いた回り (ラジアン/s)。**タイヤが回す `turning` とは別に持つ** —
+    /// 遅いときは幾何の曲がりへ混ぜるので、`turning` へ足すと次の 1 歩で舵どおりの回りへ
+    /// 引き戻され、鼻を壁へ向けたまま擦り続けた
+    var knock: Float = 0
     /// 車輪の回り・傾き・沈み。**どれも見た目だけ。**
     var spin: Float = 0
     var lean: Float = 0
@@ -311,7 +316,8 @@ struct Car {
         // 軸で見ると、横向きの成分が残る (これが滑りである)
         var nextTurning = r + spinUp * h
         velocity += (ahead * (active + scrub) + right * side) * h
-        yaw = Track.wrap(yaw + nextTurning * h)
+        yaw = Track.wrap(yaw + (nextTurning + knock) * h)
+        knock -= knock * Math.chase(h, 0.25)
         ahead = Track.forward(yaw)
         right = Track.side(yaw)
         var forward = simd_dot(velocity, ahead)
@@ -358,7 +364,17 @@ struct Car {
     /// 路肩の外の壁で押し戻す。
     ///
     /// **(距離・横ずれ) の側で解く。** 世界の座標で壁の形を持たなくて済み、
-    /// コースがどれだけ曲がっていても同じ 4 行で済む
+    /// コースがどれだけ曲がっていても同じ形で済む。
+    ///
+    /// ## 当たった強さだけ返す
+    ///
+    /// 壁へ向かう速さに反発を掛けて返し、**接線にはその強さに比例した摩擦だけ**を掛ける。
+    /// 当たった角から車体を回すので、鼻から当たれば壁に沿う向きへ回される。
+    ///
+    /// 以前は擦っている間ずっと速度に 0.997 を掛け、向きを 1 歩ごとに 2 割ずつ壁沿いへ
+    /// 寄せていた。これが**壁に貼り付く**原因だった — 押し出された先の草で踏み続けても
+    /// 12 km/h しか出ず、舵を切らない限り壁から離れなかった (#88)。いまは擦っているだけ
+    /// (壁へ向かう速さがほぼ 0) なら、ほとんど何も失わない
     mutating func bounce(on track: Track) {
         guard abs(lateral) > Track.wallWidth else { return }
         let here = track.frame(at: s)
@@ -366,16 +382,36 @@ struct Car {
         lateral = lateral > 0 ? Track.wallWidth : -Track.wallWidth
         place = here.point + Track.side(here.heading) * lateral
 
-        // **壁へ向かう成分だけを消す。** 速度そのものを削ると、擦っている間ずっと
-        // 減速がかかって**壁に貼り付いたまま動けなくなる** (実際にそうなった)
         let into = simd_dot(velocity, outward)
-        if into > 0 { velocity -= outward * into }
-        // 擦っている間の罰は軽く。**1 歩ぶん**なので、強くすると 1 秒で 8 割方削れて
-        // 壁から出られなくなる (0.985 にしたら実際にそうなった)
-        velocity *= 0.997
-        // **壁沿いに向き直らせる。** これが無いと壁を向いたまま空回りする
-        yaw += Track.wrap(here.heading - yaw) * 0.2
+        guard into > 0 else { return }
+        let along = velocity - outward * into
+        let slide = simd_length(along)
+        let normal = (1 + Car.wallBounce) * into
+        let rub = min(Car.wallFriction * normal, slide)
+        let impulse = -outward * normal - (slide > 1e-3 ? along / slide : .zero) * rub
+        velocity += impulse
+
+        // **当たった角から回す。** 壁の側にある鼻か尻の角に撃力が掛かったとして、その
+        // 回りの向きの成分だけを `knock` へ足す (右回りが正)
+        let ahead = Track.forward(yaw)
+        let corner = ahead * (simd_dot(ahead, outward) >= 0 ? 17 : -17) + outward * 9.5
+        let twist = corner.y * impulse.x - corner.x * impulse.y
+        knock = Math.clamp(knock + 0.3 * twist / Car.inertia, -1.5, 1.5)
+
+        // **押し付けた強さのぶんだけ、壁沿いへ向きを寄せる。** 遅いときは車が横へ
+        // 滑らないので、鼻を壁へ向けたまま踏むと壁に沿って動けず、そこで止まった
+        // (30 単位/s・45° で当たると 0.1 km/h)。以前のように 1 歩ごとに決まった割合で
+        // 寄せると、擦っているだけで貼り付く — だから当たった強さに比例させる
+        let wall = simd_dot(ahead, Track.forward(here.heading)) >= 0 ? here.heading : here.heading + .pi
+        yaw = Track.wrap(yaw + Track.wrap(wall - yaw) * min(Car.wallTurn * normal, 0.1))
     }
+
+    /// 壁の反発係数。
+    static let wallBounce: Float = 0.25
+    /// 壁の摩擦 (当たった強さに対する割合)。
+    static let wallFriction: Float = 0.3
+    /// 押し付けた強さ (単位/s) あたりに壁沿いへ寄せる割合。
+    static let wallTurn: Float = 0.04
 
     /// その速さで切れる舵角の上限 (ラジアン)。**人も AI も同じ口を通る。**
     ///

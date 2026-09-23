@@ -122,6 +122,55 @@ import simd
         #expect(car.turning < 0)
     }
 
+    /// コースの上で、左の壁際 (草) に置いた車。**直線の途中** (s = 100 m) で、壁へ
+    /// `into` だけ向けて `speed` で進んでいる
+    func atWall(on track: Track, speed: Float, into: Float) -> Car {
+        let here = track.frame(at: 1000)
+        let lateral = -(Track.wallWidth - 5)
+        var car = Car(place: here.point + Track.side(here.heading) * lateral, yaw: here.heading - into)
+        car.velocity = Track.forward(car.yaw) * speed
+        car.settle(on: track)
+        return car
+    }
+
+    /// コースの上で `seconds` 秒進める (壁も効かせる)。
+    func drive(_ car: inout Car, on track: Track, seconds: Float, controls: Controls) {
+        for _ in 0..<Int((seconds / Self.h).rounded()) {
+            car.advance(Self.h, controls: controls, on: track)
+            car.bounce(on: track)
+        }
+    }
+
+    @Test("壁際の草から、内へ切って踏めば 3 秒で路肩の内へ戻れる")
+    func wallDoesNotTrap() {
+        let track = Track.build()
+        var car = atWall(on: track, speed: 100, into: Math.radians(10))
+        drive(&car, on: track, seconds: 3, controls: Controls(throttle: 1, steer: 1))
+        #expect(abs(car.lateral) < 110, "3 秒後の横ずれが \(car.lateral / 10) m")
+    }
+
+    @Test("速く浅く壁を擦っても、壁に触れない車と比べて 1 割も失わない")
+    func scrapingKeepsPace() {
+        let track = Track.build()
+        var scraping = atWall(on: track, speed: 250, into: Math.radians(3))
+        var free = atWall(on: track, speed: 250, into: 0)
+        drive(&scraping, on: track, seconds: 4, controls: Controls(throttle: 1))
+        drive(&free, on: track, seconds: 4, controls: Controls(throttle: 1))
+        // **以前は擦っている間ずっと速度に 0.997 を掛けていた** (1 秒で 3 割)。いまは
+        // 擦るだけなら、壁へ向かう速さのぶんしか失わない
+        #expect(
+            scraping.speed > free.speed * 0.9,
+            "擦った車 \(scraping.kmh) km/h・触れない車 \(free.kmh) km/h")
+    }
+
+    @Test("遅く鼻から壁に当たっても、壁に向いたまま止まらない")
+    func noseInDoesNotStall() {
+        let track = Track.build()
+        var car = atWall(on: track, speed: 30, into: Math.radians(45))
+        drive(&car, on: track, seconds: 4, controls: Controls(throttle: 1))
+        #expect(car.kmh > 10, "4 秒後の速さが \(car.kmh) km/h")
+    }
+
     // **番号は定数で渡す。** 引数は隔離の外で組まれるので、`Rival.field` (main actor) を読めない
     @Test("相手は 1 台ずつ走らせても 3 周を走り切り、壁に 1 度も触れない", arguments: [0, 1, 2])
     func rivalsFinishThreeLaps(index: Int) {
