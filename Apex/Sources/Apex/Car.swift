@@ -404,6 +404,14 @@ struct Car {
         // 寄せると、擦っているだけで貼り付く — だから当たった強さに比例させる
         let wall = simd_dot(ahead, Track.forward(here.heading)) >= 0 ? here.heading : here.heading + .pi
         yaw = Track.wrap(yaw + Track.wrap(wall - yaw) * min(Car.wallTurn * normal, 0.1))
+        // **鼻か尻が壁を向いている間は、押し付けているだけでも回す。** 止まっていると
+        // 当たった強さがごく小さいので、上の寄せだけでは直角に突っ込んだ車が壁沿いを
+        // 向くまで 3 秒以上かかった。ほぼ平行 (10° 未満) なら回さない — 擦るだけで
+        // 貼り付かないように
+        if abs(simd_dot(ahead, outward)) > sin(Math.radians(10)) {
+            let gap = Track.wrap(wall - yaw)
+            yaw = Track.wrap(yaw + Math.clamp(gap, -Car.wallCreep / 120, Car.wallCreep / 120))
+        }
     }
 
     /// 壁の反発係数。
@@ -412,6 +420,8 @@ struct Car {
     static let wallFriction: Float = 0.3
     /// 押し付けた強さ (単位/s) あたりに壁沿いへ寄せる割合。
     static let wallTurn: Float = 0.04
+    /// 鼻か尻が壁を向いている間に、壁沿いへ回す速さ (ラジアン/s)。**1 歩は 1/120 秒。**
+    static let wallCreep: Float = 1.5
 
     /// その速さで切れる舵角の上限 (ラジアン)。**人も AI も同じ口を通る。**
     ///
