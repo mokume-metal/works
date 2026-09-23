@@ -1,4 +1,5 @@
 import Foundation
+import simd
 
 /// レースの進み — 待ち、周回、計時、順位。
 ///
@@ -120,7 +121,12 @@ struct Race {
             runner.halfway = true
         }
 
-        runner.progress = Float(runner.lap) * length + s
+        // **線の手前にいる間は、まだ 1 周目に入っていない。** グリッドは線の手前に並ぶ
+        // ので、そこを「1 周の終わり」として数えると、線を越えた車の進みが後ろの車より
+        // 小さくなり、先頭で線を越えた直後に一瞬 P4 と出た (#88)。中間点を踏む前に
+        // 最後の 1/4 周にいるのは、線の手前にいるときだけである
+        let behindLine = !runner.halfway && s > length * 0.75
+        runner.progress = Float(runner.lap) * length + (behindLine ? s - length : s)
     }
 
     /// 終わったか。
@@ -155,5 +161,27 @@ struct Race {
         let minutes = Int(seconds) / 60
         let rest = seconds - Float(minutes * 60)
         return String(format: "%d:%06.3f", minutes, rest)
+    }
+}
+
+/// 逆走の見張り。
+///
+/// **向きではなく動きで見る。** 車の向きがコースと逆でも、壁から下がって抜け出して
+/// いるだけなら逆走ではない。**コースに沿って後ろへ 14 km/h より速く進み、それが
+/// 0.8 秒続いたら**知らせる — 一瞬のスピンや、止まりかけの切り返しでは出さない
+struct WrongWay {
+    /// 逆走とみなす、コースに沿って後ろへ進む速さ (単位/s)。
+    static let threshold: Float = 40
+    /// 知らせるまでに続く時間 (秒)。
+    static let delay: Float = 0.8
+
+    /// 後ろへ進み続けている時間 (秒)。
+    private(set) var elapsed: Float = 0
+    /// 知らせるか。
+    var showing: Bool { elapsed >= WrongWay.delay }
+
+    mutating func update(_ car: Car, on track: Track, _ h: Float) {
+        let along = simd_dot(car.velocity, Track.forward(track.frame(at: car.s).heading))
+        elapsed = along < -WrongWay.threshold ? elapsed + h : 0
     }
 }

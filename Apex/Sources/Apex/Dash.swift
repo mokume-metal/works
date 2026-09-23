@@ -42,6 +42,7 @@ extension Apex {
             if !guiding { speedo() }
             chart()
             signal()
+            if wrongWay.showing { turnBack() }
         }
 
         look()
@@ -137,7 +138,9 @@ extension Apex {
         // **相手を先に、自分を最後に置く。** 重なったとき自分が見えるように
         for (index, other) in cars.enumerated().reversed() {
             let spot = chartPoint(other.place, origin: origin, box: box)
-            let tint = Palette.cars[index % Palette.cars.count]
+            // **逆走している間は、自分の印を赤く点滅させる**
+            let tint = index == 0 && wrongWay.showing && blinking
+                ? Palette.lampStop : Palette.cars[index % Palette.cars.count]
             fill(Palette.shade.x, Palette.shade.y, Palette.shade.z, 220)
             circle(spot.x, spot.y, index == 0 ? 15 : 12)
             fill(tint.x, tint.y, tint.z, 250)
@@ -166,6 +169,36 @@ extension Apex {
         return SIMD2(
             origin.x + pad.x + (p.x - mapLow.x) * mapScale,
             origin.y + pad.y + (mapHigh.y - p.y) * mapScale)
+    }
+
+    // MARK: - 中央 — 逆走
+
+    /// 点滅の拍。**1 秒に 2.5 回。**
+    private var blinking: Bool { sin(time * Float.pi * 5) > 0 }
+
+    /// 進むべき向きを指す赤い矢印。**字は使わない** (mokume#1273 — 使う字の種類が
+    /// 増えると GPU が描けなくなる)。画面の上が車の前なので、矢印はコースの向きを
+    /// 車の向きから測った角だけ回す。逆走していれば下 (後ろ) を指し、どちらへ回れば
+    /// よいかは矢印の傾きで分かる
+    private func turnBack() {
+        guard blinking else { return }
+        let angle = Track.wrap(track.frame(at: car.s).heading - car.yaw)
+        let centre = SIMD2<Float>(width / 2, height / 2 - 140)
+        // 画面の上 (−y) が車の前、+x が車の右
+        let along = SIMD2<Float>(sin(angle), -cos(angle))
+        let across = SIMD2<Float>(cos(angle), sin(angle))
+        fill(Palette.shade.x, Palette.shade.y, Palette.shade.z, 170)
+        circle(centre.x, centre.y, 150)
+        let red = Palette.lampStop
+        fill(red.x, red.y, red.z, 245)
+        let tail = centre - along * 50
+        let neck = centre + along * 8
+        let a = tail - across * 15, b = tail + across * 15
+        let c = neck + across * 15, d = neck - across * 15
+        quad(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y)
+        let tip = centre + along * 58
+        let left = neck - across * 40, right = neck + across * 40
+        triangle(tip.x, tip.y, left.x, left.y, right.x, right.y)
     }
 
     // MARK: - 中央 — 合図と結果

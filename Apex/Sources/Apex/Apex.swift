@@ -33,6 +33,8 @@ final class Apex: Sketch {
     /// 自分の車。
     var car: Car { cars.first ?? Car(place: .zero, yaw: 0) }
     private var chase = Chase()
+    /// 自分の車の逆走の見張り。
+    var wrongWay = WrongWay()
 
     /// 地図に描く中心線 (間引いたもの) と、その外接と縮尺。
     var mapLine: [SIMD2<Float>] = []
@@ -138,6 +140,7 @@ final class Apex: Sketch {
         expose("phase", "\(race.phase)")
         expose("best", race.runners[0].best ?? -1)
         expose("bakeMs", bakeMs)
+        expose("wrongWay", wrongWay.showing)
     }
 
     // MARK: - 立てる
@@ -189,6 +192,7 @@ final class Apex: Sketch {
             race.note(index, s: cars[index].s, length: track.length)
         }
         chase.snap(to: cars[0], on: track)
+        wrongWay = WrongWay()
         pending = 0
     }
 
@@ -266,6 +270,7 @@ final class Apex: Sketch {
                     cars[index].bounce(on: track)
                 }
                 bump()
+                wrongWay.update(cars[0], on: track, Apex.tick)
             }
             // **待っている間も位置は知らせる。** 知らせないと「前のフレームの距離」が
             // 0 のまま走り出し、最初の 1 歩が「1 周ぶん戻った」と数えられる
