@@ -21,6 +21,13 @@ let package = Package(
                 // mokume と揃える。既定の隔離が main actor でないと、スケッチに
                 // 並行性の注釈が要る
                 .swiftLanguageMode(.v6), .defaultIsolation(MainActor.self),
-            ])
+            ]),
+        // **車の運動とレースの進みを固定する。** 絵を書き出す口や組み立てを測る口ではなく
+        // (ルート README「並べ方」)、物理が約束している振る舞いの検査である。
+        // product は増えないので、`mokume run` の側からは今までと同じに見える
+        .testTarget(
+            name: "ApexTests",
+            dependencies: ["Apex"],
+            swiftSettings: [.swiftLanguageMode(.v6), .defaultIsolation(MainActor.self)]),
     ]
 )

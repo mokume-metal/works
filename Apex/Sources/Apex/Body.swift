@@ -87,9 +87,9 @@ extension Apex {
             push()
             let hub = Apex.screen(axle.x, 5.2, axle.z)
             translate(hub.x, hub.y, hub.z)
-            // **舵は前輪だけ。** 実際に効く舵角より大きく振る (見て分かるように)。
-            // 世界の Ry(+舵)・Rx(+回り) を挟んだもの
-            if axle.front { rotateY(-car.steer * Math.radians(24)) }
+            // **舵は前輪だけ。** 実際の舵角 (逆舵の助けを足した後) で振るので、
+            // 尻が出たときに前輪が進む向きへ返るのが見える。世界の Ry(+舵)・Rx(+回り) を挟んだもの
+            if axle.front { rotateY(-car.wheelAngle) }
             rotateX(-car.spin)
             shape(wheel)
             pop()
