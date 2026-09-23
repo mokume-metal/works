@@ -38,6 +38,7 @@
   Package.resolved     どの mokume で描いたか。コミットする
   README.md            その作品の記録
   Sources/<作品>/       スケッチ (assets を置くならこの下・宣言も要る)
+  Tests/<作品>Tests/    振る舞いの検査。持つ作品だけ (いまは Apex)。product は増えない
 ```
 
 **[Atlas](Atlas/) だけがこの形に収まらない。** あちらは作品ではなく物差しで、Processing の
