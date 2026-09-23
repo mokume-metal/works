@@ -26,6 +26,12 @@ enum Palette {
     /// 手元の表示の色。
     static let ink = SIMD3<Float>(244, 246, 248)
     static let shade = SIMD3<Float>(16, 17, 20)
+
+    /// 合図の灯。**消えている灯も見せる** — 並んだ 3 つが順に灯ることで、あといくつで
+    /// 走れるかが数字なしで読める
+    static let lampOff = SIMD3<Float>(58, 60, 66)
+    static let lampStop = SIMD3<Float>(232, 54, 42)
+    static let lampGo = SIMD3<Float>(70, 214, 98)
 }
 
 extension Palette {

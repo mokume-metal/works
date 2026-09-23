@@ -52,17 +52,35 @@ struct Race {
         if phase == .waiting, clock >= 0 { phase = .running }
     }
 
-    /// 待っている間に出る合図。**残り秒からそのまま決まる。**
+    /// 合図の灯火。**残り秒からそのまま決まる。**
     ///
-    /// **数字だけで書く。** `GO` の 2 文字は手元の表示のどこにも出ていない字なので、
-    /// ここで初めて使うとその瞬間から GPU が描き切れなくなる (mokume#1273)
-    var light: (text: String, age: Float)? {
+    /// ## 字ではなく灯で出す
+    ///
+    /// 以前は `3` → `3` → `2` → `1` → `1` と数字を出していた。`GO` の 2 文字は手元の
+    /// 表示のどこにも出ていない字で、ここで初めて使うとその瞬間から GPU が描き切れなく
+    /// なる (mokume#1273)。だから数字へ畳んだのだが、**GO の合図が「1 の出し直し」で
+    /// しかなくなった**。「1」が消えるのを待ってから踏むと GO から 1.4 秒遅れ、ちょうど
+    /// そこへ後ろの車が来た (#88)。
+    ///
+    /// **灯なら字を 1 つも使わない。** 3 つの丸を 1 秒ごとに赤く灯し、**走り出す瞬間に
+    /// 全部を緑へ変える** — 変わる瞬間がそのまま合図になる。
+    struct Lamps {
+        /// 赤く灯っている数 (0…3)。
+        var lit: Int
+        /// 緑に変わったか。**ここから走れる。**
+        var go: Bool
+        /// 濃さ (0…1)。**緑は 1 秒灯してから 0.4 秒で消える。**
+        var strength: Float
+    }
+
+    /// いまの灯。**走り出して 1.4 秒たったら出さない。**
+    var lamps: Lamps? {
         switch clock {
-        case ..<(-3): return ("3", -3 - clock)
-        case ..<(-2): return ("3", -2 - clock)
-        case ..<(-1): return ("2", -1 - clock)
-        case ..<0: return ("1", -clock)
-        case ..<1.4: return ("1", 1.4 - clock)
+        case ..<(-3): return Lamps(lit: 0, go: false, strength: 1)
+        case ..<(-2): return Lamps(lit: 1, go: false, strength: 1)
+        case ..<(-1): return Lamps(lit: 2, go: false, strength: 1)
+        case ..<0: return Lamps(lit: 3, go: false, strength: 1)
+        case ..<1.4: return Lamps(lit: 3, go: true, strength: Math.unit((1.4 - clock) / 0.4))
         default: return nil
         }
     }

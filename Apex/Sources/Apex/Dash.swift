@@ -190,18 +190,22 @@ extension Apex {
             return
         }
 
-        guard let light = race.light else { return }
-        // **合図は残り秒の関数。** 薄れながら消える。
-        //
-        // **大きさは動かさない。** `textSize` へ毎フレーム違う値を渡したら
-        // (拡大して出したかった)、**GPU がアドレス違反で落ちて 1 フレームも
-        // 描けなくなった**。動かしてよいのは色のほうだけである
-        let age = Math.unit(light.age)
-        textAlign(.center)
-        fill(Palette.ink.x, Palette.ink.y, Palette.ink.z, 250 * age)
-        textSize(84)
-        text(light.text, width / 2, height / 2 - 40)
-        textAlign(.left)
+        guard let lamps = race.lamps else { return }
+        // **合図は灯で出す** (理由は ``Race/Lamps``)。**大きさは動かさない** — 動かしてよいのは
+        // 色のほうだけ、という字の約束 (`textSize` を毎フレーム変えたら GPU が落ちた) に
+        // 丸も揃えておく
+        let alpha = 255 * lamps.strength
+        let spacing: Float = 78
+        let centre = SIMD2<Float>(width / 2, height / 2 - 150)
+        fill(Palette.shade.x, Palette.shade.y, Palette.shade.z, 200 * lamps.strength)
+        rect(centre.x - spacing * 1.5 - 4, centre.y - 43, spacing * 3 + 8, 86)
+        for index in 0..<3 {
+            let x = centre.x + Float(index - 1) * spacing
+            let tint: SIMD3<Float> =
+                lamps.go ? Palette.lampGo : (index < lamps.lit ? Palette.lampStop : Palette.lampOff)
+            fill(tint.x, tint.y, tint.z, alpha)
+            circle(x, centre.y, 58)
+        }
     }
 
 }
