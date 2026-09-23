@@ -20,7 +20,7 @@ import mokume
     @Test("鏡映した不透明の箱は、逆に回した箱と同じ明るさで写る")
     func mirroredSolid() throws {
         let (a, b) = try pair(.mirroredSolid)
-        withKnownIssue("mokume#TBD-mirror: 鏡映すると裏面を捨てる向きが逆になり、奥の面だけが残る") {
+        withKnownIssue("mokume#1446: 鏡映すると裏面を捨てる向きが逆になり、奥の面だけが残る") {
             #expect(abs(a.totalLuminance - b.totalLuminance) < b.totalLuminance * 0.05)
             #expect(a.differing(from: b) < 200)
         }
@@ -39,7 +39,7 @@ import mokume
         }
         let (got, expected) = (try draw(mode), try draw(.blend))
         let broken: Set<BlendMode> = [.add, .subtract, .lightest, .darkest, .difference, .exclusion, .multiply, .screen]
-        withKnownIssue("mokume#TBD-blend: 下地を読む混ぜ方が下地の α を見ない") {
+        withKnownIssue("mokume#1447: 下地を読む混ぜ方が下地の α を見ない") {
             #expect(abs(got.red - expected.red) < 0.01, "\(mode) の赤 \(got.red)、blend は \(expected.red)")
             #expect(abs(got.alpha - expected.alpha) < 0.01)
         } when: {
@@ -55,7 +55,7 @@ import mokume
         #expect(b[81, 67].red > 0.3)
         // 媒介変数の角 60° (扇の外)、極角では 28° (扇の内) に当たる点
         #expect(b[52, 77].red < 0.05)
-        withKnownIssue("mokume#TBD-arc: 塗りの内外を極角で決め、切り口は媒介変数の角で引いている") {
+        withKnownIssue("mokume#1448: 塗りの内外を極角で決め、切り口は媒介変数の角で引いている") {
             #expect(a[52, 77].red < 0.05)
         }
     }
@@ -63,7 +63,7 @@ import mokume
     @Test("curveVertex の穴は、外周の点を引き継がない")
     func curveContour() throws {
         let (a, b) = try pair(.curveContour)
-        withKnownIssue("mokume#TBD-curve: curveVertex の履歴が beginContour をまたいで残る") {
+        withKnownIssue("mokume#1449: curveVertex の履歴が beginContour をまたいで残る") {
             #expect(a.differing(from: b) < 16)
         }
     }
@@ -79,7 +79,7 @@ import mokume
             }[80, 80]
         }
         let (got, expected) = (try draw(given), try draw(clamped))
-        withKnownIssue("mokume#TBD-alpha: fill の α が 0…255 に締まらず、下地が負や 1 超えになる") {
+        withKnownIssue("mokume#1450: fill の α が 0…255 に締まらず、下地が負や 1 超えになる") {
             #expect(abs(got.red - expected.red) < 0.01, "α \(given) の赤 \(got.red)、α \(clamped) は \(expected.red)")
         }
     }
@@ -96,7 +96,7 @@ import mokume
             }
             energies.append(p.redSum(row: 80, columns: 70..<90))
         }
-        withKnownIssue("mokume#TBD-hairline: 縁の被覆が両側で同じ画素に入る場合を扱わない") {
+        withKnownIssue("mokume#1451: 縁の被覆が両側で同じ画素に入る場合を扱わない") {
             for energy in energies {
                 #expect(abs(energy - weight) < weight * 0.25, "太さ \(weight) の線の濃さ \(energies)")
             }
@@ -106,14 +106,14 @@ import mokume
     @Test("右揃えの行の末尾の空白は、行の幅に数えない")
     func trailingSpace() throws {
         let (a, b) = try pair(.trailingSpace)
-        withKnownIssue("mokume#TBD-space: 語の後ろの空白が行の幅に残り、右揃えが左へずれる") {
+        withKnownIssue("mokume#1452: 語の後ろの空白が行の幅に残り、右揃えが左へずれる") {
             #expect(abs(a.rightmostInk() - b.rightmostInk()) <= 1, "右端 \(a.rightmostInk()) と \(b.rightmostInk())")
         }
     }
 
     @Test("lerp は amount が 1 なら stop を返し、有限の端からは有限の値を返す")
     func lerpEnds() {
-        withKnownIssue("mokume#TBD-lerp: start + (stop - start) * amount の丸めと桁あふれ") {
+        withKnownIssue("mokume#1453: start + (stop - start) * amount の丸めと桁あふれ") {
             #expect(lerp(1e8, 1, 1) == 1)
             #expect(lerp(-3e38, 3e38, 0.5).isFinite)
         }
@@ -147,7 +147,8 @@ import mokume
     @Test("clip() は描く位置の変換を受けず、面の座標で読まれる")
     func clipTranslate() throws {
         let (a, b) = try pair(.clipTranslate)
-        // 面の座標の (0…60) が残り、動かした先 (60…120) は切られる
+        // 面の座標の (0…60) が残り、動かした先 (60…120) は切られる。**説明はこれを
+        // 名乗っていない** (mokume#1445) — 変換を効かせる側へ変わったら、ここが赤くなる
         #expect(a[30, 30].blue > 0.3)
         #expect(a[90, 90].blue < 0.05)
         #expect(b[90, 90].blue > 0.3)
