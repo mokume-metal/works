@@ -62,7 +62,7 @@ struct Rival {
         // 1. 目標点 — 速いほど遠くを見る
         let look = Math.clamp(60 + reach * pace, 80, 420)
         let ahead = track.frame(at: car.s + look)
-        let offset = line(ahead.drift) + drift + dodge(car, others: others, on: track)
+        let offset = pass(car, others: others, on: track, around: line(ahead.drift) + drift)
         let target = ahead.point + Track.side(ahead.heading) * offset
 
         // 2. 舵 — 純追従。**先読みが速さに比例するので、これで速度適応になる**
@@ -75,8 +75,10 @@ struct Rival {
         var controls = Controls()
         controls.steer = Math.clamp(want / Car.lock(at: pace) - damp, -1, 1)
 
-        // 3. 速さ
-        let goal = targetSpeed(from: car.s, on: track, skill: nowSkill)
+        // 3. 速さ。**前の車の後ろで止まれる速さを越えない**
+        let goal = min(
+            targetSpeed(from: car.s, on: track, skill: nowSkill),
+            yield(car, others: others, on: track))
         let error = goal - car.pace
         controls.throttle = Math.clamp(error / 60, 0, 1)
         controls.brake = Math.clamp(-error / 45, 0, 1)
@@ -105,20 +107,78 @@ struct Rival {
         return best
     }
 
-    /// 前の車をよける横ずれ。**追突しそうなら速さも落とす** — それは呼ぶ側が見る。
-    private func dodge(_ me: Car, others: [Car], on track: Track) -> Float {
-        var push: Float = 0
+    /// 前の車の後ろで止まれる速さ。
+    ///
+    /// **よけるだけでは追突を防げない。** `pass` は横へ逃げるが、止まっている車の
+    /// 真後ろから全開で来ると、横へ逃げ切る前に届く — スタートで出遅れた自分の車が
+    /// 19 m 後ろの相手に押し出され、壁まで運ばれた (#88)。
+    ///
+    /// 横に重なっている前の車ごとに、**その車の速さに、残りの隙間で詰められるぶんを
+    /// 足したもの**を上限にする。制動は `targetSpeed` と同じ甘めの値を使う。横へ抜けて
+    /// 重ならなくなれば上限は外れるので、追い抜きはそのまま起きる。
+    ///
+    /// **這う速さだけは残す。** ぴたりと止めると舵で横へ逃げられなくなり、止まった車の
+    /// 後ろで 3 台とも動かなくなった。這いながら `pass` の横ずれへ回り込めば抜けられる。
+    /// 当たっても這う速さなら、押し戻しは車 1 台ぶんも運ばない
+    private func yield(_ me: Car, others: [Car], on track: Track) -> Float {
+        let braking = Car.braking * 0.8
+        var best = Float.greatestFiniteMagnitude
         for other in others {
             let gap = Rival.gap(from: me.s, to: other.s, length: track.length)
-            guard gap > 0, gap < 250 else { continue }
-            let apart = other.lateral - me.lateral
-            guard abs(apart) < 45 else { continue }
-            // **自分がいま居る側へ逃げる。** 重なっているなら外側へ
-            let hand: Float = apart == 0 ? 1 : (apart > 0 ? -1 : 1)
-            push += hand * (45 - abs(apart)) * 0.9 * (1 - gap / 250)
+            // **少しでも前にいる車は全部見る。** 当たりは中心どうしの距離の円で見るので、
+            // 斜め後ろ 3 m・横 3 m でも当たる — 全長ぶん前の車だけに絞ったら、そこから当てた
+            guard gap > 0, gap < 400 else { continue }
+            guard abs(other.lateral - me.lateral) < Rival.overlap else { continue }
+            let room = max(gap - Rival.buffer, 0)
+            best = min(best, max(other.pace, 0) + sqrt(2 * braking * room) + Rival.crawl)
         }
-        return Math.clamp(push, -60, 60)
+        return best
     }
+
+    /// 横に重なっているとみなす中心どうしの隔たり (単位)。**当たりの円 2 つぶん
+    /// (4.4 m) に 0.4 m の余裕。** 車幅 (1.9 m) で見ると狭すぎる — 当たりは円で見て
+    /// いるので、横に 3.2 m 離れていても斜め後ろから寄れば当たった
+    private static let overlap: Float = Car.radius * 2 + 4
+    /// 前の車との間に残す隙間 (単位)。**中心どうしで 6 m** — 全長 4.3 m に 1.7 m の余裕
+    private static let buffer: Float = 60
+    /// 前の車の後ろでも残す速さ (単位/s)。**約 11 km/h。**
+    private static let crawl: Float = 30
+
+    /// 前の遅い車を抜く横ずれ。
+    ///
+    /// **いつもの線を少しずらすだけでは抜けない。** 以前はずれの量を重なりに比例させて
+    /// 足していたが、ライン取りの引きに負けた — 右列からスタートした車が中央の線へ寄り、
+    /// 左列で止まっている自分の車へ斜め後ろから当て続けた (#88)。
+    ///
+    /// **遅い車が前で重なっているときは、線を捨ててその車の横 (当たりの円の外) を狙う。**
+    /// 近いほど強く寄せ、離れていればいつもの線 (`around`) のまま走る。寄せる側は
+    /// 自分がいま居る側で、そちらに路面が残っていなければ反対へ回る
+    private func pass(_ me: Car, others: [Car], on track: Track, around: Float) -> Float {
+        var offset = around
+        var nearest = Float.greatestFiniteMagnitude
+        for other in others {
+            let gap = Rival.gap(from: me.s, to: other.s, length: track.length)
+            guard gap > 0, gap < Rival.passReach, gap < nearest else { continue }
+            let apart = other.lateral - me.lateral
+            guard abs(apart) < Rival.overlap + 10 else { continue }
+            // **離れていく車は抜かなくてよい。**
+            guard me.pace - other.pace > -20 else { continue }
+            nearest = gap
+            var hand: Float = apart > 0 ? -1 : 1
+            let room = Track.halfWidth - 12
+            if abs(other.lateral + hand * Rival.clearance) > room { hand = -hand }
+            let beside = Math.clamp(other.lateral + hand * Rival.clearance, -room, room)
+            // **近いほど強く寄せる。** 窓の端で急に線が跳ねないように
+            let weight = Math.unit((Rival.passReach - gap) / (Rival.passReach * 0.4))
+            offset = Math.mix(around, beside, weight)
+        }
+        return offset
+    }
+
+    /// 前の車を抜きにかかる距離 (単位)。**25 m。**
+    private static let passReach: Float = 250
+    /// 抜くときに空ける横の隔たり (単位)。**当たりの円 2 つぶんに 1.4 m の余裕。**
+    private static let clearance: Float = Car.radius * 2 + 14
 
     /// 前向きの距離の差。**1 周をまたぐので、−L/2…L/2 へ畳む。**
     static func gap(from: Float, to: Float, length: Float) -> Float {
