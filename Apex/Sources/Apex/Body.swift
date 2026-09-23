@@ -69,20 +69,26 @@ extension Apex {
         let pitch = atan(here.slope) + car.dive
 
         push()
-        // **位置の y と、回転の 3 軸すべてが符号反転する。** 世界を縦に鏡映して
-        // 渡しているので、鏡の中では回る向きも逆になる
-        translate(car.place.x, -here.height, car.place.y)
+        // **世界の回転を写し (``Apex/screen(_:_:_:)``) で挟み直す。** 写しは z 軸まわりの
+        // 180° の回転なので、Y と X の回転は向きが逆になり、Z はそのまま残る。
+        //
+        // 世界では、ヨー θ は +z を (sin θ, 0, cos θ) へ回す Ry(θ)・鼻上げは Rx(−pitch)・
+        // 右旋回で外 (左) へ傾くのは Rz(+lean) である。挟むと Ry(−θ)・Rx(+pitch)・Rz(+lean)
+        let spot = Apex.screen(car.place.x, here.height, car.place.y)
+        translate(spot.x, spot.y, spot.z)
         rotateY(-car.yaw)
-        rotateX(-pitch)
-        rotateZ(-car.lean)
+        rotateX(pitch)
+        rotateZ(car.lean)
 
         shape(shell, at: [Placement(fill: Palette.linear(colour))])
         shape(trim)
 
         for axle in Apex.axles {
             push()
-            translate(axle.x, -5.2, axle.z)
-            // **舵は前輪だけ。** 実際に効く舵角より大きく振る (見て分かるように)
+            let hub = Apex.screen(axle.x, 5.2, axle.z)
+            translate(hub.x, hub.y, hub.z)
+            // **舵は前輪だけ。** 実際に効く舵角より大きく振る (見て分かるように)。
+            // 世界の Ry(+舵)・Rx(+回り) を挟んだもの
             if axle.front { rotateY(-car.steer * Math.radians(24)) }
             rotateX(-car.spin)
             shape(wheel)

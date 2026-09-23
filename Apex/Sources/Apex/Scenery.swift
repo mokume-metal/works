@@ -70,11 +70,12 @@ enum Scenery {
                 let across = hand * (inner + (outer - inner) * jitter(s * 0.021 + seed, 3))
                 // 裾は外へ向かって下がるので、その傾きに乗せる
                 let lift = -30 * Math.unit((abs(across) - 110) / 340)
-                let spot = frame.point + Track.side(frame.heading) * across
+                let ground = frame.point + Track.side(frame.heading) * across
+                // **渡す座標なので写しを通す** (``Apex/screen(_:_:_:)``)
+                let spot = Apex.screen(ground.x, frame.height + lift, ground.y)
                 places.append(
                     Placement(
-                        // **渡す座標なので y は反転する。**
-                        x: spot.x, y: -(frame.height + lift), z: spot.y,
+                        x: spot.x, y: spot.y, z: spot.z,
                         scale: 0.7 + 0.9 * jitter(s * 0.017 + seed, 7),
                         rotation: SIMD3(0, -jitter(s * 0.031 + seed, 5) * 2 * Float.pi, 0)))
             }

@@ -77,10 +77,11 @@ final class Apex: Sketch {
         look()
 
         ambientLight(96, 104, 118)
-        // **光の向きも y を反転して渡す。** 世界の上から差す光が、絵でも上から差すように。
+        // **光の向きも同じ写しを通して渡す。** 世界の上から差す光が、絵でも上から差すように。
         // **影を落とすのは向きを持つ光の 1 本目だけ**なので、これがその 1 本になる。
         // 真上に近いと影が車の真下に潰れるので、**太陽は低く置く** (仰角 33 度)
-        directionalLight(255, 244, 228, -0.58, -0.54, 0.61)
+        let sun = Apex.screen(-0.58, 0.54, 0.61)
+        directionalLight(255, 244, 228, sun.x, sun.y, sun.z)
 
         // **影の切り取りは、いまの注視点を中心に取られる。** 追うカメラでは注視点が
         // 車の少し先にあるので、車のまわりだけを高い細かさで焼ける。範囲が足りないと
@@ -191,19 +192,43 @@ final class Apex: Sketch {
         pending = 0
     }
 
+    /// 世界の点を、mokume へ渡す座標へ写す。
+    ///
+    /// ## y と一緒に x も反転する
+    ///
+    /// 世界は y 上向きで持ち、mokume の縦は下向きなので y の符号を変える。**y だけを
+    /// 変えると鏡映になる** (行列式が −1) — 絵の左右が裏返り、右カーブが画面で左へ
+    /// 曲がり、`D` を押した車が画面の左へ向いた。x も一緒に変えると z 軸まわりの
+    /// 180° の回転になり、右は右のまま写る。
+    ///
+    /// **世界の回転は、この写しで挟むと Y と X の向きが逆になり、Z はそのまま残る**
+    /// (`put` が置くときに使う)。
+    static func screen(_ x: Float, _ y: Float, _ z: Float) -> SIMD3<Float> {
+        SIMD3(-x, -y, z)
+    }
+
     /// 頂点の並びを 1 つの形へ焼く。
     ///
-    /// **y はここで反転する。** 世界は上向きで持ち、渡す直前に符号を変える
+    /// **写しはここで通す** (``screen(_:_:_:)``)。
+    ///
+    /// **三角形ごとに 2 点目と 3 点目を入れ替える。** mokume は不透明な面の裏を捨て、
+    /// 表の向きは画面で時計回りに決まっている。世界の側 (路面・立体) は「外向きの
+    /// 法線とは逆に巻く」約束で並べてあり、これは鏡映の写しで表を向く巻きだった。
+    /// 写しを回転に変えたぶん、ここで巻きを 1 度だけ裏返す
     func form(_ corners: [Corner]) -> Shape {
         guard !corners.isEmpty else { return .empty }
         return createShape {
             noStroke()
             beginShape(.triangles)
-            for corner in corners {
-                // **塗りは頂点ごとに置く。** 明示しないと 1 枚も置かれない
-                fill(corner.r, corner.g, corner.b)
-                normal(corner.nx, -corner.ny, corner.nz)
-                vertex(corner.x, -corner.y, corner.z)
+            for first in stride(from: 0, to: corners.count - 2, by: 3) {
+                for corner in [corners[first], corners[first + 2], corners[first + 1]] {
+                    // **塗りは頂点ごとに置く。** 明示しないと 1 枚も置かれない
+                    fill(corner.r, corner.g, corner.b)
+                    let n = Apex.screen(corner.nx, corner.ny, corner.nz)
+                    normal(n.x, n.y, n.z)
+                    let p = Apex.screen(corner.x, corner.y, corner.z)
+                    vertex(p.x, p.y, p.z)
+                }
             }
             endShape()
         }
@@ -328,10 +353,10 @@ final class Apex: Sketch {
     }
 
     func look() {
-        // **世界は y 上向き、渡すのは下向き。**
-        camera(
-            chase.eye.x, -chase.eye.y, chase.eye.z,
-            chase.look.x, -chase.look.y, chase.look.z, 0, 1, 0)
+        // **目と注視点も同じ写しを通す。** 上の向きは mokume の約束どおり (0, 1, 0) で渡す
+        let eye = Apex.screen(chase.eye.x, chase.eye.y, chase.eye.z)
+        let at = Apex.screen(chase.look.x, chase.look.y, chase.look.z)
+        camera(eye.x, eye.y, eye.z, at.x, at.y, at.z, 0, 1, 0)
         perspective(chase.lens, width / height, 6, 26000)
     }
 }
