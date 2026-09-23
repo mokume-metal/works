@@ -174,8 +174,8 @@ final class Apex: Sketch {
     /// スタートラインの手前へ並べ直す。
     func restart() {
         race = Race(count: 1 + rivals.count)
-        // **ラインの手前の直線に並べる。** 制御点を組み直して、スタートラインの
-        // 前後が直線になるようにしてある。左右へ振り分けるのは実際のグリッドと同じ
+        // **ラインの手前の直線に並べる。** 線の手前 37 m までが厳密に直線になるよう
+        // 制御点を並べてある (`Track.control`)。左右へ振り分けるのは実際のグリッドと同じ
         cars = (0...rivals.count).map { index in
             let grid = track.frame(at: track.length - (70 + Float(index) * 95))
             let hand: Float = index % 2 == 0 ? -28 : 28
