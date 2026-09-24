@@ -50,8 +50,10 @@ def text(version: str) -> str:
 def names(text: str) -> set[str]:
     """一覧の Markdown から呼べる名前を起こす。
 
-    **Atlas の台帳が使っている判定と同じ形**にしてある (`Atlas/scripts/ledger.py`)。
-    ここを変えると台帳の区分が動くので、両方が同じ集合を見ていることが要る。
+    **probes の Atlas の台帳が使っている判定と同じ形**にしてある (probes の
+    `Atlas/scripts/ledger.py` は、probes に写したこのファイルを import する)。ここを
+    変えるなら probes の写しも同じに変える — 台帳の区分が動くので、両方が同じ集合を見て
+    いることが要る。
     """
     found: set[str] = set(re.findall(r"^## (\w+)", text, re.M))          # 型
     found |= set(re.findall(r"\bfunc\s+([a-zA-Z_]\w*)", text))            # 関数

@@ -16,8 +16,8 @@
 **リリースノートも取りこぼす。** `v0.6.0` の `## 破壊的変更` は 2 件しか挙げていないが、
 `## 新機能` の中に太字で 2 件が埋まっており、さらに 4 件はノートに 1 度も出てこない。
 
-見ているのは署名の字面だけで、**振る舞いの変化は写らない**。Atlas の台帳が「予測で
-あって検証ではない」と書いているのと同じ限界がここにもある。
+見ているのは署名の字面だけで、**振る舞いの変化は写らない**。振る舞いを突くのは
+[probes](https://github.com/mokume-metal/probes) の物差しの仕事である。
 """
 
 import subprocess
@@ -31,9 +31,9 @@ import pieces  # noqa: E402
 def touched(names: set[str]) -> dict[str, list[str]]:
     """その名前に works のどこが触れているか。
 
-    **Swift だけ見ると足りない。** Atlas の台帳 (`vocabulary.jsonl` / `summary.md`) は
-    mokume の口を名指しで持っているし、README は語彙の対応表を持っている。
-    works#21 が「該当ゼロ件」と結論したとき、見ていたのは Swift だけだった。
+    **Swift だけ見ると足りない。** README は語彙の対応表を持っていて、mokume の口を
+    名指しで書いている。works#21 が「該当ゼロ件」と結論したとき、見ていたのは Swift だけ
+    だった (当時は台帳 `Atlas/ledger/*.jsonl` も触れていた。Atlas は probes へ移した)。
     """
     out: dict[str, list[str]] = {}
     for name in sorted(names):

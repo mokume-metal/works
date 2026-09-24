@@ -12,7 +12,7 @@
 
 ## 何を測るか
 
-Garden・Solids・Ring が測ったのは p5.js の**語彙の対応**で、Atlas はそれを全数に広げた台帳である。**どれも資産を読まない。** `Solids` が `loadModel()` を通したが、読んだのは自分で書いた 14 面の矢じりで、材質もテクスチャも持たない。
+Garden・Solids・Ring が測ったのは p5.js の**語彙の対応**で、[Atlas](https://github.com/mokume-metal/probes/tree/main/Atlas) (いまは probes にある) はそれを全数に広げた台帳である。**どれも資産を読まない。** `Solids` が `loadModel()` を通したが、読んだのは自分で書いた 14 面の矢じりで、材質もテクスチャも持たない。
 
 three.js のリッチな 3DCG が実際に使っているのは、語彙ではなく**資産と質感のパイプライン**である。`webgl_loader_gltf` の中身を読むと 5 つ揃っている:
 
