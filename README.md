@@ -23,14 +23,12 @@
 **最初の product が黙って起動する**。
 
 **作品は普通に作った例として置く。** 絵を書き出す口も、組み立てを測る口も持たない —
-道具を測る仕掛けは、作品を読もうとした人が最初に出会うものではないからである。原典 157 本の
-語彙を数える Atlas だけが**物差し**で、あちらは台帳 (`ledger/`) を持つが、**絵を書き出す口は
-同じく持たない** ([#39](https://github.com/mokume-metal/works/pull/39) で畳んだ)。
+道具を測る仕掛けは、作品を読もうとした人が最初に出会うものではないからである。
 
-**[Probe](Probe/) は 2 本目の物差しで、約束が期待どおりに出るかを突く。** 同じ絵になるはずの
-2 つの経路で描いて比べ、画素を読む検査 (`Tests/`) を持つ。書き出す絵は検査の中で読むだけで、
-コミットはしない。
-[Drift](Drift/) は同じ形で**動き**を比べる 3 本目で、フレームを重ねてはじめて出る食い違いを突く。
+**mokume を測る物差しは [probes](https://github.com/mokume-metal/probes) に置く。** 原典 157 本の
+語彙を数える Atlas、約束を 1 枚の絵で突く Probe、動きで突く Drift の 3 本は、もともとここに
+あったが、2026-09 にあちらへ移した ([#100](https://github.com/mokume-metal/works/pull/100))。
+移す前の履歴はこのリポジトリで辿れる。
 
 **縛っているのは product が 1 つであることで、スケッチの数ではない。** Grain は
 `Grain slab` で 2 本目を持ち、product は 1 つなので `mokume run` の側からは同じに見える。
@@ -43,21 +41,8 @@
   Package.resolved     どの mokume で描いたか。コミットする
   README.md            その作品の記録
   Sources/<作品>/       スケッチ (assets を置くならこの下・宣言も要る)
-  Tests/<作品>Tests/    振る舞いの検査。持つものだけ (いまは Apex・Probe・Drift)。product は増えない
+  Tests/<作品>Tests/    振る舞いの検査。持つ作品だけ (いまは Apex)。product は増えない
 ```
-
-**[Atlas](Atlas/) だけがこの形に収まらない。** あちらは作品ではなく物差しで、Processing の
-例 157 本を**それぞれ独立した mokume のスケッチ**として持つ — 1 フォルダの中に 157 個の
-`Package.swift` がある。**引数で例を選ぶ形をやめたのは、`mokume watch` が通らないため**で、
-1 本ずつ手元で見るには 1 本ずつがパッケージである必要があった。
-
-```bash
-mokume watch Atlas/Examples/Basics/Input/Mouse2D
-```
-
-作品を数える道具 ([`scripts/pieces.py`](scripts/pieces.py)) は**直下に `Package.swift` を
-持つディレクトリ**を 1 作品として数えるので、入れ子の 157 枚は拾わない。Atlas はいまも
-1 作品で、`Atlas/Package.swift` は例が引く共有の面と版の正本を持つ (executable は無い)。
 
 開発は CLI から:
 
@@ -90,7 +75,6 @@ brew upgrade mokume                    # 古いと感じたら
 | [Garden](Garden/) | p5.js の Data Structure Garden を 1 行ずつ移した庭。作品であると同時に、p5 の語彙との対応を測る物差し |
 | [Solids](Solids/) | p5.js の 3D Geometries を 1 行ずつ移した立体の並び。Garden が測らなかった**立体の**語彙の物差し |
 | [Ring](Ring/) | p5.js の Triangle Strip を 1 行ずつ移した虹の輪。原形の外へ出る唯一の道である**頂点列**の物差し |
-| [Atlas](Atlas/) | Processing の Examples を全数で当てた台帳と、[公式ページ](https://processing.org/examples/)の 162 本のうち移せる 157 本の実測。**作品ではなく物差し**で、1 本ずつでは出ない「どの欠けが何本の例を止めるか」を数える。**mokume `v0.6.0` で 26 本が `clean` へ移り、台帳が重いと数えた欠けから順に埋まった** |
 | [Helmet](Helmet/) | three.js の webgl_loader_gltf 相当を目標に、Khronos の DamagedHelmet を読んで PBR で見せようとした記録。語彙ではなく**資産と質感のパイプライン**を測る 1 本目。**絵を 1 枚貼るところで折れ**、その原因は mokume `v0.6.0` で直った |
 | [Nebula](Nebula/) | 4K の面に 100 万粒を撒き、3 次元の渦に巻いて瞬かせる星雲。**粒 (`makeParticles`) を使う 1 本目**で、mokume 自身が描いたことのない規模 (上流の参照スケッチは最大 24,000 粒) を測る物差しでもある。**確保も 60fps も通り、足りなかったのは「動く粒をキラキラさせる語彙」のほう** |
 | [Prism](Prism/) | 白色光を三角プリズムへ通し、波長ごとの屈折率差で虹に分ける幾何光学。**触って動かせる 1 本目**で、光線ではなく**幅を持つ帯**を追うので扇は連続したグラデーションになる。毎フレームの仕事の大半が CPU にある作品も初めてで、**release と debug で 3.2 倍の差**が出た |
@@ -100,10 +84,8 @@ brew upgrade mokume                    # 古いと感じたら
 | [Cast](Cast/) | 1 つの塊が、向きによって円・三角・四角の影を落とす 48 秒。**影を落とす 1 本目**で、読めるのは影だけ — 塊は距離の関数 `f ≤ 0` として彫ってあり、**影が狙いの外へ出ないことが定義から出る** (欠けだけが起きる)。4 つの幕はどれも同じ式の別の見え方で、**塊を回すことと光を回すことが同じ**だと最後に分かる |
 | [Marble](Marble/) | 墨を流して指でかき混ぜる水盤。**計算 (`compute`) を使う 1 本目**で、絵は毎フレーム解いた非圧縮 Navier–Stokes の積分結果 — 置いている図形は矩形 1 枚だけで、状態は GPU の並びにしかない。**混ぜても濁らない**のは非圧縮の流れが伸ばして畳むだけだからで、色は `mix` でも加算でもなく**吸収 (Lambert–Beer) で混ざる** |
 | [Apex](Apex/) | 3 周を走って順位を競うサーキット。**勝ち負けと終わりがある 1 本目**で、12 本の眺めと、触れる Prism・Quarry・Marble のどれにも目的は無かった。**「全開では曲がれない」はタイヤが出せる横 G の上限で角速度を頭打ちにする 1 行から出る** — ヘアピンを回れるのは 54 km/h、高速コーナーは 120 km/h と、コーナーごとの差が同じ式から出る。相手の 3 台は人と同じ操作の構造体しか返せないので、速いとしたら同じ車をうまく操っているからである。**追うカメラと、速さで広がる視野角**もここが初めて |
-| [Probe](Probe/) | mokume `v0.11.0` の継ぎ目を突いた記録。**作品ではなく物差し**で、候補 1 件を同じ絵になるはずの 2 つの経路で描き、窓では左右に並べて目で、`swift test` では画素で比べる。**13 件を突いて 8 件が約束を破っており、mokume へ 8 件の Bug と 1 件の docs を戻した** (鏡映した立体の裏面・透明な下地の上の混ぜ方・楕円の `arc`・`curveVertex` の穴・範囲外の不透明度・細い線の濃さ・右揃えの末尾の空白・`lerp` の端)。直ると `withKnownIssue` が赤くなって知らせる |
-| [Drift](Drift/) | mokume `v0.11.0` の**フレームをまたぐ**継ぎ目を突いた記録。Probe と同じく**作品ではなく物差し**で、候補 1 件を同じ動きになるはずの 2 つの経路で描き、窓では左右に並べた動きで、`swift test` では `SketchRuntime` で N 枚回して画素で比べる。**6 件を突いて 6 件とも約束を破っており、mokume へ 6 件の Bug を戻した** (描き場所の時刻・噴き口どうしの繰り越し・残像への効果の焼き込み・`numbers` の寿命・低い fps の `drag`・止まっている間の変換)。1 枚目では食い違わず、フレームを重ねてはじめてずれる |
 
-**Probe と Drift を除く 14 作品が mokume `v0.9.0` を引いている** (物差しの 2 本は、測る版の `v0.11.0` で始めた)。 物差しの [Atlas](Atlas/) も [#78](https://github.com/mokume-metal/works/pull/78) で追いつき、語彙の台帳の判定も [#77](https://github.com/mokume-metal/works/issues/77) で `v0.9.0` に揃えた (157 枚の入れ子パッケージと台帳を持つので、手順がまるごと違って最後になる)。
+**13 作品が mokume `v0.9.0` を引いている。**
 
 **`v0.7.0` への追随で 2 つ踏んだ。** どちらも #983 が描画の受け口を `Float` から
 `some ScalarConvertible` へ広げた副作用で、**総称の引数では型推論の既定が変わる**ことによる:
@@ -111,12 +93,13 @@ brew upgrade mokume                    # 古いと感じたら
 | 踏んだもの | | 効き方 |
 | --- | --- | --- |
 | `rotateX(.pi)` が通らなくなった (暗黙メンバ参照が解決できない) | [mokume#1017](https://github.com/mokume-metal/mokume/issues/1017) | **赤くなる。** Atlas 22 箇所・Solids 1 箇所を `Float.pi` へ書き換えた |
-| `fill(255, 255 * 50 / 100)` が 127.5 から 127 になる (リテラルが `Int` へ倒れ整数除算になる) | [mokume#1018](https://github.com/mokume-metal/mokume/issues/1018) | **黙る。** Atlas の `additivewave-1.png` が動いて初めて気付いた |
+| `fill(255, 255 * 50 / 100)` が 127.5 から 127 になる (リテラルが `Int` へ倒れ整数除算になる) | [mokume#1018](https://github.com/mokume-metal/mokume/issues/1018) | **黙る。** 当時ここにあった Atlas の `additivewave-1.png` が動いて初めて気付いた |
 
 後者は**指紋を持っていたから見つかった**。絵のハッシュを版ごとに記録していなければ、
 「そういう絵だった」で通り過ぎていた。**その指紋はもう無い** — Atlas が絵を撮って突き合わせる
 仕組みを畳み ([#39](https://github.com/mokume-metal/works/pull/39))、作品からも計測と検証を
-外した ([#40](https://github.com/mokume-metal/works/pull/40))。同じことが次に起きたら通り
+外した ([#40](https://github.com/mokume-metal/works/pull/40))。Atlas は後に物差しとして
+[probes](https://github.com/mokume-metal/probes) へ移った。同じことが次に起きたら通り
 過ぎる。**版を上げたら窓を開けて目で見る**、がいまの担保である。承知のうえで、works に置くのは
 作品の例だと決めた。
 
@@ -172,7 +155,6 @@ mokume は週に 1 度 (月曜 00:00 UTC) 版を出す。**追随は works の�
 python3 scripts/status.py      # いま何を引いていて、mokume はどこまで行っているか
 python3 scripts/api-diff.py    # 版の間で増えた口・消えた口
 python3 scripts/bump.py 0.7.0  # 引く版を上げる (中身は変えない)
-python3 scripts/verify.py      # ビルドと版の刻印が揃っているか (台帳を持つ Atlas だけ)
 python3 scripts/upstream.py    # 戻した Issue がいまどうなっているか
 ```
 
@@ -186,11 +168,6 @@ python3 scripts/upstream.py    # 戻した Issue がいまどうなっている�
 **遅れていること自体は赤にしない** — 差は情報であって故障ではないので、ジョブが落ちるのは
 *見に行けなかった* ときだけである。手順の正典は
 [`.claude/skills/mokume-bump/`](.claude/skills/mokume-bump/SKILL.md)。
-
-**`checks.json` を持つのは Atlas だけで、いまは版の刻印しか持たない** (絵の期待ハッシュは
-[#39](https://github.com/mokume-metal/works/pull/39) で空になった)。その README の「検証する」
-節は印 (`<!-- verify:pins -->` / `<!-- verify:renders -->`) で囲った区間だけが生成物である。
-**手で書いた数字は腐る** — 囲いの外の散文は手書きのままなので、何が動いたのかはそこへ書く。
 
 **作品には台帳が無いので、版上げで動くのは `Package.swift` と `Package.resolved` だけ**
 である。絵が動いたかどうかは走らせて見て、気付いたことは各 README の散文へ書く。

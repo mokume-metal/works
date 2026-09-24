@@ -4,10 +4,8 @@
     python3 scripts/status.py           # 一覧
     python3 scripts/status.py --check   # 追随が要るなら終了コード 1 (CI が見る)
 
-**版は 2 か所か 3 か所にある。** `Package.swift` の `from:` は記録 (留め金ではない)、
-`Package.resolved` が実際に固定している版。**台帳 (`checks.json`) を持つ物差しでは**
-さらにその期待ハッシュを測ったときの版が載る。揃っていないと、どれかの作業が途中で
-止まっている。台帳を持たない作品では「測った版」は `—` になる。
+**版は 2 か所にある。** `Package.swift` の `from:` は記録 (留め金ではない)、
+`Package.resolved` が実際に固定している版。揃っていないと、版上げが途中で止まっている。
 """
 
 import subprocess
@@ -34,20 +32,15 @@ def main(argv: list[str]) -> int:
     rows = []
     for path in pieces.pieces():
         pin = pieces.pinned(path)
-        # 台帳を持つのは物差しの側だけなので、測った版が無い作品がある
-        checks = pieces.load_checks(path) if pieces.has_checks(path) else None
         rows.append({
             "piece": path.name,
             "declared": pieces.declared(path),
             "resolved": pin["version"],
-            "measured": checks["mokume"] if checks else None,
             "behind": pin["version"] != latest["version"],
         })
 
     behind = [r for r in rows if r["behind"]]
-    ragged = [r for r in rows
-              if r["declared"] != r["resolved"]
-              or (r["measured"] is not None and r["measured"] != r["resolved"])]
+    ragged = [r for r in rows if r["declared"] != r["resolved"]]
 
     if check:
         if behind:
@@ -57,12 +50,11 @@ def main(argv: list[str]) -> int:
 
     print(f"## mokume は `{latest['tag']}` ({latest['published'][:10]} 公開)\n")
     print(f"手元の道具: {tool()}\n")
-    print("| 作品 | `Package.swift` | 解決している版 | 測った版 | |")
-    print("| --- | --- | --- | --- | --- |")
+    print("| 作品 | `Package.swift` | 解決している版 | |")
+    print("| --- | --- | --- | --- |")
     for r in rows:
         mark = "**追随していない**" if r["behind"] else ("**揃っていない**" if r in ragged else "追随済み")
-        measured = f"`{r['measured']}`" if r["measured"] else "—"
-        print(f"| {r['piece']} | `{r['declared']}` | `{r['resolved']}` | {measured} | {mark} |")
+        print(f"| {r['piece']} | `{r['declared']}` | `{r['resolved']}` | {mark} |")
 
     if behind:
         print(f"\n**{len(behind)} 作品が `v{latest['version']}` を引いていない。**"
@@ -70,7 +62,7 @@ def main(argv: list[str]) -> int:
         if breaking := mokume_api.breaking(latest["body"]):
             print(f"\n### `{latest['tag']}` の破壊的変更\n\n{breaking}")
     elif ragged:
-        print("\n**版の記録が揃っていない作品がある。** `verify.py --check` が理由を出す。")
+        print("\n**`Package.swift` の `from:` と解決している版が揃っていない作品がある。**")
     else:
         print("\n全作品が最新の mokume を引いていて、記録も揃っている。")
     return 0
