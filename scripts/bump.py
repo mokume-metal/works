@@ -17,6 +17,8 @@
 上げたら窓を開けて目で見る。**絵が動いたなら、その理由を README の散文へ書く。**
 """
 
+from __future__ import annotations
+
 import pathlib
 import re
 import subprocess
