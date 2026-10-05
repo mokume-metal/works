@@ -388,7 +388,7 @@ final class Quarry: Sketch {
     func mouseReleased() {
         guard swept < 6 else { return }
         guard let aim else { return }
-        if mouseButton == 0 {
+        if mouseButton == .left {
             world.set(aim.x, aim.y, aim.z, .air)
         } else {
             let place = aim.beside

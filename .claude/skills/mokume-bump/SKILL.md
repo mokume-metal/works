@@ -84,6 +84,20 @@ python3 scripts/bump.py 0.7.0      # ① Package.swift と Package.resolved (全
 スケッチが自分で書き出すことはあるので、**手で走らせたら `git status` を見て、未追跡のファイルが
 増えていないか確かめる**。
 
+### 動かして確かめるとき
+
+- **全作品の実走は `mokume render --fps 30 --seconds 2 --out <路>/f-####.png` で足りる。** 窓を開かず、
+  同じ引数なら同じ絵が出る (時計を読む作品も 1 ビットも違わない)。**ただし書き出せるのは版を上げたあとのライブラリだけ**
+  — `v0.9.0` のライブラリは `render` の経路を持たず、窓を開いたまま止まる。**旧い版の基準線は `render` では取れない**ので、
+  版を上げる前に自分で取るか、取れなかったと README へ書く。いまの書き出しが次の基準線になる
+- **道具 (CLI) が配られる版は、ライブラリより遅れることがある。** Homebrew の tap がまだ 1 版前のとき、
+  ライブラリだけ新しいと `mokume mcp` の `observe` が黙る (`mokume doctor` が版の不一致を警告する)。
+  同じタグを clone して `swift build -c release --product mokume-cli` した**使い捨ての道具で揃える** — 置き場は
+  リポジトリの外 (作業用のディレクトリ) にして、常用しない。観測 (`.mokume/observe`) と入力 (`.mokume/input`) の区画は
+  **起動したときに在る**必要があるので、先に `mkdir -p` してから走らせる
+- **Helmet は `upstream/` (gitignore 済みの資産) が無いと「glTF が読めていない」と出る。** 取り直す前に、
+  ほかの worktree に取得済みのものが無いか探して複製する (`sources.json` が同じなら同じ資産である)
+
 ## mokume へ戻す
 
 判断の表はルート README にある (できない → `Feature` / 期待と違う → `Bug`)。
