@@ -199,8 +199,9 @@ final class Nebula: Sketch {
     /// 3 次元の球へ撒く。**回ごとに色と濃さを変える。**
     ///
     /// `rate` は毎秒の数なので、1 フレームで出したい数を `deltaTime` で割って渡す。
-    /// 初速が面内 (`vz = 0`) にしかならないのは mokume の `emit` の作りなので、
-    /// 奥行きの動きは初期位置と力のほうから作っている。
+    /// 初速は全方位 (`toward: .sphere`) へ向ける。**ただし絵を決めているのは初速ではない** —
+    /// 撒いて 2 秒もすると粒は力の言うなりになっていて (面内へ撒いた形と比べても、種を
+    /// 変えたのと同じ差しか出なかった)、奥行きの動きはいまも初期位置と力のほうから作っている。
     private func scatter(_ dust: Particles) {
         let batch = min(capacity / batches, capacity - seeded)
         let index = seeded / max(capacity / batches, 1)
@@ -211,7 +212,7 @@ final class Nebula: Sketch {
         let spread = ring * (0.3 + 1.0 * Float(index) / Float(max(batches - 1, 1)))
         emit(
             dust, from: .sphere(center.x, center.y, center.z, radius: spread),
-            toward: .plane(0...(2 * Float.pi)),
+            toward: .sphere,
             rate: Float(batch) / max(deltaTime, 1e-6),
             speed: 0...500,
             // 撒き切りで動かし続けるので、寿命は走らせる時間より長く取る
