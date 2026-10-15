@@ -43,8 +43,9 @@ final class Quarry: Sketch {
     private var aim: Hit?
     /// 手に持っている種類の番号。
     private var holding = 0
-    /// 押してから離すまでに動いた量 (画素)。**クリックとドラッグはこれで分ける。**
-    private var swept: Float = 0
+    /// カーソルを捕まえた押下の位置。**捕まっているかはこれで読む** — 捕まっている間は
+    /// `mouseX` / `mouseY` がここに留まる。外れていれば `nil`
+    private var anchor: SIMD2<Float>?
     /// 何か触ったか。**触ったら手引きを引っ込める。**
     private var touched = false
 
@@ -105,6 +106,9 @@ final class Quarry: Sketch {
         expose("chunks", drawn)
         expose("sun", weather.elevation)
         expose("aim", aim != nil)
+        expose("grabbed", grabbed)
+        expose("yaw", walker.yaw)
+        expose("pitch", walker.pitch)
         expose("raiseMs", raiseMs)
     }
 
@@ -136,6 +140,8 @@ final class Quarry: Sketch {
         // **太陽を背にして始める。** 逆光だと最初の絵で面の向きが読めない
         walker.yaw = 0.7 + .pi
         walker.pitch = -0.12
+        // 要求だけ出しておく。**捕まるのは面を押したとき**で、要求は放すまで残る
+        requestPointerLock()
     }
 
     /// 立つ場所を探す。
@@ -351,6 +357,13 @@ final class Quarry: Sketch {
             x += slot + gap
         }
 
+        // 外れている間は、捕まえ直す手を中央に出す
+        if touched, !grabbed {
+            fill(250, 250, 252, 220)
+            textSize(18)
+            text("クリックで見まわす", mid.x - 81, mid.y + 44)
+        }
+
         // はじめの手引き。**触ったら引っ込む。**
         let fade = touched ? 0 : min(max((14 - time) / 3, 0), 1)
         if fade > 0.01 {
@@ -358,7 +371,8 @@ final class Quarry: Sketch {
             textSize(20)
             let lines = [
                 "W A S D — 歩く / Space — 跳ぶ",
-                "ドラッグ — 見まわす",
+                "クリック — カーソルを捕まえる / Esc — 放す",
+                "マウス — 見まわす",
                 "クリック — 掘る / 右クリック — 積む",
                 "1…7 — 持ちかえる",
             ]
@@ -370,23 +384,27 @@ final class Quarry: Sketch {
 
     // MARK: - 触る
 
-    func mousePressed() {
-        swept = 0
-        touched = true
-    }
-
-    func mouseDragged(deltaX: Float, deltaY: Float) {
-        walker.turn(by: SIMD2(deltaX, deltaY))
-        swept += abs(deltaX) + abs(deltaY)
-        touched = true
-    }
-
-    /// 離したところで決める。
+    /// 捕まっているか。
     ///
-    /// **ドラッグとクリックを分けるため。** 見まわすのも掘るのも同じボタンなので、
-    /// 押した瞬間に掘ると、振り向こうとしただけで足元に穴が開く
-    func mouseReleased() {
-        guard swept < 6 else { return }
+    /// **mokume には読む口が無い**ので、捕まえた押下の位置にカーソルが留まっているかで読む。
+    /// Escape はキーとして届くので自分で下ろせるが、窓が退いて外れたときは知らせが来ない —
+    /// そのときも、戻ってきたカーソルは別の位置にいるので外れたと分かる
+    private var grabbed: Bool {
+        guard let anchor else { return false }
+        return anchor == SIMD2(mouseX, mouseY)
+    }
+
+    /// 押した瞬間に決める。
+    ///
+    /// **捕まっていないときの押しは、捕まえるだけにする。** それで掘ると、見まわし始めようと
+    /// しただけで目の前に穴が開く。見まわすのと掘るのが別の手になったので、押してから
+    /// 離すまでの移動量でクリックとドラッグを分ける必要はもう無い
+    func mousePressed() {
+        touched = true
+        guard grabbed else {
+            anchor = SIMD2(mouseX, mouseY)
+            return
+        }
         guard let aim else { return }
         if mouseButton == .left {
             world.set(aim.x, aim.y, aim.z, .air)
@@ -396,6 +414,16 @@ final class Quarry: Sketch {
             guard !overlapsBody(place) else { return }
             world.set(place.x, place.y, place.z, Block.inHand[holding])
         }
+    }
+
+    /// 動いた量で回す。**押していても回す** — 掘りながら振り向けるように
+    func mouseMoved(deltaX: Float, deltaY: Float) {
+        guard grabbed else { return }
+        walker.turn(by: SIMD2(deltaX, deltaY))
+    }
+
+    func mouseDragged(deltaX: Float, deltaY: Float) {
+        mouseMoved(deltaX: deltaX, deltaY: deltaY)
     }
 
     /// 置こうとしている場所が自分と重なるか。
@@ -413,6 +441,8 @@ final class Quarry: Sketch {
     func keyPressed() {
         touched = true
         guard let code = keyCode else { return }
+        // Escape で mokume がカーソルを放す。**要求は残る**ので、次に押せば捕まえ直す
+        if code == .escape { anchor = nil }
         held.insert(code.rawValue)
 
         let digits: [Key] = [.digit1, .digit2, .digit3, .digit4, .digit5, .digit6, .digit7]
