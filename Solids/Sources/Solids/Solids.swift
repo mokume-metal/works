@@ -152,9 +152,10 @@ final class Solids: Sketch {
     ///
     /// 原典は `angleMode(DEGREES)` を宣言して `rotateZ(frameCount)` と書く。
     /// **mokume に `angleMode()` は無い** — 単位を切り替える状態を持たない作りなので、
-    /// 度で考えた角は `radians()` を通して渡す (`v0.6.0` から面にある)。
+    /// 度で考えた角は `radians()` を通して渡す (`v0.6.0` から面にある)。`v0.24.0` から
+    /// `Int` をそのまま受けるので、`frameCount` を `Float` へ直さずに渡せる。
     private func rotateWithFrameCount() {
-        let degree = radians(Float(frameCount))
+        let degree = radians(frameCount)
         rotateZ(degree)
         rotateX(degree)
         rotateY(degree)
