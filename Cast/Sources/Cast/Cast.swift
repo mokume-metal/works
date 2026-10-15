@@ -31,19 +31,18 @@ import simd
 /// 沿って伸び (幕 3)、最後は塊を止めたまま光のほうが 1 周する (幕 4)。**どの幕も
 /// 同じ 1 つの式の別の見え方**で、譜は ``Score`` が持つ。
 ///
-/// ## 状態は再生位置だけ
+/// ## 再生位置を持たない
 ///
 /// 絵は時刻の関数である。時刻を渡すと ``Score/Frame`` が決まり、そこから下は時計を
 /// 読まない。乱数も雑音も使わず、`frameCount` も読まない。**同じ時刻からは同じ絵が
-/// 出る。**
+/// 出る。** 時刻は mokume の `time` をそのまま読み、止める・飛ぶ・擦るは
+/// `pauseTime()` / `playTime()` / `jumpTime(_:)` で mokume の時計へ頼む。
 final class Cast: Sketch {
     var settings = SketchSettings(width: 1920, height: 1080, title: "cast")
 
-    // MARK: - 時計 (ここだけが状態)
+    // MARK: - 時計の操作 (時刻そのものは mokume の `time`)
 
-    /// 再生位置 (秒)。
-    private(set) var playhead: Float = 0
-    /// 動いているか。
+    /// 動いているか。**擦り終えたときに、再開するかどうかをここで決める。**
     private var isPlaying = true
     private var isScrubbing = false
 
@@ -80,12 +79,8 @@ final class Cast: Sketch {
     func draw() {
         bakeIfNeeded()
 
-        // **飛んだフレームで時間を飛ばさない。** 作り直しの後の 1 フレーム目が長い
-        if isPlaying, !isScrubbing {
-            playhead += min(deltaTime, 1.0 / 20)
-        }
         // **ここから下は時計を読まない。** 絵はこの 1 つの構造体の関数である
-        let frame = Score.frame(at: playhead)
+        let frame = Score.frame(at: time)
 
         stage(frame)
         rule()
@@ -150,6 +145,10 @@ final class Cast: Sketch {
         began = Date()
         coverage = Cover.measure(lattice, turns: Cast.turns)
         coverMs = Float(Date().timeIntervalSince(began) * 1000)
+
+        // **焼いていた間を、幕 1 から引かない。** 実時間の `time` は追いつく時計なので、
+        // 焼くのに掛かった秒 (debug で 17 秒) をそのまま飛ばしてしまう。頭から始め直す
+        jumpTime(0)
     }
 
     /// 頂点の並びを 1 つの形へ焼く。
@@ -183,6 +182,7 @@ final class Cast: Sketch {
 
     func mousePressed() {
         isScrubbing = true
+        pauseTime()
         scrub()
     }
 
@@ -193,25 +193,30 @@ final class Cast: Sketch {
 
     func mouseReleased() {
         isScrubbing = false
+        if isPlaying { playTime() }
     }
 
     /// 横の位置を時刻へ写す。**下に敷いた定規と同じ物差しを使う** (``Ruler``)。
     private func scrub() {
-        playhead = Ruler.time(atX: mouseX)
+        jumpTime(Ruler.time(atX: mouseX))
     }
 
     func keyPressed() {
         switch keyCode {
         case Key.space:
             isPlaying.toggle()
+            // 擦っている間は止めたままにして、離したときに決める
+            if !isScrubbing {
+                if isPlaying { playTime() } else { pauseTime() }
+            }
         case Key.arrowLeft, Key.arrowRight:
-            playhead = Score.wrap(playhead + (keyCode == Key.arrowRight ? 0.25 : -0.25))
+            jumpTime(Score.wrap(time + (keyCode == Key.arrowRight ? 0.25 : -0.25)))
         case Key.digit1, Key.digit2, Key.digit3, Key.digit4:
             let keys: [Key] = [.digit1, .digit2, .digit3, .digit4]
             if let index = keys.firstIndex(where: { $0 == keyCode }),
                 index < Score.Act.allCases.count
             {
-                playhead = Score.start(of: Score.Act.allCases[index])
+                jumpTime(Score.start(of: Score.Act.allCases[index]))
             }
         default:
             break
