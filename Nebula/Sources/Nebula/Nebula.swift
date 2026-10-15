@@ -211,8 +211,9 @@ final class Nebula: Sketch {
         let spread = ring * (0.3 + 1.0 * Float(index) / Float(max(batches - 1, 1)))
         emit(
             dust, from: .sphere(center.x, center.y, center.z, radius: spread),
+            toward: .plane(0...(2 * Float.pi)),
             rate: Float(batch) / max(deltaTime, 1e-6),
-            speed: 0...500, angle: 0...(2 * Float.pi),
+            speed: 0...500,
             // 撒き切りで動かし続けるので、寿命は走らせる時間より長く取る
             life: 900...1200, size: star ? 2...4 : 4...9,
             color: tint(index, bright: star))
