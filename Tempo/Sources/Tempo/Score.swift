@@ -17,6 +17,11 @@ enum Score {
     /// ひと回りの長さ (秒)。
     static let loopSeconds: Float = beatsPerLoop * secondsPerBeat
 
+    /// 秒を拍へ。**時計 (mokume の `time`) は秒で進むので、読むところでだけ換える。**
+    static func beat(atSeconds seconds: Float) -> Float { seconds / secondsPerBeat }
+    /// 拍を秒へ。飛ぶ先 (`jumpTime(_:)`) を渡すところでだけ換える。
+    static func seconds(atBeat beat: Float) -> Float { beat * secondsPerBeat }
+
     /// 場面。**5 つで 1 回り。**
     enum Cut: Int, CaseIterable {
         case count, rise, tiles, extrude, fold

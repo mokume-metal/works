@@ -10,9 +10,10 @@ import simd
 /// 絵が決まる。アニメーションを「進める」コードが 1 行も無いので、時間を戻しても
 /// 飛ばしても、同じ拍からは同じ絵が出る。
 ///
-/// スケッチが持つ状態は**再生位置 (`playhead`) と、動かしているかどうか**だけで、
-/// これは時計であって絵ではない。ドラッグで擦れるのはその帰結で、**擦れること自体が
-/// 「状態を持っていない」ことの実演**になっている。
+/// スケッチは**再生位置を持たない。** 拍は mokume の `time` (秒) から毎フレーム導き、
+/// 止める・飛ぶ・擦るは `pauseTime()` / `playTime()` / `jumpTime(_:)` で mokume の
+/// 時計へ頼む。手元に残るのは動かしているかどうかだけである。ドラッグで擦れるのは
+/// その帰結で、**擦れること自体が「状態を持っていない」ことの実演**になっている。
 ///
 /// ## 5 つの場面は 5 つの作品ではない
 ///
@@ -29,11 +30,9 @@ import simd
 final class Tempo: Sketch {
     var settings = SketchSettings(width: 1920, height: 1080, title: "tempo")
 
-    // MARK: - 時計 (ここだけが状態)
+    // MARK: - 時計の操作 (時刻そのものは mokume の `time`)
 
-    /// 再生位置 (拍)。**絵ではなく時計である。**
-    private(set) var playhead: Float = 0
-    /// 動いているか。
+    /// 動いているか。**擦り終えたときに、再開するかどうかをここで決める。**
     private var isPlaying = true
     /// いま擦っているか。
     private var isScrubbing = false
@@ -73,11 +72,7 @@ final class Tempo: Sketch {
     func draw() {
         bakeIfNeeded()
 
-        // **飛んだフレームで拍を飛ばさない。** 作り直しの後の 1 フレーム目が長い
-        if isPlaying, !isScrubbing {
-            playhead += min(deltaTime, 1.0 / 20) / Score.secondsPerBeat
-        }
-        let beat = Score.wrap(playhead)
+        let beat = Score.wrap(Score.beat(atSeconds: time))
 
         render(at: beat)
         dress(at: beat)
@@ -170,6 +165,10 @@ final class Tempo: Sketch {
 
         relief = bakeRelief()
         smear = try? makeEffect(Smear.body, name: "smear", values: Smear.starting)
+
+        // **焼いていた間を、数え始めから引かない。** 実時間の `time` は追いつく時計なので、
+        // 焼くのに掛かった秒をそのまま飛ばしてしまう。頭から始め直す
+        jumpTime(0)
     }
 
     /// 焼いた語を引く。**焼けていなければ空の語**を返す (絵は出ないが落ちない)。
@@ -204,6 +203,7 @@ final class Tempo: Sketch {
 
     func mousePressed() {
         isScrubbing = true
+        pauseTime()
         scrub()
     }
 
@@ -214,27 +214,38 @@ final class Tempo: Sketch {
 
     func mouseReleased() {
         isScrubbing = false
+        if isPlaying { playTime() }
     }
 
     /// 横の位置をひと回りへ写す。**下に敷いた定規と同じ物差しを使う** (``Ruler``)。
     private func scrub() {
-        playhead = Ruler.beat(atX: mouseX)
+        jump(toBeat: Ruler.beat(atX: mouseX))
+    }
+
+    /// その拍へ飛ぶ。**次のフレームから**その拍になる (`jumpTime(_:)` の約束)。
+    private func jump(toBeat beat: Float) {
+        jumpTime(Score.seconds(atBeat: beat))
     }
 
     func keyPressed() {
+        let beat = Score.wrap(Score.beat(atSeconds: time))
         switch keyCode {
         case Key.space:
             isPlaying.toggle()
+            // 擦っている間は止めたままにして、離したときに決める
+            if !isScrubbing {
+                if isPlaying { playTime() } else { pauseTime() }
+            }
         case Key.arrowLeft:
-            playhead = Score.wrap((Score.wrap(playhead) - 0.001).rounded(.down))
+            jump(toBeat: Score.wrap((beat - 0.001).rounded(.down)))
         case Key.arrowRight:
-            playhead = Score.wrap(Score.wrap(playhead).rounded(.down) + 1)
+            jump(toBeat: Score.wrap(beat.rounded(.down) + 1))
         case Key.digit1, Key.digit2, Key.digit3, Key.digit4, Key.digit5:
             let cuts: [Key] = [.digit1, .digit2, .digit3, .digit4, .digit5]
             if let index = cuts.firstIndex(where: { $0 == keyCode }),
                 index < Score.spans.count
             {
-                playhead = Score.spans[index].from
+                jump(toBeat: Score.spans[index].from)
             }
         default:
             break
