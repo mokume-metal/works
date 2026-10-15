@@ -182,7 +182,7 @@ gitignore 済みなので、旧版を別の checkout で撮るときは写して
 (Pond の `Bed`・`School`・`Surface`) のどちらかで、前者はもう同じ語彙を呼べており、後者は描く先が
 走っているスケッチの面ではないので名乗る意味が無い。
 
-**塞がった穴は、まだ使っていない。** works が戻した Issue のうち、次の 4 件がこの間に入った。どれも使えば
+**塞がった穴は、版上げでは使っていない。** works が戻した Issue のうち、次の 4 件がこの間に入った。どれも使えば
 絵か手触りが変わるので、版上げには混ぜず作品ごとに書き直す:
 
 | 塞がったもの | 入った版 | 作品 |
@@ -190,7 +190,7 @@ gitignore 済みなので、旧版を別の checkout で撮るときは写して
 | 字ごとの輪郭と墨の範囲 ([mokume#1284](https://github.com/mokume-metal/mokume/issues/1284)) | `v0.17.0` | Tempo |
 | 時刻を止める・再開する・飛ぶ口 ([mokume#1286](https://github.com/mokume-metal/mokume/issues/1286)) | `v0.19.0` | Cast・Tempo |
 | 粒の初速を 3 次元へ向ける `toward:` ([mokume#1042](https://github.com/mokume-metal/mokume/issues/1042)) | `v0.20.0` | Nebula |
-| カーソルを捕まえて視線を回し続ける ([mokume#1144](https://github.com/mokume-metal/mokume/issues/1144)) | `v0.21.0` | Quarry |
+| カーソルを捕まえて視線を回し続ける ([mokume#1144](https://github.com/mokume-metal/mokume/issues/1144)) | `v0.21.0` | Quarry (使った — [Quarry の「踏んだもの」](Quarry/README.md#カーソルを捕まえられないので視線はドラッグで回すしかなかった--v0210-で塞がった)) |
 
 **`Package.resolved` は作品ごとに持ち、コミットする。** 作品のコミットへ戻れば mokume も
 当時の版に戻るので、別の作品が新しい mokume を要求しても前の作品の再現は壊れない。
