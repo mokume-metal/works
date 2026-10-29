@@ -121,15 +121,15 @@ enum Glyphs {
         while index < rings.count {
             guard !rings[index].isHole else {
                 // 外周に先立つ穴は行き場が無い。落とさずに周としては残す
-                outlines.append(rings[index].points)
+                outlines.append(rings[index].points.map(\.simd))
                 index += 1
                 continue
             }
-            let outer = rings[index].points
+            let outer = rings[index].points.map(\.simd)
             var holes: [[SIMD2<Float>]] = []
             var next = index + 1
             while next < rings.count, rings[next].isHole {
-                holes.append(rings[next].points)
+                holes.append(rings[next].points.map(\.simd))
                 next += 1
             }
             triangles += Stitch.triangulate(outer: outer, holes: holes)

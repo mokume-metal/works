@@ -81,7 +81,7 @@ extension Tempo {
             placements.append(
                 Placement(
                     x: Tiles.centre(of: index).x, y: Tiles.centre(of: index).y, z: lift,
-                    scale: 1, rotation: SIMD3(0, turns * Float.pi, 0), fill: colour))
+                    scale: 1, rotation: Vector3(0, turns * Float.pi, 0), fill: colour))
         }
 
         noStroke()

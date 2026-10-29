@@ -170,7 +170,7 @@ final class Nebula: Sketch {
     /// 渡すのが道具側の想定した使い方で、ここで掴んでいるのは星雲そのものである。
     private func pointer() -> SIMD3<Float> {
         let depth = screenZ(center.x, center.y, center.z)
-        return spacePosition(screenX: mouseX, screenY: mouseY, depth: depth)
+        return spacePosition(screenX: mouseX, screenY: mouseY, depth: depth).simd
     }
 
     /// 押している場所へ輪を置く。

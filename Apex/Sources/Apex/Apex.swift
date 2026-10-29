@@ -319,15 +319,15 @@ final class Apex: Sketch {
 
     /// いま押されているものを操作へ直す。
     ///
-    /// **押しっぱなしは `isKeyDown` で見る。** `keyPressed()` は押しっぱなしで
+    /// **押しっぱなしは `keyboard.isPressed` で見る。** `keyPressed()` は押しっぱなしで
     /// 連射されるので、状態の判定には向かない
     private func wheelAndPedals() -> Controls {
         var wish = Controls()
-        if isKeyDown(.w) || isKeyDown(.arrowUp) { wish.throttle = 1 }
-        if isKeyDown(.s) || isKeyDown(.arrowDown) { wish.brake = 1 }
-        if isKeyDown(.a) || isKeyDown(.arrowLeft) { wish.steer -= 1 }
-        if isKeyDown(.d) || isKeyDown(.arrowRight) { wish.steer += 1 }
-        wish.handbrake = isKeyDown(.space)
+        if keyboard.isPressed(.w) || keyboard.isPressed(.arrowUp) { wish.throttle = 1 }
+        if keyboard.isPressed(.s) || keyboard.isPressed(.arrowDown) { wish.brake = 1 }
+        if keyboard.isPressed(.a) || keyboard.isPressed(.arrowLeft) { wish.steer -= 1 }
+        if keyboard.isPressed(.d) || keyboard.isPressed(.arrowRight) { wish.steer += 1 }
+        wish.handbrake = keyboard.isPressed(.space)
         return wish
     }
 
