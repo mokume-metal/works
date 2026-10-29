@@ -115,7 +115,7 @@ enum Grains {
                 place -= travel * (swell * sin((phase + grain.rank * 2.2) * 2 * Float.pi))
             }
             return Placement(
-                x: place.x, y: -place.y, z: place.z, scale: 1, rotation: .zero, fill: tint)
+                x: place.x, y: -place.y, z: place.z, scale: 1, fill: tint)
         }
     }
 

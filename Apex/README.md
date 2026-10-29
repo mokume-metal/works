@@ -74,7 +74,7 @@ swift test --package-path Apex --build-system native
 ## どの mokume で描いたか
 
 **`Package.resolved` が固定している版がそのまま答えで、コミットしてある。**
-いまは `v0.26.0` である。
+いまは `v0.38.0` である。
 
 **同じ操作からは同じ走りが出る。** 物理はフレームの長さではなく **1/120 秒の固定刻み**で
 進めるので、機械の速さでラップタイムが変わらない。相手の走りも同じ刻みの上にあり、
@@ -94,6 +94,12 @@ swift test --package-path Apex --build-system native
 このときは絵を貼り替えなかった (並べても区別が付かない)。**いまの絵は
 [#88](https://github.com/mokume-metal/works/issues/88) で運動と画面を直したあとに
 `v0.9.0` で撮り直したもの**である。
+
+### v0.38.0 で動いたもの
+
+**2 箇所を書き換えた。** `isKeyDown(_:)` が `v0.27.0` で `keyboard.isPressed(_:)` へ移った ので、操作を読む 5 行をそちらへ。`Placement` の `rotation:` が `SIMD3<Float>` から `Vector3` になったので、木を回す 1 箇所を `Vector3(…)` へ。
+
+**絵は縁だけが動いた。** `mokume render --fps 30 --seconds 3` の 90 枚を `v0.26.0` の書き出しと画素ごとに突き合わせた。 90 枚とも動いたが、1 枚に最大 1528 画素・差は最大 13 / 255 で、動いたのは信号の円と右上の地図の細い線の**縁だけ**である。`v0.31.0`〜`v0.32.0` で楕円の輪郭と 1 画素より細い線の被覆の数え方が直った ([mokume#2913](https://github.com/mokume-metal/mokume/pull/2913)・[#2999](https://github.com/mokume-metal/mokume/pull/2999)) ことによると見ている。上の絵は貼り替えていない。`swift test` は 17 本とも緑。
 
 ## 何がどう動いているか
 

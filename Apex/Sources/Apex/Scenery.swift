@@ -77,7 +77,7 @@ enum Scenery {
                     Placement(
                         x: spot.x, y: spot.y, z: spot.z,
                         scale: 0.7 + 0.9 * jitter(s * 0.017 + seed, 7),
-                        rotation: SIMD3(0, -jitter(s * 0.031 + seed, 5) * 2 * Float.pi, 0)))
+                        rotation: Vector3(0, -jitter(s * 0.031 + seed, 5) * 2 * Float.pi, 0)))
             }
             s += spacing
         }
